@@ -113,7 +113,7 @@ function SupplierDetail() {
               <FileText size={14} /> Verified credentials
             </div>
             <ul className="space-y-2">
-              {s.permits.map((p) => (
+              {s.permits.map((p: string) => (
                 <li key={p} className="flex items-center justify-between text-sm">
                   <span>{p}</span>
                   <span className="chip chip-verified">Verified</span>
@@ -125,7 +125,7 @@ function SupplierDetail() {
           <div className="rounded-lg border bg-card p-5">
             <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Categories</div>
             <div className="flex flex-wrap gap-1.5">
-              {s.categories.map((c) => <span key={c} className="chip chip-primary">{c}</span>)}
+              {s.categories.map((c: string) => <span key={c} className="chip chip-primary">{c}</span>)}
             </div>
           </div>
 

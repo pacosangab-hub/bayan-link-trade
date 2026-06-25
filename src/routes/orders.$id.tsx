@@ -48,7 +48,7 @@ function OrderDetail() {
                 <tr><th className="text-left px-4 py-2">Product</th><th className="text-right px-4 py-2">Qty</th><th className="text-right px-4 py-2">Unit</th><th className="text-right px-4 py-2">Total</th></tr>
               </thead>
               <tbody>
-                {o.items.map((it, i) => {
+                {o.items.map((it: { productId: string; qty: number; price: number }, i: number) => {
                   const p = productById(it.productId);
                   return (
                     <tr key={i} className="border-t">

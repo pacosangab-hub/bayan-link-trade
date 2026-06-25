@@ -73,7 +73,7 @@ function ProductDetail() {
                   Tier pricing
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  {p.tierPricing.map((t) => (
+                  {p.tierPricing.map((t: { qty: number; price: number }) => (
                     <div key={t.qty} className={`rounded p-2 text-center border ${qty >= t.qty ? "border-primary bg-primary/5" : "border-transparent"}`}>
                       <div className="text-xs text-muted-foreground">≥ {t.qty}</div>
                       <div className="font-display text-xl text-primary">{formatPhp(t.price)}</div>
