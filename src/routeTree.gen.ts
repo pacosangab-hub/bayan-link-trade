@@ -9,38 +9,294 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as RfqRouteImport } from './routes/rfq'
+import { Route as ProductsRouteImport } from './routes/products'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
+import { Route as RfqNewRouteImport } from './routes/rfq.new'
+import { Route as RfqIdRouteImport } from './routes/rfq.$id'
+import { Route as ProductsIdRouteImport } from './routes/products.$id'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as OnboardingSupplierRouteImport } from './routes/onboarding.supplier'
+import { Route as OnboardingBuyerRouteImport } from './routes/onboarding.buyer'
+import { Route as DashboardSupplierRouteImport } from './routes/dashboard.supplier'
+import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
 
+const SuppliersRoute = SuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RfqRoute = RfqRouteImport.update({
+  id: '/rfq',
+  path: '/rfq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuppliersIdRoute = SuppliersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => SuppliersRoute,
+} as any)
+const RfqNewRoute = RfqNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => RfqRoute,
+} as any)
+const RfqIdRoute = RfqIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => RfqRoute,
+} as any)
+const ProductsIdRoute = ProductsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ProductsRoute,
+} as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OrdersRoute,
+} as any)
+const OnboardingSupplierRoute = OnboardingSupplierRouteImport.update({
+  id: '/onboarding/supplier',
+  path: '/onboarding/supplier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingBuyerRoute = OnboardingBuyerRouteImport.update({
+  id: '/onboarding/buyer',
+  path: '/onboarding/buyer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardSupplierRoute = DashboardSupplierRouteImport.update({
+  id: '/dashboard/supplier',
+  path: '/dashboard/supplier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardBuyerRoute = DashboardBuyerRouteImport.update({
+  id: '/dashboard/buyer',
+  path: '/dashboard/buyer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/docs': typeof DocsRoute
+  '/messages': typeof MessagesRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/products': typeof ProductsRouteWithChildren
+  '/rfq': typeof RfqRouteWithChildren
+  '/suppliers': typeof SuppliersRouteWithChildren
+  '/dashboard/buyer': typeof DashboardBuyerRoute
+  '/dashboard/supplier': typeof DashboardSupplierRoute
+  '/onboarding/buyer': typeof OnboardingBuyerRoute
+  '/onboarding/supplier': typeof OnboardingSupplierRoute
+  '/orders/$id': typeof OrdersIdRoute
+  '/products/$id': typeof ProductsIdRoute
+  '/rfq/$id': typeof RfqIdRoute
+  '/rfq/new': typeof RfqNewRoute
+  '/suppliers/$id': typeof SuppliersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/docs': typeof DocsRoute
+  '/messages': typeof MessagesRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/products': typeof ProductsRouteWithChildren
+  '/rfq': typeof RfqRouteWithChildren
+  '/suppliers': typeof SuppliersRouteWithChildren
+  '/dashboard/buyer': typeof DashboardBuyerRoute
+  '/dashboard/supplier': typeof DashboardSupplierRoute
+  '/onboarding/buyer': typeof OnboardingBuyerRoute
+  '/onboarding/supplier': typeof OnboardingSupplierRoute
+  '/orders/$id': typeof OrdersIdRoute
+  '/products/$id': typeof ProductsIdRoute
+  '/rfq/$id': typeof RfqIdRoute
+  '/rfq/new': typeof RfqNewRoute
+  '/suppliers/$id': typeof SuppliersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/docs': typeof DocsRoute
+  '/messages': typeof MessagesRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/products': typeof ProductsRouteWithChildren
+  '/rfq': typeof RfqRouteWithChildren
+  '/suppliers': typeof SuppliersRouteWithChildren
+  '/dashboard/buyer': typeof DashboardBuyerRoute
+  '/dashboard/supplier': typeof DashboardSupplierRoute
+  '/onboarding/buyer': typeof OnboardingBuyerRoute
+  '/onboarding/supplier': typeof OnboardingSupplierRoute
+  '/orders/$id': typeof OrdersIdRoute
+  '/products/$id': typeof ProductsIdRoute
+  '/rfq/$id': typeof RfqIdRoute
+  '/rfq/new': typeof RfqNewRoute
+  '/suppliers/$id': typeof SuppliersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/docs'
+    | '/messages'
+    | '/orders'
+    | '/products'
+    | '/rfq'
+    | '/suppliers'
+    | '/dashboard/buyer'
+    | '/dashboard/supplier'
+    | '/onboarding/buyer'
+    | '/onboarding/supplier'
+    | '/orders/$id'
+    | '/products/$id'
+    | '/rfq/$id'
+    | '/rfq/new'
+    | '/suppliers/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/docs'
+    | '/messages'
+    | '/orders'
+    | '/products'
+    | '/rfq'
+    | '/suppliers'
+    | '/dashboard/buyer'
+    | '/dashboard/supplier'
+    | '/onboarding/buyer'
+    | '/onboarding/supplier'
+    | '/orders/$id'
+    | '/products/$id'
+    | '/rfq/$id'
+    | '/rfq/new'
+    | '/suppliers/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/docs'
+    | '/messages'
+    | '/orders'
+    | '/products'
+    | '/rfq'
+    | '/suppliers'
+    | '/dashboard/buyer'
+    | '/dashboard/supplier'
+    | '/onboarding/buyer'
+    | '/onboarding/supplier'
+    | '/orders/$id'
+    | '/products/$id'
+    | '/rfq/$id'
+    | '/rfq/new'
+    | '/suppliers/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  DocsRoute: typeof DocsRoute
+  MessagesRoute: typeof MessagesRoute
+  OrdersRoute: typeof OrdersRouteWithChildren
+  ProductsRoute: typeof ProductsRouteWithChildren
+  RfqRoute: typeof RfqRouteWithChildren
+  SuppliersRoute: typeof SuppliersRouteWithChildren
+  DashboardBuyerRoute: typeof DashboardBuyerRoute
+  DashboardSupplierRoute: typeof DashboardSupplierRoute
+  OnboardingBuyerRoute: typeof OnboardingBuyerRoute
+  OnboardingSupplierRoute: typeof OnboardingSupplierRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/suppliers': {
+      id: '/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rfq': {
+      id: '/rfq'
+      path: '/rfq'
+      fullPath: '/rfq'
+      preLoaderRoute: typeof RfqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +304,133 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/suppliers/$id': {
+      id: '/suppliers/$id'
+      path: '/$id'
+      fullPath: '/suppliers/$id'
+      preLoaderRoute: typeof SuppliersIdRouteImport
+      parentRoute: typeof SuppliersRoute
+    }
+    '/rfq/new': {
+      id: '/rfq/new'
+      path: '/new'
+      fullPath: '/rfq/new'
+      preLoaderRoute: typeof RfqNewRouteImport
+      parentRoute: typeof RfqRoute
+    }
+    '/rfq/$id': {
+      id: '/rfq/$id'
+      path: '/$id'
+      fullPath: '/rfq/$id'
+      preLoaderRoute: typeof RfqIdRouteImport
+      parentRoute: typeof RfqRoute
+    }
+    '/products/$id': {
+      id: '/products/$id'
+      path: '/$id'
+      fullPath: '/products/$id'
+      preLoaderRoute: typeof ProductsIdRouteImport
+      parentRoute: typeof ProductsRoute
+    }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof OrdersRoute
+    }
+    '/onboarding/supplier': {
+      id: '/onboarding/supplier'
+      path: '/onboarding/supplier'
+      fullPath: '/onboarding/supplier'
+      preLoaderRoute: typeof OnboardingSupplierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/buyer': {
+      id: '/onboarding/buyer'
+      path: '/onboarding/buyer'
+      fullPath: '/onboarding/buyer'
+      preLoaderRoute: typeof OnboardingBuyerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/supplier': {
+      id: '/dashboard/supplier'
+      path: '/dashboard/supplier'
+      fullPath: '/dashboard/supplier'
+      preLoaderRoute: typeof DashboardSupplierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/buyer': {
+      id: '/dashboard/buyer'
+      path: '/dashboard/buyer'
+      fullPath: '/dashboard/buyer'
+      preLoaderRoute: typeof DashboardBuyerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface OrdersRouteChildren {
+  OrdersIdRoute: typeof OrdersIdRoute
+}
+
+const OrdersRouteChildren: OrdersRouteChildren = {
+  OrdersIdRoute: OrdersIdRoute,
+}
+
+const OrdersRouteWithChildren =
+  OrdersRoute._addFileChildren(OrdersRouteChildren)
+
+interface ProductsRouteChildren {
+  ProductsIdRoute: typeof ProductsIdRoute
+}
+
+const ProductsRouteChildren: ProductsRouteChildren = {
+  ProductsIdRoute: ProductsIdRoute,
+}
+
+const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
+  ProductsRouteChildren,
+)
+
+interface RfqRouteChildren {
+  RfqIdRoute: typeof RfqIdRoute
+  RfqNewRoute: typeof RfqNewRoute
+}
+
+const RfqRouteChildren: RfqRouteChildren = {
+  RfqIdRoute: RfqIdRoute,
+  RfqNewRoute: RfqNewRoute,
+}
+
+const RfqRouteWithChildren = RfqRoute._addFileChildren(RfqRouteChildren)
+
+interface SuppliersRouteChildren {
+  SuppliersIdRoute: typeof SuppliersIdRoute
+}
+
+const SuppliersRouteChildren: SuppliersRouteChildren = {
+  SuppliersIdRoute: SuppliersIdRoute,
+}
+
+const SuppliersRouteWithChildren = SuppliersRoute._addFileChildren(
+  SuppliersRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  DocsRoute: DocsRoute,
+  MessagesRoute: MessagesRoute,
+  OrdersRoute: OrdersRouteWithChildren,
+  ProductsRoute: ProductsRouteWithChildren,
+  RfqRoute: RfqRouteWithChildren,
+  SuppliersRoute: SuppliersRouteWithChildren,
+  DashboardBuyerRoute: DashboardBuyerRoute,
+  DashboardSupplierRoute: DashboardSupplierRoute,
+  OnboardingBuyerRoute: OnboardingBuyerRoute,
+  OnboardingSupplierRoute: OnboardingSupplierRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
