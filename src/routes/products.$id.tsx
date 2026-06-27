@@ -62,7 +62,7 @@ function ProductDetail() {
   ];
   const [activeImg, setActiveImg] = useState(gallery[0]);
 
-  const tier = [...p.tierPricing].reverse().find((t) => qty >= t.qty) ?? p.tierPricing[0];
+  const tier = [...p.tierPricing].reverse().find((t: { qty: number; price: number }) => qty >= t.qty) ?? p.tierPricing[0];
   const subtotal = tier.price * qty;
   const ship = dest ? shippingTable[dest] : null;
   const total = subtotal + (ship?.cost ?? 0);
