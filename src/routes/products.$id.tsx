@@ -152,7 +152,7 @@ function ProductDetail() {
                   Tier pricing
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  {p.tierPricing.map((t) => (
+                  {p.tierPricing.map((t: { qty: number; price: number }) => (
                     <button
                       key={t.qty}
                       onClick={() => setQty(Math.max(t.qty, p.moq))}
