@@ -352,7 +352,7 @@ function TrackingMap({ stepIdx, dest, origin }: { stepIdx: number; dest: string;
           className="absolute transition-all duration-1000 ease-out"
           style={{ left: `${5 + progress * 88}%`, top: `${72 - progress * 50}%` }}
         >
-          <div className="bg-primary text-white rounded-full p-2 shadow-lg animate-bounce-slow">
+          <div className="bg-primary text-white rounded-full p-2 shadow-lg animate-bounce">
             <Truck size={20} />
           </div>
         </div>
