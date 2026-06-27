@@ -1,6 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Bell, MessageSquare, Search, ShoppingCart, ChevronDown, Menu } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { useCartCount } from "@/lib/cart";
+
 
 const navLinks = [
   { to: "/", label: "Marketplace" },
@@ -24,6 +26,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const cartCount = useCartCount();
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -81,9 +85,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Bell size={20} />
               <span className="absolute top-1 right-1 size-2 bg-primary rounded-full" />
             </button>
-            <Link to="/orders" className="p-2 rounded hover:bg-muted">
+            <Link to="/checkout" className="p-2 rounded hover:bg-muted relative">
               <ShoppingCart size={20} />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold grid place-items-center">
+                  {cartCount}
+                </span>
+              )}
             </Link>
+
             <div className="relative">
               <button
                 onClick={() => setMenuOpen((v) => !v)}
