@@ -403,7 +403,7 @@ function ReleaseAnimation() {
   );
 }
 
-function ReviewModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: (r: DemoOrder["review"] & object) => void }) {
+function ReviewModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: (r: NonNullable<DemoOrder["review"]>) => void }) {
   const [rating, setRating] = useState(5);
   const [quality, setQuality] = useState(5);
   const [packaging, setPackaging] = useState(5);
