@@ -11,13 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as RfqRouteImport } from './routes/rfq'
-import { Route as ProductsRouteImport } from './routes/products'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
 import { Route as RfqNewRouteImport } from './routes/rfq.new'
 import { Route as RfqIdRouteImport } from './routes/rfq.$id'
@@ -36,11 +36,6 @@ const SuppliersRoute = SuppliersRouteImport.update({
 const RfqRoute = RfqRouteImport.update({
   id: '/rfq',
   path: '/rfq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductsRoute = ProductsRouteImport.update({
-  id: '/products',
-  path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersRoute = OrdersRouteImport.update({
@@ -73,6 +68,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductsIndexRoute = ProductsIndexRouteImport.update({
+  id: '/products/',
+  path: '/products/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuppliersIdRoute = SuppliersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -89,9 +89,9 @@ const RfqIdRoute = RfqIdRouteImport.update({
   getParentRoute: () => RfqRoute,
 } as any)
 const ProductsIdRoute = ProductsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ProductsRoute,
+  id: '/products/$id',
+  path: '/products/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersIdRoute = OrdersIdRouteImport.update({
   id: '/$id',
@@ -126,7 +126,6 @@ export interface FileRoutesByFullPath {
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
   '/orders': typeof OrdersRouteWithChildren
-  '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -138,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
+  '/products/': typeof ProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -146,7 +146,6 @@ export interface FileRoutesByTo {
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
   '/orders': typeof OrdersRouteWithChildren
-  '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -158,6 +157,7 @@ export interface FileRoutesByTo {
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
+  '/products': typeof ProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -167,7 +167,6 @@ export interface FileRoutesById {
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
   '/orders': typeof OrdersRouteWithChildren
-  '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -179,6 +178,7 @@ export interface FileRoutesById {
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
+  '/products/': typeof ProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -189,7 +189,6 @@ export interface FileRouteTypes {
     | '/docs'
     | '/messages'
     | '/orders'
-    | '/products'
     | '/rfq'
     | '/suppliers'
     | '/dashboard/buyer'
@@ -201,6 +200,7 @@ export interface FileRouteTypes {
     | '/rfq/$id'
     | '/rfq/new'
     | '/suppliers/$id'
+    | '/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -209,7 +209,6 @@ export interface FileRouteTypes {
     | '/docs'
     | '/messages'
     | '/orders'
-    | '/products'
     | '/rfq'
     | '/suppliers'
     | '/dashboard/buyer'
@@ -221,6 +220,7 @@ export interface FileRouteTypes {
     | '/rfq/$id'
     | '/rfq/new'
     | '/suppliers/$id'
+    | '/products'
   id:
     | '__root__'
     | '/'
@@ -229,7 +229,6 @@ export interface FileRouteTypes {
     | '/docs'
     | '/messages'
     | '/orders'
-    | '/products'
     | '/rfq'
     | '/suppliers'
     | '/dashboard/buyer'
@@ -241,6 +240,7 @@ export interface FileRouteTypes {
     | '/rfq/$id'
     | '/rfq/new'
     | '/suppliers/$id'
+    | '/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -250,13 +250,14 @@ export interface RootRouteChildren {
   DocsRoute: typeof DocsRoute
   MessagesRoute: typeof MessagesRoute
   OrdersRoute: typeof OrdersRouteWithChildren
-  ProductsRoute: typeof ProductsRouteWithChildren
   RfqRoute: typeof RfqRouteWithChildren
   SuppliersRoute: typeof SuppliersRouteWithChildren
   DashboardBuyerRoute: typeof DashboardBuyerRoute
   DashboardSupplierRoute: typeof DashboardSupplierRoute
   OnboardingBuyerRoute: typeof OnboardingBuyerRoute
   OnboardingSupplierRoute: typeof OnboardingSupplierRoute
+  ProductsIdRoute: typeof ProductsIdRoute
+  ProductsIndexRoute: typeof ProductsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -273,13 +274,6 @@ declare module '@tanstack/react-router' {
       path: '/rfq'
       fullPath: '/rfq'
       preLoaderRoute: typeof RfqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/products': {
-      id: '/products'
-      path: '/products'
-      fullPath: '/products'
-      preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orders': {
@@ -324,6 +318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/products/': {
+      id: '/products/'
+      path: '/products'
+      fullPath: '/products/'
+      preLoaderRoute: typeof ProductsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/suppliers/$id': {
       id: '/suppliers/$id'
       path: '/$id'
@@ -347,10 +348,10 @@ declare module '@tanstack/react-router' {
     }
     '/products/$id': {
       id: '/products/$id'
-      path: '/$id'
+      path: '/products/$id'
       fullPath: '/products/$id'
       preLoaderRoute: typeof ProductsIdRouteImport
-      parentRoute: typeof ProductsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/orders/$id': {
       id: '/orders/$id'
@@ -401,18 +402,6 @@ const OrdersRouteChildren: OrdersRouteChildren = {
 const OrdersRouteWithChildren =
   OrdersRoute._addFileChildren(OrdersRouteChildren)
 
-interface ProductsRouteChildren {
-  ProductsIdRoute: typeof ProductsIdRoute
-}
-
-const ProductsRouteChildren: ProductsRouteChildren = {
-  ProductsIdRoute: ProductsIdRoute,
-}
-
-const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
-  ProductsRouteChildren,
-)
-
 interface RfqRouteChildren {
   RfqIdRoute: typeof RfqIdRoute
   RfqNewRoute: typeof RfqNewRoute
@@ -444,13 +433,14 @@ const rootRouteChildren: RootRouteChildren = {
   DocsRoute: DocsRoute,
   MessagesRoute: MessagesRoute,
   OrdersRoute: OrdersRouteWithChildren,
-  ProductsRoute: ProductsRouteWithChildren,
   RfqRoute: RfqRouteWithChildren,
   SuppliersRoute: SuppliersRouteWithChildren,
   DashboardBuyerRoute: DashboardBuyerRoute,
   DashboardSupplierRoute: DashboardSupplierRoute,
   OnboardingBuyerRoute: OnboardingBuyerRoute,
   OnboardingSupplierRoute: OnboardingSupplierRoute,
+  ProductsIdRoute: ProductsIdRoute,
+  ProductsIndexRoute: ProductsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
