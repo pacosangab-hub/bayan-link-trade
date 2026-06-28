@@ -36,6 +36,7 @@ function CheckoutPage() {
   const [payment, setPayment] = useState("escrow");
   const [processing, setProcessing] = useState(false);
   const [confirmed, setConfirmed] = useState<string | null>(null);
+  const [deliveryDate, setDeliveryDate] = useState<string>(defaultDeliveryDate());
 
   const [addr, setAddr] = useState({
     business: "Lola Nena's Carinderia Group",
