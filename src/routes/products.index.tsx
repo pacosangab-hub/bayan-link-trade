@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/ui-bits";
 import { products, categories, regions, supplierTypes, suppliers } from "@/lib/mock-data";
 import { SlidersHorizontal } from "lucide-react";
 
-export const Route = createFileRoute("/products")({
+export const Route = createFileRoute("/products/")({
   head: () => ({ meta: [{ title: "Products — PSG Marketplace" }] }),
   component: ProductsPage,
 });
@@ -39,7 +39,6 @@ function ProductsPage() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-6 grid lg:grid-cols-[260px_1fr] gap-6">
-        {/* Filters */}
         <aside className="space-y-5">
           <div className="flex items-center gap-2 text-sm font-semibold">
             <SlidersHorizontal size={16} /> Filters
@@ -88,7 +87,6 @@ function ProductsPage() {
           </FilterGroup>
         </aside>
 
-        {/* Results grid */}
         <div>
           <div className="flex items-center justify-between mb-4">
             <div className="text-sm text-muted-foreground">Showing {filtered.length} of {products.length}</div>
