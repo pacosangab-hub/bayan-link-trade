@@ -65,11 +65,14 @@ function ProductDetail() {
   const tier = [...p.tierPricing].reverse().find((t: { qty: number; price: number }) => qty >= t.qty) ?? p.tierPricing[0];
   const subtotal = tier.price * qty;
   const ship = dest ? shippingTable[dest] : null;
-  const total = subtotal + (ship?.cost ?? 0);
+  const escrowFee = Math.round(subtotal * 0.03);
+  const total = subtotal + (ship?.cost ?? 0) + escrowFee;
+  const belowMoq = qty < p.moq;
 
   const related = products.filter((x) => x.id !== p.id).slice(0, 5);
 
   function handleAddToCart() {
+    if (belowMoq) { toast.error(`Minimum order quantity is ${p.moq} ${p.unit}`); return; }
     addToCart(p.id, qty);
     toast.success(`Added ${qty} ${p.unit} to cart`, {
       description: p.title,
@@ -78,6 +81,7 @@ function ProductDetail() {
   }
 
   function handleBuyNow() {
+    if (belowMoq) { toast.error(`Minimum order quantity is ${p.moq} ${p.unit}`); return; }
     addToCart(p.id, qty);
     navigate({ to: "/checkout" });
   }
@@ -297,17 +301,23 @@ function ProductDetail() {
           <div className="rounded-lg border bg-card p-5 shadow-sm">
             <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Order quantity</div>
             <div className="mt-2 flex items-center gap-2">
-              <button onClick={() => setQty(Math.max(p.moq, qty - 1))} className="size-9 border rounded font-bold hover:bg-muted">−</button>
+              <button onClick={() => setQty(Math.max(1, qty - 1))} className="size-9 border rounded font-bold hover:bg-muted">−</button>
               <input
                 type="number"
                 value={qty}
-                min={p.moq}
-                onChange={(e) => setQty(Math.max(p.moq, parseInt(e.target.value || `${p.moq}`)))}
-                className="flex-1 border rounded text-center py-2"
+                min={1}
+                onChange={(e) => setQty(Math.max(1, parseInt(e.target.value || "1")))}
+                className={`flex-1 border rounded text-center py-2 ${belowMoq ? "border-destructive text-destructive" : ""}`}
               />
               <button onClick={() => setQty(qty + 1)} className="size-9 border rounded font-bold hover:bg-muted">+</button>
             </div>
             <div className="text-xs text-muted-foreground mt-1">in {p.unit} · min {p.moq}</div>
+            {belowMoq && (
+              <div className="mt-2 text-xs rounded-md bg-destructive/10 text-destructive px-2 py-1.5 flex items-center gap-1">
+                ⚠ Minimum order quantity is {p.moq} {p.unit}.
+                <button onClick={() => setQty(p.moq)} className="ml-auto underline font-semibold">Set to MOQ</button>
+              </div>
+            )}
 
             <div className="mt-4">
               <label className="text-xs uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
@@ -332,6 +342,7 @@ function ProductDetail() {
             <div className="mt-4 space-y-1 text-sm">
               <Row label={`${qty} × ${formatPhp(tier.price)}`} value={formatPhp(subtotal)} />
               <Row label="Shipping" value={ship ? formatPhp(ship.cost) : "Select dest."} sub />
+              <Row label="Escrow / platform fee (3%)" value={formatPhp(escrowFee)} sub />
             </div>
             <div className="border-t mt-3 pt-3 flex items-baseline justify-between">
               <span className="text-sm">Total</span>
@@ -341,13 +352,15 @@ function ProductDetail() {
             <div className="mt-4 grid grid-cols-2 gap-2">
               <button
                 onClick={handleBuyNow}
-                className="col-span-2 bg-primary text-primary-foreground font-semibold rounded-md py-3 hover:bg-primary/90 flex items-center justify-center gap-2"
+                disabled={belowMoq}
+                className="col-span-2 bg-primary text-primary-foreground font-semibold rounded-md py-3 hover:bg-primary/90 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Zap size={16} /> Buy Now
               </button>
               <button
                 onClick={handleAddToCart}
-                className="border-2 border-primary text-primary font-semibold rounded-md py-2.5 hover:bg-primary/5 flex items-center justify-center gap-2"
+                disabled={belowMoq}
+                className="border-2 border-primary text-primary font-semibold rounded-md py-2.5 hover:bg-primary/5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ShoppingCart size={16} /> Add to Cart
               </button>
