@@ -53,7 +53,8 @@ function CheckoutPage() {
   });
   const subtotal = lines.reduce((n, l) => n + l.total, 0);
   const ship = shippingTable[dest];
-  const total = subtotal + (cart.length ? ship.cost : 0);
+  const escrowFee = cart.length ? Math.round(subtotal * 0.03) : 0;
+  const total = subtotal + (cart.length ? ship.cost : 0) + escrowFee;
 
   function handlePay() {
     if (!cart.length) return;
@@ -173,6 +174,16 @@ function CheckoutPage() {
               </div>
               <div className="sm:col-span-2">
                 <Field label="Warehouse address" value={addr.address} onChange={(v) => setAddr({ ...addr, address: v })} />
+              </div>
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Preferred delivery date</label>
+                <input
+                  type="date"
+                  value={deliveryDate}
+                  min={defaultDeliveryDate()}
+                  onChange={(e) => setDeliveryDate(e.target.value)}
+                  className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-card"
+                />
               </div>
               <div className="sm:col-span-2">
                 <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Special instructions</label>
