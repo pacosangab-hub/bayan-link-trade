@@ -15,12 +15,19 @@ export const Route = createFileRoute("/checkout")({
 });
 
 const PAYMENTS = [
-  { id: "escrow", label: "PSG Escrow (Recommended)", desc: "Funds held until delivery confirmed", icon: "🛡️" },
-  { id: "gcash", label: "GCash", desc: "Pay via GCash wallet", icon: "💚" },
-  { id: "maya", label: "Maya", desc: "Pay via Maya wallet", icon: "💙" },
-  { id: "card", label: "Credit / Debit Card", desc: "Visa, Mastercard, JCB", icon: "💳" },
-  { id: "bank", label: "Bank Transfer", desc: "BPI, BDO, Metrobank, UnionBank", icon: "🏦" },
+  { id: "escrow", label: "PSG Escrow (Recommended)", desc: "Funds held until delivery confirmed", icon: "🛡️", disabled: false },
+  { id: "gcash", label: "GCash", desc: "Pay via GCash wallet", icon: "💚", disabled: false },
+  { id: "maya", label: "Maya", desc: "Pay via Maya wallet", icon: "💙", disabled: false },
+  { id: "card", label: "Credit / Debit Card", desc: "Visa, Mastercard, JCB", icon: "💳", disabled: false },
+  { id: "bank", label: "Bank Transfer", desc: "BPI, BDO, Metrobank, UnionBank", icon: "🏦", disabled: false },
+  { id: "cod", label: "Cash on Delivery", desc: "Unavailable for B2B escrow orders", icon: "💵", disabled: true },
 ];
+
+function defaultDeliveryDate(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 5);
+  return d.toISOString().slice(0, 10);
+}
 
 function CheckoutPage() {
   const cart = useCart();
