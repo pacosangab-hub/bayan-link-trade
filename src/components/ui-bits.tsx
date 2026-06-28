@@ -31,7 +31,7 @@ export function ProductCard({ p }: { p: Product }) {
     <Link
       to="/products/$id"
       params={{ id: p.id }}
-      className="group rounded-lg border bg-card overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all"
+      className="group block cursor-pointer rounded-lg border bg-card overflow-hidden hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/40 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
       <div className="aspect-[4/3] overflow-hidden bg-muted">
         <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
