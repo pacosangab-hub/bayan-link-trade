@@ -198,27 +198,37 @@ function CheckoutPage() {
 
           {/* Payment */}
           <Section title="Payment method">
+            <div className="rounded-md bg-success/5 border border-success/30 text-success px-3 py-2 text-xs flex items-start gap-2 mb-3">
+              <ShieldCheck size={14} className="shrink-0 mt-0.5" />
+              <span><strong>Escrow protection:</strong> Payment is held safely by PSG until you confirm delivery. If anything goes wrong, you can open a dispute within 72 hours.</span>
+            </div>
             <div className="grid sm:grid-cols-2 gap-2">
-              {PAYMENTS.map((m) => (
-                <label
-                  key={m.id}
-                  className={`flex gap-3 items-start p-3 border-2 rounded-md cursor-pointer ${payment === m.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted"}`}
-                >
-                  <input
-                    type="radio"
-                    name="pay"
-                    checked={payment === m.id}
-                    onChange={() => setPayment(m.id)}
-                    className="mt-1 accent-[oklch(0.58_0.22_27)]"
-                  />
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm flex items-center gap-2">
-                      <span className="text-base">{m.icon}</span>{m.label}
+              {PAYMENTS.map((m) => {
+                const isDisabled = m.disabled;
+                const active = payment === m.id;
+                return (
+                  <label
+                    key={m.id}
+                    className={`flex gap-3 items-start p-3 border-2 rounded-md ${isDisabled ? "opacity-50 cursor-not-allowed bg-muted/40 border-dashed" : `cursor-pointer ${active ? "border-primary bg-primary/5" : "border-border hover:bg-muted"}`}`}
+                  >
+                    <input
+                      type="radio"
+                      name="pay"
+                      checked={active}
+                      disabled={isDisabled}
+                      onChange={() => !isDisabled && setPayment(m.id)}
+                      className="mt-1 accent-[oklch(0.58_0.22_27)]"
+                    />
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm flex items-center gap-2">
+                        <span className="text-base">{m.icon}</span>{m.label}
+                        {isDisabled && <span className="text-[10px] uppercase bg-muted px-1.5 py-0.5 rounded ml-1">Disabled</span>}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{m.desc}</div>
                     </div>
-                    <div className="text-xs text-muted-foreground">{m.desc}</div>
-                  </div>
-                </label>
-              ))}
+                  </label>
+                );
+              })}
             </div>
           </Section>
         </div>
@@ -230,7 +240,8 @@ function CheckoutPage() {
             <div className="space-y-1.5 text-sm">
               <Row label={`Subtotal (${lines.reduce((n, l) => n + l.qty, 0)} items)`} value={formatPhp(subtotal)} />
               <Row label={`Shipping — ${dest}`} value={formatPhp(ship.cost)} />
-              <Row label="Platform fee" value="₱0" sub />
+              <Row label="Escrow / platform fee (3%)" value={formatPhp(escrowFee)} sub />
+              <Row label={`Preferred delivery — ${deliveryDate}`} value="" sub />
             </div>
             <div className="border-t my-3" />
             <div className="flex items-baseline justify-between">
