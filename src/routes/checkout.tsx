@@ -80,7 +80,7 @@ function CheckoutPage() {
           <div className="size-20 rounded-full bg-success/10 text-success grid place-items-center mx-auto mb-4 animate-scale-in">
             <CheckCircle2 size={48} />
           </div>
-          <h1 className="font-display text-4xl">Payment received</h1>
+          <h1 className="font-display text-4xl">Payment secured in escrow</h1>
           <p className="text-muted-foreground mt-2">
             Order <span className="font-mono font-semibold text-foreground">{confirmed.toUpperCase()}</span> is locked into PSG escrow.
             Funds will release to the supplier once you confirm delivery.
@@ -253,7 +253,7 @@ function CheckoutPage() {
               disabled={processing}
               className="mt-5 w-full bg-primary text-primary-foreground font-semibold rounded-md py-3 hover:bg-primary/90 disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              {processing ? (<><Loader2 size={18} className="animate-spin" /> Processing…</>) : "Pay Now"}
+              {processing ? (<><Loader2 size={18} className="animate-spin" /> Processing payment…</>) : (<><ShieldCheck size={16} /> Pay Securely</>)}
             </button>
             <div className="mt-3 flex items-start gap-2 text-xs text-success">
               <ShieldCheck size={14} className="shrink-0 mt-0.5" />
