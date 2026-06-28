@@ -15,12 +15,19 @@ export const Route = createFileRoute("/checkout")({
 });
 
 const PAYMENTS = [
-  { id: "escrow", label: "PSG Escrow (Recommended)", desc: "Funds held until delivery confirmed", icon: "🛡️" },
-  { id: "gcash", label: "GCash", desc: "Pay via GCash wallet", icon: "💚" },
-  { id: "maya", label: "Maya", desc: "Pay via Maya wallet", icon: "💙" },
-  { id: "card", label: "Credit / Debit Card", desc: "Visa, Mastercard, JCB", icon: "💳" },
-  { id: "bank", label: "Bank Transfer", desc: "BPI, BDO, Metrobank, UnionBank", icon: "🏦" },
+  { id: "escrow", label: "PSG Escrow (Recommended)", desc: "Funds held until delivery confirmed", icon: "🛡️", disabled: false },
+  { id: "gcash", label: "GCash", desc: "Pay via GCash wallet", icon: "💚", disabled: false },
+  { id: "maya", label: "Maya", desc: "Pay via Maya wallet", icon: "💙", disabled: false },
+  { id: "card", label: "Credit / Debit Card", desc: "Visa, Mastercard, JCB", icon: "💳", disabled: false },
+  { id: "bank", label: "Bank Transfer", desc: "BPI, BDO, Metrobank, UnionBank", icon: "🏦", disabled: false },
+  { id: "cod", label: "Cash on Delivery", desc: "Unavailable for B2B escrow orders", icon: "💵", disabled: true },
 ];
+
+function defaultDeliveryDate(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 5);
+  return d.toISOString().slice(0, 10);
+}
 
 function CheckoutPage() {
   const cart = useCart();
@@ -29,6 +36,7 @@ function CheckoutPage() {
   const [payment, setPayment] = useState("escrow");
   const [processing, setProcessing] = useState(false);
   const [confirmed, setConfirmed] = useState<string | null>(null);
+  const [deliveryDate, setDeliveryDate] = useState<string>(defaultDeliveryDate());
 
   const [addr, setAddr] = useState({
     business: "Lola Nena's Carinderia Group",
@@ -45,7 +53,8 @@ function CheckoutPage() {
   });
   const subtotal = lines.reduce((n, l) => n + l.total, 0);
   const ship = shippingTable[dest];
-  const total = subtotal + (cart.length ? ship.cost : 0);
+  const escrowFee = cart.length ? Math.round(subtotal * 0.03) : 0;
+  const total = subtotal + (cart.length ? ship.cost : 0) + escrowFee;
 
   function handlePay() {
     if (!cart.length) return;
@@ -71,7 +80,7 @@ function CheckoutPage() {
           <div className="size-20 rounded-full bg-success/10 text-success grid place-items-center mx-auto mb-4 animate-scale-in">
             <CheckCircle2 size={48} />
           </div>
-          <h1 className="font-display text-4xl">Payment received</h1>
+          <h1 className="font-display text-4xl">Payment secured in escrow</h1>
           <p className="text-muted-foreground mt-2">
             Order <span className="font-mono font-semibold text-foreground">{confirmed.toUpperCase()}</span> is locked into PSG escrow.
             Funds will release to the supplier once you confirm delivery.
@@ -166,6 +175,16 @@ function CheckoutPage() {
               <div className="sm:col-span-2">
                 <Field label="Warehouse address" value={addr.address} onChange={(v) => setAddr({ ...addr, address: v })} />
               </div>
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Preferred delivery date</label>
+                <input
+                  type="date"
+                  value={deliveryDate}
+                  min={defaultDeliveryDate()}
+                  onChange={(e) => setDeliveryDate(e.target.value)}
+                  className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-card"
+                />
+              </div>
               <div className="sm:col-span-2">
                 <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Special instructions</label>
                 <textarea
@@ -179,27 +198,37 @@ function CheckoutPage() {
 
           {/* Payment */}
           <Section title="Payment method">
+            <div className="rounded-md bg-success/5 border border-success/30 text-success px-3 py-2 text-xs flex items-start gap-2 mb-3">
+              <ShieldCheck size={14} className="shrink-0 mt-0.5" />
+              <span><strong>Escrow protection:</strong> Payment is held safely by PSG until you confirm delivery. If anything goes wrong, you can open a dispute within 72 hours.</span>
+            </div>
             <div className="grid sm:grid-cols-2 gap-2">
-              {PAYMENTS.map((m) => (
-                <label
-                  key={m.id}
-                  className={`flex gap-3 items-start p-3 border-2 rounded-md cursor-pointer ${payment === m.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted"}`}
-                >
-                  <input
-                    type="radio"
-                    name="pay"
-                    checked={payment === m.id}
-                    onChange={() => setPayment(m.id)}
-                    className="mt-1 accent-[oklch(0.58_0.22_27)]"
-                  />
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm flex items-center gap-2">
-                      <span className="text-base">{m.icon}</span>{m.label}
+              {PAYMENTS.map((m) => {
+                const isDisabled = m.disabled;
+                const active = payment === m.id;
+                return (
+                  <label
+                    key={m.id}
+                    className={`flex gap-3 items-start p-3 border-2 rounded-md ${isDisabled ? "opacity-50 cursor-not-allowed bg-muted/40 border-dashed" : `cursor-pointer ${active ? "border-primary bg-primary/5" : "border-border hover:bg-muted"}`}`}
+                  >
+                    <input
+                      type="radio"
+                      name="pay"
+                      checked={active}
+                      disabled={isDisabled}
+                      onChange={() => !isDisabled && setPayment(m.id)}
+                      className="mt-1 accent-[oklch(0.58_0.22_27)]"
+                    />
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm flex items-center gap-2">
+                        <span className="text-base">{m.icon}</span>{m.label}
+                        {isDisabled && <span className="text-[10px] uppercase bg-muted px-1.5 py-0.5 rounded ml-1">Disabled</span>}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{m.desc}</div>
                     </div>
-                    <div className="text-xs text-muted-foreground">{m.desc}</div>
-                  </div>
-                </label>
-              ))}
+                  </label>
+                );
+              })}
             </div>
           </Section>
         </div>
@@ -211,7 +240,8 @@ function CheckoutPage() {
             <div className="space-y-1.5 text-sm">
               <Row label={`Subtotal (${lines.reduce((n, l) => n + l.qty, 0)} items)`} value={formatPhp(subtotal)} />
               <Row label={`Shipping — ${dest}`} value={formatPhp(ship.cost)} />
-              <Row label="Platform fee" value="₱0" sub />
+              <Row label="Escrow / platform fee (3%)" value={formatPhp(escrowFee)} sub />
+              <Row label={`Preferred delivery — ${deliveryDate}`} value="" sub />
             </div>
             <div className="border-t my-3" />
             <div className="flex items-baseline justify-between">
@@ -223,7 +253,7 @@ function CheckoutPage() {
               disabled={processing}
               className="mt-5 w-full bg-primary text-primary-foreground font-semibold rounded-md py-3 hover:bg-primary/90 disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              {processing ? (<><Loader2 size={18} className="animate-spin" /> Processing…</>) : "Pay Now"}
+              {processing ? (<><Loader2 size={18} className="animate-spin" /> Processing payment…</>) : (<><ShieldCheck size={16} /> Pay Securely</>)}
             </button>
             <div className="mt-3 flex items-start gap-2 text-xs text-success">
               <ShieldCheck size={14} className="shrink-0 mt-0.5" />
