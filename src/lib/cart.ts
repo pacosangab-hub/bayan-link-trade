@@ -52,12 +52,19 @@ const SAVED_KEY = "psg_saved_v1";
 const isBrowser = typeof window !== "undefined";
 const EMPTY_CART: CartItem[] = [];
 const EMPTY_SAVED: string[] = [];
+const EMPTY_ORDERS: DemoOrder[] = [];
+const storageCache = new Map<string, { raw: string; value: unknown }>();
 
 function read<T>(key: string, fallback: T): T {
   if (!isBrowser) return fallback;
   try {
-    const v = localStorage.getItem(key);
-    return v ? (JSON.parse(v) as T) : fallback;
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const cached = storageCache.get(key);
+    if (cached?.raw === raw) return cached.value as T;
+    const value = JSON.parse(raw) as T;
+    storageCache.set(key, { raw, value });
+    return value;
   } catch {
     return fallback;
   }
@@ -65,7 +72,9 @@ function read<T>(key: string, fallback: T): T {
 
 function write<T>(key: string, val: T) {
   if (!isBrowser) return;
-  localStorage.setItem(key, JSON.stringify(val));
+  const raw = JSON.stringify(val);
+  storageCache.set(key, { raw, value: val });
+  localStorage.setItem(key, raw);
   window.dispatchEvent(new CustomEvent("psg-store-change", { detail: { key } }));
 }
 
@@ -80,7 +89,7 @@ function subscribe(cb: () => void) {
 }
 
 // ===== Cart =====
-export const getCart = (): CartItem[] => read<CartItem[]>(CART_KEY, []);
+export const getCart = (): CartItem[] => read<CartItem[]>(CART_KEY, EMPTY_CART);
 export function addToCart(productId: string, qty: number) {
   const cart = getCart();
   const ex = cart.find((c) => c.productId === productId);
@@ -109,7 +118,7 @@ export function useCartCount(): number {
 }
 
 // ===== Saved / wishlist =====
-export const getSaved = (): string[] => read<string[]>(SAVED_KEY, []);
+export const getSaved = (): string[] => read<string[]>(SAVED_KEY, EMPTY_SAVED);
 export function toggleSaved(productId: string) {
   const s = getSaved();
   const i = s.indexOf(productId);
@@ -122,7 +131,7 @@ export function useSaved(): string[] {
 }
 
 // ===== Orders (demo) =====
-export const getDemoOrders = (): DemoOrder[] => read<DemoOrder[]>(ORDERS_KEY, []);
+export const getDemoOrders = (): DemoOrder[] => read<DemoOrder[]>(ORDERS_KEY, EMPTY_ORDERS);
 export function saveDemoOrder(o: DemoOrder) {
   const all = getDemoOrders();
   const i = all.findIndex((x) => x.id === o.id);
