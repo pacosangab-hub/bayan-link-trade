@@ -50,6 +50,8 @@ const ORDERS_KEY = "psg_demo_orders_v1";
 const SAVED_KEY = "psg_saved_v1";
 
 const isBrowser = typeof window !== "undefined";
+const EMPTY_CART: CartItem[] = [];
+const EMPTY_SAVED: string[] = [];
 
 function read<T>(key: string, fallback: T): T {
   if (!isBrowser) return fallback;
@@ -96,7 +98,7 @@ export function updateCartQty(productId: string, qty: number) {
 export function clearCart() { write(CART_KEY, []); }
 
 export function useCart(): CartItem[] {
-  return useSyncExternalStore(subscribe, getCart, () => []);
+  return useSyncExternalStore(subscribe, getCart, () => EMPTY_CART);
 }
 
 export function cartCount(): number {
@@ -116,7 +118,7 @@ export function toggleSaved(productId: string) {
   write(SAVED_KEY, s);
 }
 export function useSaved(): string[] {
-  return useSyncExternalStore(subscribe, getSaved, () => []);
+  return useSyncExternalStore(subscribe, getSaved, () => EMPTY_SAVED);
 }
 
 // ===== Orders (demo) =====
