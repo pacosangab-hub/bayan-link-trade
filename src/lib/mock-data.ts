@@ -38,26 +38,45 @@ export type Product = {
   origin: string;
 };
 
+export type RFQStatus =
+  | "Draft"
+  | "Open"
+  | "Receiving Quotes"
+  | "Awaiting Decision"
+  | "Supplier Selected"
+  | "Order Created"
+  | "Completed"
+  | "Closed"
+  | "Awarded";
+
 export type RFQ = {
   id: string;
   buyer: string;
   buyerType: string;
+  buyerVerified?: boolean;
   title: string;
   category: string;
   qty: string;
+  unit?: string;
+  recurring?: boolean;
   budgetPhp: string;
   deliverBy: string;
+  deliveryLocation?: string;
   region: string;
   postedAgo: string;
   description: string;
   responses: number;
-  status: "Open" | "Awarded" | "Closed";
+  status: RFQStatus;
+  nextAction?: string;
+  selectedSupplierId?: string;
   quotes: {
     supplierId: string;
     pricePhp: number;
     moq: number;
     leadTimeDays: number;
     note: string;
+    deliveryFee?: number;
+    paymentTerms?: string;
   }[];
 };
 
