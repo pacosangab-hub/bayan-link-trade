@@ -47,18 +47,35 @@ export function getOverrides(): RFQ[] {
   return read<RFQ[]>(RFQ_KEY, EMPTY);
 }
 
+// Reference-stable merged snapshot — recomputed only when overrides change.
+let mergedCache: { key: RFQ[]; value: RFQ[] } | null = null;
+const rfqByIdCache = new Map<string, RFQ | undefined>();
+let rfqByIdCacheKey: RFQ[] | null = null;
+
 /** Merged view: seed rfqs + any custom created/edited overrides. */
 export function getAllRfqs(): RFQ[] {
   const overrides = getOverrides();
+  if (mergedCache && mergedCache.key === overrides) return mergedCache.value;
   const byId = new Map<string, RFQ>();
   for (const r of seedRfqs) byId.set(r.id, r);
   for (const r of overrides) byId.set(r.id, r);
-  return Array.from(byId.values()).sort((a, b) => (b.id > a.id ? 1 : -1));
+  const value = Array.from(byId.values()).sort((a, b) => (b.id > a.id ? 1 : -1));
+  mergedCache = { key: overrides, value };
+  return value;
 }
 
 export function getRfq(id: string): RFQ | undefined {
-  return getAllRfqs().find((r) => r.id === id);
+  const all = getAllRfqs();
+  if (rfqByIdCacheKey !== all) {
+    rfqByIdCache.clear();
+    rfqByIdCacheKey = all;
+  }
+  if (rfqByIdCache.has(id)) return rfqByIdCache.get(id);
+  const found = all.find((r) => r.id === id);
+  rfqByIdCache.set(id, found);
+  return found;
 }
+
 
 export function saveRfq(rfq: RFQ) {
   const all = getOverrides();
