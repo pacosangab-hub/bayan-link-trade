@@ -118,10 +118,9 @@ export function RFQCard({ r }: { r: RFQ }) {
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="chip chip-primary">{r.category}</span>
-            <span className={`chip ${r.status === "Open" ? "chip-verified" : r.status === "Awarded" ? "chip-gold" : ""}`}>
-              {r.status}
-            </span>
+            <span className={`chip ${statusChipClass(r.status)}`}>{r.status}</span>
           </div>
+
           <h3 className="font-semibold leading-snug">{r.title}</h3>
           <div className="text-xs text-muted-foreground mt-1">
             {r.buyer} · {r.buyerType}
