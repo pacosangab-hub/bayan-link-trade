@@ -1,7 +1,25 @@
 import { Star, ShieldCheck, BadgeCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import type { Product, Supplier, RFQ, EscrowState } from "@/lib/mock-data";
+import type { Product, Supplier, RFQ, EscrowState, RFQStatus } from "@/lib/mock-data";
 import { formatPhp, supplierById, escrowSteps } from "@/lib/mock-data";
+
+export function statusChipClass(s: RFQStatus): string {
+  switch (s) {
+    case "Open":
+    case "Receiving Quotes":
+      return "chip-verified";
+    case "Awaiting Decision":
+      return "chip-primary";
+    case "Supplier Selected":
+    case "Order Created":
+    case "Completed":
+    case "Awarded":
+      return "chip-gold";
+    default:
+      return "";
+  }
+}
+
 
 export function VerifiedBadge({ gold = false }: { gold?: boolean }) {
   return gold ? (
