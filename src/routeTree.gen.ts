@@ -18,6 +18,7 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RfqIndexRouteImport } from './routes/rfq.index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
 import { Route as RfqNewRouteImport } from './routes/rfq.new'
@@ -73,6 +74,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const RfqIndexRoute = RfqIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RfqRoute,
 } as any)
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/products/': typeof ProductsIndexRoute
+  '/rfq/': typeof RfqIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -153,7 +160,6 @@ export interface FileRoutesByTo {
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
   '/orders': typeof OrdersRouteWithChildren
-  '/rfq': typeof RfqRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -165,6 +171,7 @@ export interface FileRoutesByTo {
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/products': typeof ProductsIndexRoute
+  '/rfq': typeof RfqIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -187,6 +194,7 @@ export interface FileRoutesById {
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/products/': typeof ProductsIndexRoute
+  '/rfq/': typeof RfqIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -210,6 +218,7 @@ export interface FileRouteTypes {
     | '/rfq/new'
     | '/suppliers/$id'
     | '/products/'
+    | '/rfq/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -218,7 +227,6 @@ export interface FileRouteTypes {
     | '/docs'
     | '/messages'
     | '/orders'
-    | '/rfq'
     | '/suppliers'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -230,6 +238,7 @@ export interface FileRouteTypes {
     | '/rfq/new'
     | '/suppliers/$id'
     | '/products'
+    | '/rfq'
   id:
     | '__root__'
     | '/'
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/rfq/new'
     | '/suppliers/$id'
     | '/products/'
+    | '/rfq/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -333,6 +343,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/rfq/': {
+      id: '/rfq/'
+      path: '/'
+      fullPath: '/rfq/'
+      preLoaderRoute: typeof RfqIndexRouteImport
+      parentRoute: typeof RfqRoute
     }
     '/products/': {
       id: '/products/'
@@ -435,11 +452,13 @@ const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
 interface RfqRouteChildren {
   RfqIdRoute: typeof RfqIdRoute
   RfqNewRoute: typeof RfqNewRoute
+  RfqIndexRoute: typeof RfqIndexRoute
 }
 
 const RfqRouteChildren: RfqRouteChildren = {
   RfqIdRoute: RfqIdRoute,
   RfqNewRoute: RfqNewRoute,
+  RfqIndexRoute: RfqIndexRoute,
 }
 
 const RfqRouteWithChildren = RfqRoute._addFileChildren(RfqRouteChildren)
@@ -474,13 +493,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -38,26 +38,45 @@ export type Product = {
   origin: string;
 };
 
+export type RFQStatus =
+  | "Draft"
+  | "Open"
+  | "Receiving Quotes"
+  | "Awaiting Decision"
+  | "Supplier Selected"
+  | "Order Created"
+  | "Completed"
+  | "Closed"
+  | "Awarded";
+
 export type RFQ = {
   id: string;
   buyer: string;
   buyerType: string;
+  buyerVerified?: boolean;
   title: string;
   category: string;
   qty: string;
+  unit?: string;
+  recurring?: boolean;
   budgetPhp: string;
   deliverBy: string;
+  deliveryLocation?: string;
   region: string;
   postedAgo: string;
   description: string;
   responses: number;
-  status: "Open" | "Awarded" | "Closed";
+  status: RFQStatus;
+  nextAction?: string;
+  selectedSupplierId?: string;
   quotes: {
     supplierId: string;
     pricePhp: number;
     moq: number;
     leadTimeDays: number;
     note: string;
+    deliveryFee?: number;
+    paymentTerms?: string;
   }[];
 };
 
@@ -401,90 +420,98 @@ export const products: Product[] = [
 export const rfqs: RFQ[] = [
   {
     id: "rfq_001",
-    buyer: "Lola Nena's Carinderia Group", buyerType: "Carinderia (8 branches)",
-    title: "500 kg/month premium rice — recurring",
+    buyer: "Lola Nena's Carinderia Group", buyerType: "Carinderia (8 branches)", buyerVerified: true,
+    title: "500 kg/month Premium Rice — Recurring Supply",
     category: "Rice & Grains",
-    qty: "500 kg / month (recurring 6 months)",
+    qty: "500 kg / month", unit: "kg", recurring: true,
     budgetPhp: "₱45–50 / kg",
     deliverBy: "Weekly drops, Mon",
+    deliveryLocation: "Project 8 Commissary, Quezon City",
     region: "Metro Manila",
     postedAgo: "2 hrs ago",
     description:
       "We operate 8 branches in QC and Caloocan. Need consistent quality, weekly delivery to a central commissary in Project 8. Open to 6-month contract.",
     responses: 4,
-    status: "Open",
+    status: "Receiving Quotes",
+    nextAction: "4 new quotes — Review now",
     quotes: [
-      { supplierId: "sup_001", pricePhp: 46, moq: 200, leadTimeDays: 2, note: "Locked-in pricing for 6 months. Weekly delivery, free for orders ≥ 300 kg." },
-      { supplierId: "sup_003", pricePhp: 48, moq: 100, leadTimeDays: 3, note: "Can mix grades on request. Delivery via partner trucker." },
+      { supplierId: "sup_001", pricePhp: 46, moq: 200, leadTimeDays: 2, deliveryFee: 0, paymentTerms: "50% escrow / 50% on delivery", note: "Locked-in pricing for 6 months. Weekly delivery, free for orders ≥ 300 kg." },
+      { supplierId: "sup_003", pricePhp: 48, moq: 100, leadTimeDays: 3, deliveryFee: 800, paymentTerms: "Full escrow", note: "Can mix grades on request. Delivery via partner trucker." },
     ],
   },
   {
     id: "rfq_002",
-    buyer: "Casa Marikina Boutique Hotel", buyerType: "Hotel — 64 rooms",
-    title: "Toiletries + tissue starter pack for 64 rooms",
+    buyer: "Casa Marikina Boutique Hotel", buyerType: "Hotel — 64 rooms", buyerVerified: true,
+    title: "Tissue Starter Pack — 64 Rooms",
     category: "Paper",
-    qty: "Setup pack + monthly resupply",
+    qty: "Setup pack + monthly resupply", unit: "carton", recurring: true,
     budgetPhp: "Open",
     deliverBy: "Within 2 weeks",
+    deliveryLocation: "Marikina City",
     region: "Metro Manila",
     postedAgo: "1 day ago",
-    description: "Looking for a hotel toiletries supplier. Want kraft-look packaging, eco-positioned. Monthly resupply schedule.",
+    description: "Looking for a hotel toiletries + tissue supplier. Want kraft-look packaging, eco-positioned. Monthly resupply schedule.",
     responses: 6,
-    status: "Open",
+    status: "Receiving Quotes",
+    nextAction: "6 new quotes — Review now",
     quotes: [
-      { supplierId: "sup_008", pricePhp: 0, moq: 0, leadTimeDays: 5, note: "We can do a custom kraft line. Sending sample pack at no cost." },
+      { supplierId: "sup_008", pricePhp: 870, moq: 30, leadTimeDays: 5, deliveryFee: 500, paymentTerms: "Full escrow", note: "Custom kraft line available. Sending sample pack at no cost." },
     ],
   },
   {
     id: "rfq_003",
-    buyer: "BarakoBros Coffee", buyerType: "Café chain (12 outlets)",
-    title: "House blend espresso — 80 kg / month",
+    buyer: "BarakoBros Coffee", buyerType: "Café chain (12 outlets)", buyerVerified: true,
+    title: "House Blend Espresso — 80 kg/month",
     category: "Coffee",
-    qty: "80 kg / month",
+    qty: "80 kg / month", unit: "kg", recurring: true,
     budgetPhp: "≤ ₱700 / kg",
     deliverBy: "First delivery in 10 days",
+    deliveryLocation: "Pasig commissary + Cavite hub",
     region: "Metro Manila + Cavite",
     postedAgo: "3 days ago",
     description: "Switching roaster. Want chocolatey medium-dark profile. Will cup-test 3 samples.",
     responses: 9,
-    status: "Open",
+    status: "Awaiting Decision",
+    nextAction: "9 quotes ready — Decide soon",
     quotes: [
-      { supplierId: "sup_004", pricePhp: 680, moq: 25, leadTimeDays: 3, note: "Will send 3 sample profiles by Friday. Free cupping at our roastery." },
+      { supplierId: "sup_004", pricePhp: 680, moq: 25, leadTimeDays: 3, deliveryFee: 400, paymentTerms: "Full escrow", note: "Will send 3 sample profiles by Friday. Free cupping at our roastery." },
     ],
   },
   {
     id: "rfq_004",
-    buyer: "Mercury Aid Pharmacy", buyerType: "Pharmacy — 3 branches",
-    title: "OTC analgesics — quarterly restock",
-    category: "Pharma",
-    qty: "2,000 boxes paracetamol + ibuprofen mix",
-    budgetPhp: "Best price",
-    deliverBy: "End of month",
-    region: "Metro Manila",
-    postedAgo: "5 days ago",
-    description: "Must be FDA-registered, ≥ 18 months shelf life. Will need certificate of analysis.",
-    responses: 3,
-    status: "Awarded",
+    buyer: "Sunrise Snack Foods", buyerType: "Food Manufacturer", buyerVerified: true,
+    title: "Corrugated Packaging Boxes — 5,000 pieces",
+    category: "Packaging",
+    qty: "5,000 pcs (one-time)", unit: "pcs", recurring: false,
+    budgetPhp: "≤ ₱22 / box",
+    deliverBy: "3 weeks",
+    deliveryLocation: "Biñan, Laguna",
+    region: "Laguna",
+    postedAgo: "6 hrs ago",
+    description: "Need double-wall corrugated boxes 30x20x15 cm with 2-color flexo print. Sample approval required before mass production.",
+    responses: 2,
+    status: "Open",
+    nextAction: "2 quotes so far — Share request",
     quotes: [
-      { supplierId: "sup_005", pricePhp: 152, moq: 200, leadTimeDays: 4, note: "Awarded — 24-month shelf life batches available." },
+      { supplierId: "sup_007", pricePhp: 21, moq: 1000, leadTimeDays: 12, deliveryFee: 1200, paymentTerms: "30% escrow / 70% on delivery", note: "Can meet spec. Sample in 3 days." },
     ],
   },
   {
     id: "rfq_005",
-    buyer: "Vista Builders Inc.", buyerType: "Contractor",
-    title: "Portland cement — 4,000 bags for site",
-    category: "Construction",
-    qty: "4,000 bags (40 kg)",
-    budgetPhp: "≤ ₱280 / bag",
-    deliverBy: "Phased over 3 weeks",
-    region: "Cavite",
-    postedAgo: "1 week ago",
-    description: "Project site in Dasmariñas. Need phased delivery and project pricing.",
-    responses: 5,
+    buyer: "Grill Master QC", buyerType: "Restaurant Chain (5 outlets)", buyerVerified: true,
+    title: "Chicken Breast Supply — 300 kg/week",
+    category: "Seafood",
+    qty: "300 kg / week", unit: "kg", recurring: true,
+    budgetPhp: "₱250–280 / kg",
+    deliverBy: "Tue & Fri, 6 AM",
+    deliveryLocation: "Quezon City central kitchen",
+    region: "Metro Manila",
+    postedAgo: "12 hrs ago",
+    description: "Skinless, boneless chicken breast, ≤ 200g per piece. Cold-chain delivery required. NMIS-accredited supplier only.",
+    responses: 0,
     status: "Open",
-    quotes: [
-      { supplierId: "sup_006", pricePhp: 268, moq: 500, leadTimeDays: 5, note: "Phased delivery available. Project terms with PSG escrow per tranche." },
-    ],
+    nextAction: "No quotes yet — Share request",
+    quotes: [],
   },
 ];
 
