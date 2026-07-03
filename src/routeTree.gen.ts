@@ -31,6 +31,7 @@ import { Route as ProductsIdRouteImport } from './routes/products.$id'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as OnboardingSupplierRouteImport } from './routes/onboarding.supplier'
 import { Route as OnboardingBuyerRouteImport } from './routes/onboarding.buyer'
+import { Route as OffersIdRouteImport } from './routes/offers.$id'
 import { Route as DashboardSupplierRouteImport } from './routes/dashboard.supplier'
 import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
 import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
@@ -145,6 +146,11 @@ const OnboardingBuyerRoute = OnboardingBuyerRouteImport.update({
   path: '/onboarding/buyer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OffersIdRoute = OffersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OffersRoute,
+} as any)
 const DashboardSupplierRoute = DashboardSupplierRouteImport.update({
   id: '/dashboard/supplier',
   path: '/dashboard/supplier',
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
+  '/offers/$id': typeof OffersIdRoute
   '/onboarding/buyer': typeof OnboardingBuyerRoute
   '/onboarding/supplier': typeof OnboardingSupplierRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -199,6 +206,7 @@ export interface FileRoutesByTo {
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
+  '/offers/$id': typeof OffersIdRoute
   '/onboarding/buyer': typeof OnboardingBuyerRoute
   '/onboarding/supplier': typeof OnboardingSupplierRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -227,6 +235,7 @@ export interface FileRoutesById {
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
+  '/offers/$id': typeof OffersIdRoute
   '/onboarding/buyer': typeof OnboardingBuyerRoute
   '/onboarding/supplier': typeof OnboardingSupplierRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
+    | '/offers/$id'
     | '/onboarding/buyer'
     | '/onboarding/supplier'
     | '/orders/$id'
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
+    | '/offers/$id'
     | '/onboarding/buyer'
     | '/onboarding/supplier'
     | '/orders/$id'
@@ -306,6 +317,7 @@ export interface FileRouteTypes {
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
+    | '/offers/$id'
     | '/onboarding/buyer'
     | '/onboarding/supplier'
     | '/orders/$id'
@@ -493,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingBuyerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/offers/$id': {
+      id: '/offers/$id'
+      path: '/$id'
+      fullPath: '/offers/$id'
+      preLoaderRoute: typeof OffersIdRouteImport
+      parentRoute: typeof OffersRoute
+    }
     '/dashboard/supplier': {
       id: '/dashboard/supplier'
       path: '/dashboard/supplier'
@@ -532,10 +551,12 @@ const CustomRequestsRouteWithChildren = CustomRequestsRoute._addFileChildren(
 )
 
 interface OffersRouteChildren {
+  OffersIdRoute: typeof OffersIdRoute
   OffersIndexRoute: typeof OffersIndexRoute
 }
 
 const OffersRouteChildren: OffersRouteChildren = {
+  OffersIdRoute: OffersIdRoute,
   OffersIndexRoute: OffersIndexRoute,
 }
 
