@@ -52,6 +52,7 @@ function ProductDetail() {
   const [dest, setDest] = useState<ShippingDest | "">("");
   const [tab, setTab] = useState<Tab>("Description");
   const [zoom, setZoom] = useState(false);
+  const [customOpen, setCustomOpen] = useState(false);
 
   // Build a small gallery + extras from the base image with different crops/orientations.
   const baseUrl = p.image.split("?")[0];
