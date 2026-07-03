@@ -366,12 +366,12 @@ function ProductDetail() {
               >
                 <ShoppingCart size={16} /> Add to Cart
               </button>
-              <Link
-                to="/rfq/new"
-                className="border rounded-md py-2.5 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-muted"
+              <button
+                onClick={() => setCustomOpen(true)}
+                className="border-2 border-gold text-ink font-semibold rounded-md py-2.5 hover:bg-gold/10 flex items-center justify-center gap-2 col-span-2 bg-gold/5"
               >
-                <FileText size={14} /> Request Quote
-              </Link>
+                <FileText size={14} /> Request Custom Quote
+              </button>
               <Link
                 to="/messages"
                 className="border rounded-md py-2.5 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-muted"
