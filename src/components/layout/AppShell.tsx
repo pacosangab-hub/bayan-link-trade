@@ -9,6 +9,8 @@ const navLinks = [
   { to: "/products", label: "Products" },
   { to: "/suppliers", label: "Suppliers" },
   { to: "/rfq", label: "RFQ Center" },
+  { to: "/offers", label: "Custom Offers" },
+  { to: "/custom-requests", label: "Custom Requests" },
   { to: "/orders", label: "Orders" },
   { to: "/messages", label: "Messages" },
 ];

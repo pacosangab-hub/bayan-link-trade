@@ -35,6 +35,7 @@ import { Route as OffersIdRouteImport } from './routes/offers.$id'
 import { Route as DashboardSupplierRouteImport } from './routes/dashboard.supplier'
 import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
 import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
+import { Route as OffersIdCheckoutRouteImport } from './routes/offers.$id.checkout'
 
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
@@ -166,6 +167,11 @@ const CustomRequestsIdRoute = CustomRequestsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => CustomRequestsRoute,
 } as any)
+const OffersIdCheckoutRoute = OffersIdCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => OffersIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -182,7 +188,7 @@ export interface FileRoutesByFullPath {
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
-  '/offers/$id': typeof OffersIdRoute
+  '/offers/$id': typeof OffersIdRouteWithChildren
   '/onboarding/buyer': typeof OnboardingBuyerRoute
   '/onboarding/supplier': typeof OnboardingSupplierRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/offers/': typeof OffersIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
+  '/offers/$id/checkout': typeof OffersIdCheckoutRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -206,7 +213,7 @@ export interface FileRoutesByTo {
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
-  '/offers/$id': typeof OffersIdRoute
+  '/offers/$id': typeof OffersIdRouteWithChildren
   '/onboarding/buyer': typeof OnboardingBuyerRoute
   '/onboarding/supplier': typeof OnboardingSupplierRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByTo {
   '/offers': typeof OffersIndexRoute
   '/products': typeof ProductsIndexRoute
   '/rfq': typeof RfqIndexRoute
+  '/offers/$id/checkout': typeof OffersIdCheckoutRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -235,7 +243,7 @@ export interface FileRoutesById {
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
-  '/offers/$id': typeof OffersIdRoute
+  '/offers/$id': typeof OffersIdRouteWithChildren
   '/onboarding/buyer': typeof OnboardingBuyerRoute
   '/onboarding/supplier': typeof OnboardingSupplierRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -247,6 +255,7 @@ export interface FileRoutesById {
   '/offers/': typeof OffersIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
+  '/offers/$id/checkout': typeof OffersIdCheckoutRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
     | '/offers/'
     | '/products/'
     | '/rfq/'
+    | '/offers/$id/checkout'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -301,6 +311,7 @@ export interface FileRouteTypes {
     | '/offers'
     | '/products'
     | '/rfq'
+    | '/offers/$id/checkout'
   id:
     | '__root__'
     | '/'
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/offers/'
     | '/products/'
     | '/rfq/'
+    | '/offers/$id/checkout'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -533,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CustomRequestsIdRouteImport
       parentRoute: typeof CustomRequestsRoute
     }
+    '/offers/$id/checkout': {
+      id: '/offers/$id/checkout'
+      path: '/checkout'
+      fullPath: '/offers/$id/checkout'
+      preLoaderRoute: typeof OffersIdCheckoutRouteImport
+      parentRoute: typeof OffersIdRoute
+    }
   }
 }
 
@@ -550,13 +569,25 @@ const CustomRequestsRouteWithChildren = CustomRequestsRoute._addFileChildren(
   CustomRequestsRouteChildren,
 )
 
+interface OffersIdRouteChildren {
+  OffersIdCheckoutRoute: typeof OffersIdCheckoutRoute
+}
+
+const OffersIdRouteChildren: OffersIdRouteChildren = {
+  OffersIdCheckoutRoute: OffersIdCheckoutRoute,
+}
+
+const OffersIdRouteWithChildren = OffersIdRoute._addFileChildren(
+  OffersIdRouteChildren,
+)
+
 interface OffersRouteChildren {
-  OffersIdRoute: typeof OffersIdRoute
+  OffersIdRoute: typeof OffersIdRouteWithChildren
   OffersIndexRoute: typeof OffersIndexRoute
 }
 
 const OffersRouteChildren: OffersRouteChildren = {
-  OffersIdRoute: OffersIdRoute,
+  OffersIdRoute: OffersIdRouteWithChildren,
   OffersIndexRoute: OffersIndexRoute,
 }
 
