@@ -406,6 +406,14 @@ function ProductDetail() {
           <img src={activeImg} alt={p.title} className="max-h-[92vh] max-w-[92vw] object-contain rounded-lg" />
         </div>
       )}
+      <RequestCustomQuoteModal
+        open={customOpen}
+        onClose={() => setCustomOpen(false)}
+        supplierId={s.id}
+        defaultProductName={p.title}
+        defaultCategory={p.category}
+        defaultUnit={p.unit}
+      />
     </AppShell>
   );
 }
