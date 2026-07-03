@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { RequestCustomQuoteModal } from "@/components/offers/RequestCustomQuoteModal";
 
 export const Route = createFileRoute("/products/$id")({
   loader: ({ params }) => {
@@ -51,6 +52,7 @@ function ProductDetail() {
   const [dest, setDest] = useState<ShippingDest | "">("");
   const [tab, setTab] = useState<Tab>("Description");
   const [zoom, setZoom] = useState(false);
+  const [customOpen, setCustomOpen] = useState(false);
 
   // Build a small gallery + extras from the base image with different crops/orientations.
   const baseUrl = p.image.split("?")[0];
@@ -364,12 +366,12 @@ function ProductDetail() {
               >
                 <ShoppingCart size={16} /> Add to Cart
               </button>
-              <Link
-                to="/rfq/new"
-                className="border rounded-md py-2.5 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-muted"
+              <button
+                onClick={() => setCustomOpen(true)}
+                className="border-2 border-gold text-ink font-semibold rounded-md py-2.5 hover:bg-gold/10 flex items-center justify-center gap-2 col-span-2 bg-gold/5"
               >
-                <FileText size={14} /> Request Quote
-              </Link>
+                <FileText size={14} /> Request Custom Quote
+              </button>
               <Link
                 to="/messages"
                 className="border rounded-md py-2.5 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-muted"
@@ -404,6 +406,14 @@ function ProductDetail() {
           <img src={activeImg} alt={p.title} className="max-h-[92vh] max-w-[92vw] object-contain rounded-lg" />
         </div>
       )}
+      <RequestCustomQuoteModal
+        open={customOpen}
+        onClose={() => setCustomOpen(false)}
+        supplierId={s.id}
+        defaultProductName={p.title}
+        defaultCategory={p.category}
+        defaultUnit={p.unit}
+      />
     </AppShell>
   );
 }
