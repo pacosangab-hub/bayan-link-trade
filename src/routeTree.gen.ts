@@ -13,6 +13,7 @@ import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as RfqRouteImport } from './routes/rfq'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as OffersRouteImport } from './routes/offers'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
@@ -51,6 +52,11 @@ const ProductsRoute = ProductsRouteImport.update({
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesRoute = MessagesRouteImport.update({
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
+  '/offers': typeof OffersRoute
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
+  '/offers': typeof OffersRoute
   '/orders': typeof OrdersRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/custom-requests/$id': typeof CustomRequestsIdRoute
@@ -204,6 +212,7 @@ export interface FileRoutesById {
   '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
+  '/offers': typeof OffersRoute
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/custom-requests'
     | '/docs'
     | '/messages'
+    | '/offers'
     | '/orders'
     | '/products'
     | '/rfq'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/docs'
     | '/messages'
+    | '/offers'
     | '/orders'
     | '/suppliers'
     | '/custom-requests/$id'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/custom-requests'
     | '/docs'
     | '/messages'
+    | '/offers'
     | '/orders'
     | '/products'
     | '/rfq'
@@ -304,6 +316,7 @@ export interface RootRouteChildren {
   CustomRequestsRoute: typeof CustomRequestsRouteWithChildren
   DocsRoute: typeof DocsRoute
   MessagesRoute: typeof MessagesRoute
+  OffersRoute: typeof OffersRoute
   OrdersRoute: typeof OrdersRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   RfqRoute: typeof RfqRouteWithChildren
@@ -342,6 +355,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages': {
@@ -552,6 +572,7 @@ const rootRouteChildren: RootRouteChildren = {
   CustomRequestsRoute: CustomRequestsRouteWithChildren,
   DocsRoute: DocsRoute,
   MessagesRoute: MessagesRoute,
+  OffersRoute: OffersRoute,
   OrdersRoute: OrdersRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   RfqRoute: RfqRouteWithChildren,
