@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { RequestCustomQuoteModal } from "@/components/offers/RequestCustomQuoteModal";
 
 export const Route = createFileRoute("/products/$id")({
   loader: ({ params }) => {
