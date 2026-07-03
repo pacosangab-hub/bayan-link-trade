@@ -15,11 +15,13 @@ import { Route as ProductsRouteImport } from './routes/products'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as DocsRouteImport } from './routes/docs'
+import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RfqIndexRouteImport } from './routes/rfq.index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
+import { Route as CustomRequestsIndexRouteImport } from './routes/custom-requests.index'
 import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
 import { Route as RfqNewRouteImport } from './routes/rfq.new'
 import { Route as RfqIdRouteImport } from './routes/rfq.$id'
@@ -29,6 +31,7 @@ import { Route as OnboardingSupplierRouteImport } from './routes/onboarding.supp
 import { Route as OnboardingBuyerRouteImport } from './routes/onboarding.buyer'
 import { Route as DashboardSupplierRouteImport } from './routes/dashboard.supplier'
 import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
+import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
 
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
@@ -60,6 +63,11 @@ const DocsRoute = DocsRouteImport.update({
   path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomRequestsRoute = CustomRequestsRouteImport.update({
+  id: '/custom-requests',
+  path: '/custom-requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -84,6 +92,11 @@ const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ProductsRoute,
+} as any)
+const CustomRequestsIndexRoute = CustomRequestsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CustomRequestsRoute,
 } as any)
 const SuppliersIdRoute = SuppliersIdRouteImport.update({
   id: '/$id',
@@ -130,17 +143,24 @@ const DashboardBuyerRoute = DashboardBuyerRouteImport.update({
   path: '/dashboard/buyer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomRequestsIdRoute = CustomRequestsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => CustomRequestsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
+  '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
   '/onboarding/buyer': typeof OnboardingBuyerRoute
@@ -150,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
+  '/custom-requests/': typeof CustomRequestsIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
 }
@@ -161,6 +182,7 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesRoute
   '/orders': typeof OrdersRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
+  '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
   '/onboarding/buyer': typeof OnboardingBuyerRoute
@@ -170,6 +192,7 @@ export interface FileRoutesByTo {
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
+  '/custom-requests': typeof CustomRequestsIndexRoute
   '/products': typeof ProductsIndexRoute
   '/rfq': typeof RfqIndexRoute
 }
@@ -178,12 +201,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
+  '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
   '/onboarding/buyer': typeof OnboardingBuyerRoute
@@ -193,6 +218,7 @@ export interface FileRoutesById {
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
+  '/custom-requests/': typeof CustomRequestsIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
 }
@@ -202,12 +228,14 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/custom-requests'
     | '/docs'
     | '/messages'
     | '/orders'
     | '/products'
     | '/rfq'
     | '/suppliers'
+    | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
     | '/onboarding/buyer'
@@ -217,6 +245,7 @@ export interface FileRouteTypes {
     | '/rfq/$id'
     | '/rfq/new'
     | '/suppliers/$id'
+    | '/custom-requests/'
     | '/products/'
     | '/rfq/'
   fileRoutesByTo: FileRoutesByTo
@@ -228,6 +257,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/orders'
     | '/suppliers'
+    | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
     | '/onboarding/buyer'
@@ -237,6 +267,7 @@ export interface FileRouteTypes {
     | '/rfq/$id'
     | '/rfq/new'
     | '/suppliers/$id'
+    | '/custom-requests'
     | '/products'
     | '/rfq'
   id:
@@ -244,12 +275,14 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/custom-requests'
     | '/docs'
     | '/messages'
     | '/orders'
     | '/products'
     | '/rfq'
     | '/suppliers'
+    | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
     | '/onboarding/buyer'
@@ -259,6 +292,7 @@ export interface FileRouteTypes {
     | '/rfq/$id'
     | '/rfq/new'
     | '/suppliers/$id'
+    | '/custom-requests/'
     | '/products/'
     | '/rfq/'
   fileRoutesById: FileRoutesById
@@ -267,6 +301,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   CheckoutRoute: typeof CheckoutRoute
+  CustomRequestsRoute: typeof CustomRequestsRouteWithChildren
   DocsRoute: typeof DocsRoute
   MessagesRoute: typeof MessagesRoute
   OrdersRoute: typeof OrdersRouteWithChildren
@@ -323,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/custom-requests': {
+      id: '/custom-requests'
+      path: '/custom-requests'
+      fullPath: '/custom-requests'
+      preLoaderRoute: typeof CustomRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout': {
       id: '/checkout'
       path: '/checkout'
@@ -357,6 +399,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/products/'
       preLoaderRoute: typeof ProductsIndexRouteImport
       parentRoute: typeof ProductsRoute
+    }
+    '/custom-requests/': {
+      id: '/custom-requests/'
+      path: '/'
+      fullPath: '/custom-requests/'
+      preLoaderRoute: typeof CustomRequestsIndexRouteImport
+      parentRoute: typeof CustomRequestsRoute
     }
     '/suppliers/$id': {
       id: '/suppliers/$id'
@@ -421,8 +470,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardBuyerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/custom-requests/$id': {
+      id: '/custom-requests/$id'
+      path: '/$id'
+      fullPath: '/custom-requests/$id'
+      preLoaderRoute: typeof CustomRequestsIdRouteImport
+      parentRoute: typeof CustomRequestsRoute
+    }
   }
 }
+
+interface CustomRequestsRouteChildren {
+  CustomRequestsIdRoute: typeof CustomRequestsIdRoute
+  CustomRequestsIndexRoute: typeof CustomRequestsIndexRoute
+}
+
+const CustomRequestsRouteChildren: CustomRequestsRouteChildren = {
+  CustomRequestsIdRoute: CustomRequestsIdRoute,
+  CustomRequestsIndexRoute: CustomRequestsIndexRoute,
+}
+
+const CustomRequestsRouteWithChildren = CustomRequestsRoute._addFileChildren(
+  CustomRequestsRouteChildren,
+)
 
 interface OrdersRouteChildren {
   OrdersIdRoute: typeof OrdersIdRoute
@@ -479,6 +549,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   CheckoutRoute: CheckoutRoute,
+  CustomRequestsRoute: CustomRequestsRouteWithChildren,
   DocsRoute: DocsRoute,
   MessagesRoute: MessagesRoute,
   OrdersRoute: OrdersRouteWithChildren,
