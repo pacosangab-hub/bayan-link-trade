@@ -22,6 +22,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RfqIndexRouteImport } from './routes/rfq.index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
+import { Route as OffersIndexRouteImport } from './routes/offers.index'
 import { Route as CustomRequestsIndexRouteImport } from './routes/custom-requests.index'
 import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
 import { Route as RfqNewRouteImport } from './routes/rfq.new'
@@ -99,6 +100,11 @@ const ProductsIndexRoute = ProductsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ProductsRoute,
 } as any)
+const OffersIndexRoute = OffersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OffersRoute,
+} as any)
 const CustomRequestsIndexRoute = CustomRequestsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -162,7 +168,7 @@ export interface FileRoutesByFullPath {
   '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
-  '/offers': typeof OffersRoute
+  '/offers': typeof OffersRouteWithChildren
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
+  '/offers/': typeof OffersIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
 }
@@ -187,7 +194,6 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
-  '/offers': typeof OffersRoute
   '/orders': typeof OrdersRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/custom-requests/$id': typeof CustomRequestsIdRoute
@@ -201,6 +207,7 @@ export interface FileRoutesByTo {
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/custom-requests': typeof CustomRequestsIndexRoute
+  '/offers': typeof OffersIndexRoute
   '/products': typeof ProductsIndexRoute
   '/rfq': typeof RfqIndexRoute
 }
@@ -212,7 +219,7 @@ export interface FileRoutesById {
   '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
-  '/offers': typeof OffersRoute
+  '/offers': typeof OffersRouteWithChildren
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
@@ -228,6 +235,7 @@ export interface FileRoutesById {
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
+  '/offers/': typeof OffersIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
 }
@@ -256,6 +264,7 @@ export interface FileRouteTypes {
     | '/rfq/new'
     | '/suppliers/$id'
     | '/custom-requests/'
+    | '/offers/'
     | '/products/'
     | '/rfq/'
   fileRoutesByTo: FileRoutesByTo
@@ -265,7 +274,6 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/docs'
     | '/messages'
-    | '/offers'
     | '/orders'
     | '/suppliers'
     | '/custom-requests/$id'
@@ -279,6 +287,7 @@ export interface FileRouteTypes {
     | '/rfq/new'
     | '/suppliers/$id'
     | '/custom-requests'
+    | '/offers'
     | '/products'
     | '/rfq'
   id:
@@ -305,6 +314,7 @@ export interface FileRouteTypes {
     | '/rfq/new'
     | '/suppliers/$id'
     | '/custom-requests/'
+    | '/offers/'
     | '/products/'
     | '/rfq/'
   fileRoutesById: FileRoutesById
@@ -316,7 +326,7 @@ export interface RootRouteChildren {
   CustomRequestsRoute: typeof CustomRequestsRouteWithChildren
   DocsRoute: typeof DocsRoute
   MessagesRoute: typeof MessagesRoute
-  OffersRoute: typeof OffersRoute
+  OffersRoute: typeof OffersRouteWithChildren
   OrdersRoute: typeof OrdersRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   RfqRoute: typeof RfqRouteWithChildren
@@ -420,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsIndexRouteImport
       parentRoute: typeof ProductsRoute
     }
+    '/offers/': {
+      id: '/offers/'
+      path: '/'
+      fullPath: '/offers/'
+      preLoaderRoute: typeof OffersIndexRouteImport
+      parentRoute: typeof OffersRoute
+    }
     '/custom-requests/': {
       id: '/custom-requests/'
       path: '/'
@@ -514,6 +531,17 @@ const CustomRequestsRouteWithChildren = CustomRequestsRoute._addFileChildren(
   CustomRequestsRouteChildren,
 )
 
+interface OffersRouteChildren {
+  OffersIndexRoute: typeof OffersIndexRoute
+}
+
+const OffersRouteChildren: OffersRouteChildren = {
+  OffersIndexRoute: OffersIndexRoute,
+}
+
+const OffersRouteWithChildren =
+  OffersRoute._addFileChildren(OffersRouteChildren)
+
 interface OrdersRouteChildren {
   OrdersIdRoute: typeof OrdersIdRoute
 }
@@ -572,7 +600,7 @@ const rootRouteChildren: RootRouteChildren = {
   CustomRequestsRoute: CustomRequestsRouteWithChildren,
   DocsRoute: DocsRoute,
   MessagesRoute: MessagesRoute,
-  OffersRoute: OffersRoute,
+  OffersRoute: OffersRouteWithChildren,
   OrdersRoute: OrdersRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   RfqRoute: RfqRouteWithChildren,
