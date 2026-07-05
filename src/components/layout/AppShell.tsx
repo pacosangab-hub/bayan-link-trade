@@ -100,36 +100,31 @@ export function AppShell({ children }: { children: ReactNode }) {
               )}
             </Link>
 
-            <div className="relative">
-              <button
-                onClick={() => setMenuOpen((v) => !v)}
-                className="hidden md:flex items-center gap-2 ml-2 pl-3 pr-2 py-1.5 rounded-md border hover:bg-muted text-sm"
-              >
-                <div className="size-7 rounded-full bg-gradient-to-br from-primary to-gold grid place-items-center text-white text-xs font-bold">
-                  LN
-                </div>
-                <span className="font-medium">Lola Nena's</span>
-                <ChevronDown size={14} />
-              </button>
-              {menuOpen && (
-                <div className="absolute right-0 top-full mt-1 w-60 bg-popover border rounded-md shadow-lg py-1 z-50">
-                  {dashboards.map((d) => (
-                    <Link
-                      key={d.to}
-                      to={d.to}
-                      onClick={() => setMenuOpen(false)}
-                      className="block px-3 py-2 text-sm hover:bg-muted"
-                    >
-                      {d.label}
-                    </Link>
-                  ))}
-                  <div className="border-t my-1" />
-                  <button className="w-full text-left px-3 py-2 text-sm hover:bg-muted">
-                    Sign out
-                  </button>
-                </div>
-              )}
-            </div>
+            {user ? (
+              <div className="relative">
+                <button onClick={() => setMenuOpen((v) => !v)}
+                  className="hidden md:flex items-center gap-2 ml-2 pl-3 pr-2 py-1.5 rounded-md border hover:bg-muted text-sm">
+                  <div className="size-7 rounded-full bg-gradient-to-br from-primary to-gold grid place-items-center text-white text-xs font-bold">{initials}</div>
+                  <span className="font-medium max-w-[120px] truncate">{user.user_metadata?.full_name || user.email}</span>
+                  <ChevronDown size={14} />
+                </button>
+                {menuOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-60 bg-popover border rounded-md shadow-lg py-1 z-50">
+                    {dashboards.map((d) => (
+                      <Link key={d.to} to={d.to} onClick={() => setMenuOpen(false)}
+                        className="block px-3 py-2 text-sm hover:bg-muted">{d.label}</Link>
+                    ))}
+                    <div className="border-t my-1" />
+                    <button onClick={async () => { setMenuOpen(false); await signOut(); navigate({ to: "/" }); }}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted">Sign out</button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/auth" className="hidden md:inline-flex items-center gap-1.5 ml-2 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90">
+                <LogIn size={14} /> Sign in
+              </Link>
+            )}
             <button className="md:hidden p-2" onClick={() => setOpen((v) => !v)}>
               <Menu size={22} />
             </button>
