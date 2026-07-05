@@ -30,6 +30,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const cartCount = useCartCount();
+  const { user } = useSession();
+  const navigate = useNavigate();
+  const initials = (user?.user_metadata?.full_name || user?.email || "U").split(" ").map((s: string) => s[0]).slice(0, 2).join("").toUpperCase();
 
 
   return (
