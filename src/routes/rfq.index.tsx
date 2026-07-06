@@ -49,7 +49,7 @@ function RfqPage() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-4">
-            {rfqs.map((r) => <RFQCard key={r.id} r={r} />)}
+            {rfqs.map((r: any) => <RFQCard key={r.id} r={r} />)}
           </div>
         )}
       </div>
