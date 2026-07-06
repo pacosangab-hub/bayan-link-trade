@@ -86,7 +86,7 @@ export function useCategories() {
 export function useRfqs() {
   return useQuery({
     queryKey: ["rfqs"],
-    queryFn: async () => listRfqs(),
+    queryFn: async () => getAllRfqs(),
   });
 }
 
