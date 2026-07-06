@@ -8,7 +8,7 @@ import {
   categories as MOCK_CATEGORIES,
   orders as MOCK_ORDERS,
 } from "@/lib/mock-data";
-import { listRfqs, getRfq } from "@/lib/rfq-store";
+import { getAllRfqs, getRfq } from "@/lib/rfq-store";
 import type { Product, Supplier, RFQ } from "@/lib/mock-data";
 
 // ---------- adapters (kept for backward-compat with any external imports)
