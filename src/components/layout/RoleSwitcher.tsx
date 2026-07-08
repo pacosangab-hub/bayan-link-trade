@@ -1,9 +1,9 @@
 // Role switcher — small pill in header for demo mode.
 import { UserCog, ShieldCheck, Store } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { setRole, useDemoRole, type DemoRole } from "@/lib/demo/session";
 
-const OPTIONS: { value: DemoRole; label: string; icon: JSX.Element; hint: string }[] = [
+const OPTIONS: { value: DemoRole; label: string; icon: ReactNode; hint: string }[] = [
   { value: "buyer", label: "View as Buyer", icon: <UserCog size={14} />, hint: "Lola Nena's Carinderia Group" },
   { value: "supplier", label: "View as Supplier", icon: <Store size={14} />, hint: "Bulacan Grain & Rice Mills" },
   { value: "admin", label: "View as Admin", icon: <ShieldCheck size={14} />, hint: "PSG safety & escrow console" },
