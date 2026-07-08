@@ -14,7 +14,7 @@ export function ReportModal({ open, onClose, target }: {
   const [note, setNote] = useState("");
   if (!open) return null;
   function submit() {
-    createReport({ ...target, targetType: target.type, reason, note });
+    createReport({ targetType: target.type, targetId: target.id, targetLabel: target.label, reason, note });
     pushNotification({
       role: "admin", kind: "dispute",
       title: "New report submitted",

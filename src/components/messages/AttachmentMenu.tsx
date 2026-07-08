@@ -1,8 +1,9 @@
 // Attachment menu opened from paperclip in composer.
 import { FileText, Sparkles, Package, Paperclip, ShoppingBag } from "lucide-react";
+import type { ReactNode } from "react";
 import type { DemoRole } from "@/lib/demo/session";
 
-type Item = { key: string; label: string; icon: JSX.Element; desc: string };
+type Item = { key: string; label: string; icon: ReactNode; desc: string };
 
 export function AttachmentMenu({ role, onPick, onClose }: {
   role: DemoRole;
