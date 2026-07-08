@@ -1,8 +1,10 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Bell, MessageSquare, Search, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
+import { MessageSquare, Search, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
 import { useSession, signOut } from "@/lib/auth";
+import { NotificationBell } from "./NotificationBell";
+import { RoleSwitcher } from "./RoleSwitcher";
 
 
 const navLinks = [
