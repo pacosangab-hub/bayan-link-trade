@@ -27,6 +27,7 @@ export type Product = {
   supplierId: string;
   title: string;
   category: string;
+  industry?: string;
   unit: string;
   moq: number;
   pricePhp: number;
@@ -36,7 +37,11 @@ export type Product = {
   stock: string;
   description: string;
   origin: string;
+  tags?: string[];
+  restricted?: boolean;
+  compliance?: string;
 };
+
 
 export type RFQStatus =
   | "Draft"
