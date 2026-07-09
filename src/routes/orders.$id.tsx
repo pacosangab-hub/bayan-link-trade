@@ -35,10 +35,12 @@ const FULFILL_STEPS: { state: EscrowState; label: string; icon: React.ReactNode;
 ];
 
 function OrderDetail() {
-  const data = Route.useLoaderData();
+  const data = Route.useLoaderData() as
+    | { isDemo: true; orderId: string }
+    | { isDemo: false; order: Order };
   const navigate = useNavigate();
   const demo = useDemoOrder(data.isDemo ? data.orderId : "__none__");
-  const o: Order | DemoOrder = data.isDemo ? (demo as DemoOrder) : data.order;
+  const o: Order | DemoOrder | undefined = data.isDemo ? demo : data.order;
   if (!o) return null;
 
   const s = supplierById(o.supplierId);
@@ -85,6 +87,7 @@ function OrderDetail() {
   }
 
   function handleReorder() {
+    if (!o) return;
     o.items.forEach((it) => addToCart(it.productId, it.qty));
     navigate({ to: "/checkout" });
   }
