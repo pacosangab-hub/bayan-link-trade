@@ -34,6 +34,9 @@ export type Conversation = {
 const KEY = "psg_conversations_v2";
 const isBrowser = typeof window !== "undefined";
 const listeners = new Set<() => void>();
+const EMPTY_CONVERSATIONS: Conversation[] = [];
+let cache: { raw: string; value: Conversation[] } | undefined;
+const conversationCache = new Map<string, { source: Conversation[]; value: Conversation | undefined }>();
 
 if (isBrowser) {
   window.addEventListener("psg-msg-change", () => listeners.forEach((l) => l()));
@@ -42,12 +45,25 @@ if (isBrowser) {
 function subscribe(cb: () => void) { listeners.add(cb); return () => listeners.delete(cb); }
 
 function read(): Conversation[] {
-  if (!isBrowser) return [];
-  try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; }
+  if (!isBrowser) return EMPTY_CONVERSATIONS;
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return EMPTY_CONVERSATIONS;
+    if (cache?.raw === raw) return cache.value;
+    const value = JSON.parse(raw) as Conversation[];
+    cache = { raw, value };
+    conversationCache.clear();
+    return value;
+  } catch {
+    return EMPTY_CONVERSATIONS;
+  }
 }
 function write(list: Conversation[]) {
   if (!isBrowser) return;
-  localStorage.setItem(KEY, JSON.stringify(list));
+  const raw = JSON.stringify(list);
+  cache = { raw, value: list };
+  conversationCache.clear();
+  localStorage.setItem(KEY, raw);
   window.dispatchEvent(new CustomEvent("psg-msg-change"));
 }
 
@@ -103,7 +119,14 @@ seed();
 
 // ---------- reads ----------
 export function getConversations(): Conversation[] { return read(); }
-export function getConversation(id: string): Conversation | undefined { return read().find((c) => c.id === id); }
+export function getConversation(id: string): Conversation | undefined {
+  const all = read();
+  const cached = conversationCache.get(id);
+  if (cached?.source === all) return cached.value;
+  const value = all.find((c) => c.id === id);
+  conversationCache.set(id, { source: all, value });
+  return value;
+}
 export function getOrCreateWithSupplier(supplierId: string): Conversation {
   const existing = getConversation(cid(supplierId));
   if (existing) return existing;
@@ -122,7 +145,7 @@ export function getOrCreateWithSupplier(supplierId: string): Conversation {
 }
 
 export function useConversations(): Conversation[] {
-  return useSyncExternalStore(subscribe, getConversations, () => []);
+  return useSyncExternalStore(subscribe, getConversations, () => EMPTY_CONVERSATIONS);
 }
 export function useConversation(id: string | undefined): Conversation | undefined {
   return useSyncExternalStore(subscribe, () => (id ? getConversation(id) : undefined), () => undefined);
