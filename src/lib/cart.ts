@@ -16,6 +16,45 @@ export const shippingTable: Record<ShippingDest, { cost: number; days: string }>
   "Davao": { cost: 4200, days: "4-6 days" },
 };
 
+export type StageKey =
+  | "created"
+  | "funded"
+  | "confirmed"
+  | "preparing"
+  | "ready"
+  | "transit"
+  | "delivered"
+  | "buyer_confirmed"
+  | "released";
+
+export type ProofType =
+  | "Packed goods photo"
+  | "Packing list"
+  | "Delivery receipt"
+  | "Driver details"
+  | "Proof of delivery"
+  | "Invoice"
+  | "Other";
+
+export type Proof = {
+  id: string;
+  stage: StageKey;
+  type: ProofType;
+  fileName: string;
+  imageUrl?: string;
+  notes?: string;
+  uploadedBy: string;
+  at: string;
+};
+
+export type StageRecord = { at: string; note?: string };
+
+export type DisputeRecord = {
+  issueType: string;
+  description: string;
+  at: string;
+};
+
 export type DemoOrder = {
   id: string;
   buyer: string;
@@ -35,6 +74,9 @@ export type DemoOrder = {
     address: string;
     instructions: string;
   };
+  stages?: Partial<Record<StageKey, StageRecord>>;
+  proofs?: Proof[];
+  dispute?: DisputeRecord;
   review?: {
     rating: number;
     quality: number;
