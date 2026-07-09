@@ -51,15 +51,32 @@ export function ProductCard({ p }: { p: Product }) {
       params={{ id: p.id }}
       className="group block cursor-pointer rounded-lg border bg-card overflow-hidden hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/40 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
-      <div className="aspect-[4/3] overflow-hidden bg-muted">
-        <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+      <div className="aspect-[4/3] overflow-hidden bg-muted relative">
+        <img
+          src={p.image}
+          alt={p.title}
+          loading="lazy"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = `https://picsum.photos/seed/${p.id}/800/600`;
+          }}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+        />
+        {p.compliance && (
+          <span className="absolute top-2 left-2 chip chip-primary text-[10px]">{p.compliance}</span>
+        )}
+        {p.restricted && (
+          <span className="absolute top-2 right-2 chip bg-destructive/90 text-white text-[10px]">Restricted</span>
+        )}
       </div>
       <div className="p-3 space-y-1.5">
         <div className="flex items-baseline justify-between gap-2">
-          <div className="font-display text-xl text-primary leading-none">{formatPhp(p.pricePhp)}</div>
+          <div className="font-display text-xl text-primary leading-none">
+            {p.pricePhp > 0 ? formatPhp(p.pricePhp) : "Request Quote"}
+          </div>
           <div className="text-xs text-muted-foreground">/ {p.unit}</div>
         </div>
         <div className="text-sm font-medium line-clamp-2 min-h-[2.5rem]">{p.title}</div>
+        <div className="text-[11px] text-muted-foreground truncate">{p.category}</div>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>MOQ {p.moq} {p.unit}</span>
           <Rating value={s.rating} />
@@ -72,6 +89,7 @@ export function ProductCard({ p }: { p: Product }) {
     </Link>
   );
 }
+
 
 export function SupplierCard({ s }: { s: Supplier }) {
   return (

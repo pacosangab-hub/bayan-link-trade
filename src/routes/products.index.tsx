@@ -3,10 +3,10 @@ import { useState, useMemo } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ProductCard } from "@/components/ui-bits";
 import { useProducts, useCategories } from "@/lib/db";
-import { SlidersHorizontal, Loader2 } from "lucide-react";
+import { SlidersHorizontal, Loader2, Search } from "lucide-react";
 
 export const Route = createFileRoute("/products/")({
-  head: () => ({ meta: [{ title: "Products — PSG Marketplace" }] }),
+  head: () => ({ meta: [{ title: "Marketplace — PSG Supply Gateway" }] }),
   component: ProductsPage,
 });
 
@@ -16,17 +16,23 @@ function ProductsPage() {
   const [cat, setCat] = useState<string | null>(null);
   const [region, setRegion] = useState<string | null>(null);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [query, setQuery] = useState("");
 
   const regions = useMemo(() => {
     const set = new Set<string>();
-    (data || []).forEach((r) => r.product.origin && set.add(r.product.origin.split(",").pop()!.trim()));
-    return Array.from(set).slice(0, 8);
+    (data || []).forEach((r) => r.supplier?.location && set.add(r.supplier.location.split(",").pop()!.trim()));
+    return Array.from(set).sort().slice(0, 20);
   }, [data]);
 
+  const q = query.trim().toLowerCase();
   const filtered = (data || []).filter(({ product, supplier }) => {
     if (cat && product.category !== cat) return false;
-    if (region && !product.origin.includes(region)) return false;
+    if (region && !(product.origin.includes(region) || supplier?.location?.includes(region))) return false;
     if (verifiedOnly && supplier?.verification_status !== "verified") return false;
+    if (q) {
+      const hay = `${product.title} ${product.category} ${product.industry ?? ""} ${supplier?.business_name ?? ""} ${product.origin}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
     return true;
   });
 
@@ -36,8 +42,17 @@ function ProductsPage() {
         <div className="mx-auto max-w-7xl px-4 py-6">
           <h1 className="font-display text-3xl">Marketplace</h1>
           <p className="text-sm text-muted-foreground">
-            {isLoading ? "Loading…" : `${filtered.length} products · seller-fulfilled · escrow-protected`}
+            {isLoading ? "Loading…" : `${filtered.length} products across ${categories.length} industries · escrow-protected`}
           </p>
+          <div className="mt-4 relative max-w-2xl">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search products, suppliers, industries…"
+              className="w-full border rounded-md pl-9 pr-3 py-2.5 text-sm bg-card"
+            />
+          </div>
         </div>
       </div>
 
@@ -46,13 +61,15 @@ function ProductsPage() {
           <div className="flex items-center gap-2 text-sm font-semibold">
             <SlidersHorizontal size={16} /> Filters
           </div>
-          <FilterGroup label="Category">
-            <FilterRow active={cat === null} onClick={() => setCat(null)}>All</FilterRow>
-            {categories.map((c: any) => (
-              <FilterRow key={c.id} active={cat === c.name} onClick={() => setCat(c.name)}>
-                {c.icon} {c.name}
-              </FilterRow>
-            ))}
+          <FilterGroup label="Industry">
+            <FilterRow active={cat === null} onClick={() => setCat(null)}>All industries</FilterRow>
+            <div className="max-h-96 overflow-y-auto pr-1">
+              {categories.map((c: any) => (
+                <FilterRow key={c.id} active={cat === c.name} onClick={() => setCat(c.name)}>
+                  <span className="mr-1">{c.icon}</span> {c.name}
+                </FilterRow>
+              ))}
+            </div>
           </FilterGroup>
           <FilterGroup label="Region">
             <FilterRow active={region === null} onClick={() => setRegion(null)}>All regions</FilterRow>
@@ -81,7 +98,7 @@ function ProductsPage() {
               </div>
               {filtered.length === 0 && (
                 <div className="rounded-lg border-2 border-dashed p-12 text-center text-muted-foreground">
-                  No products match. Try clearing filters.
+                  No products match. Try clearing filters or the search.
                 </div>
               )}
             </>
@@ -91,6 +108,7 @@ function ProductsPage() {
     </AppShell>
   );
 }
+
 
 function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
