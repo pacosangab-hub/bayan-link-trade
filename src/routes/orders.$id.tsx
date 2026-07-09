@@ -1,453 +1,570 @@
-import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
-import { EscrowTimeline } from "@/components/ui-bits";
-import { orders, supplierById, productById, formatPhp, escrowSteps } from "@/lib/mock-data";
-import type { Order, EscrowState } from "@/lib/mock-data";
+import { supplierById, productById, formatPhp, orders as MOCK_ORDERS } from "@/lib/mock-data";
 import {
-  MessageSquare, Truck, ShieldAlert, MapPin, CheckCircle2, Package, Warehouse,
-  PackageCheck, Repeat, Star, X, Sparkles,
+  MessageSquare, ShieldAlert, ShieldCheck, CheckCircle2, Clock, Circle,
+  Upload, X, Image as ImageIcon, MapPin, BadgeCheck, AlertTriangle, FileText,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  useDemoOrder, saveDemoOrder, getDemoOrder, addToCart, type DemoOrder,
+  useDemoOrder, ensureDemoOrder, currentStage, nextStage, advanceStage,
+  addProof, confirmDeliveryAndRelease, disputeOrder,
+  type DemoOrder, type StageKey, type ProofType, type Proof,
 } from "@/lib/cart";
+import { useDemoRole } from "@/lib/demo/session";
+import { pushNotification } from "@/lib/demo/notifications";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/orders/$id")({
   loader: ({ params }) => {
-    const stored = getDemoOrder(params.id);
-    if (stored) return { isDemo: true, orderId: params.id };
-    const o = orders.find((x) => x.id === params.id);
-    if (!o) throw notFound();
-    return { isDemo: false, order: o };
+    const isMock = MOCK_ORDERS.some((x) => x.id === params.id);
+    if (!isMock && !params.id.startsWith("ord_")) throw notFound();
+    return { orderId: params.id };
   },
   head: ({ params }) => ({ meta: [{ title: `Order ${params.id} — PSG` }] }),
-  notFoundComponent: () => (<AppShell><div className="p-20 text-center">Order not found</div></AppShell>),
-  errorComponent: ({ reset }) => (<AppShell><div className="p-12 text-center"><button onClick={reset}>Retry</button></div></AppShell>),
+  notFoundComponent: () => (
+    <AppShell><div className="p-20 text-center">Order not found</div></AppShell>
+  ),
+  errorComponent: ({ reset }) => (
+    <AppShell>
+      <div className="p-12 text-center">
+        <button onClick={reset} className="text-primary font-semibold">Retry</button>
+      </div>
+    </AppShell>
+  ),
   component: OrderDetail,
 });
 
-const FULFILL_STEPS: { state: EscrowState; label: string; icon: React.ReactNode; sub: string }[] = [
-  { state: "Funds Held in Escrow", label: "Payment Received", icon: <CheckCircle2 size={16} />, sub: "Escrow secured" },
-  { state: "Preparing Shipment", label: "Supplier Preparing", icon: <Package size={16} />, sub: "Picking & packing" },
-  { state: "In Transit", label: "In Transit", icon: <Truck size={16} />, sub: "On the road" },
-  { state: "Delivered — Awaiting Confirmation", label: "Delivered", icon: <Warehouse size={16} />, sub: "At your warehouse" },
-  { state: "Released to Supplier", label: "Funds Released", icon: <PackageCheck size={16} />, sub: "Order complete" },
+// ---- Timeline definition ----
+const STEPS: { key: StageKey; title: string; blurb: string }[] = [
+  { key: "created",         title: "Order Created",     blurb: "Order details generated from accepted offer." },
+  { key: "funded",          title: "Escrow Funded",     blurb: "Your payment is being held safely by PSG." },
+  { key: "confirmed",       title: "Supplier Confirmed", blurb: "Supplier accepted the order and started fulfillment." },
+  { key: "preparing",       title: "Preparing Shipment", blurb: "Goods are being picked, packed and labeled." },
+  { key: "ready",           title: "Ready for Pickup",   blurb: "Goods are staged at the warehouse for pickup." },
+  { key: "transit",         title: "In Transit",         blurb: "Shipment is on the way to the delivery address." },
+  { key: "delivered",       title: "Delivered",          blurb: "Shipment arrived at the buyer's location." },
+  { key: "buyer_confirmed", title: "Buyer Confirmed",    blurb: "Buyer confirmed the order was received correctly." },
+  { key: "released",        title: "Escrow Released",    blurb: "Funds released to the supplier — order complete." },
 ];
 
 function OrderDetail() {
-  const data = Route.useLoaderData() as
-    | { isDemo: true; orderId: string }
-    | { isDemo: false; order: Order };
-  const navigate = useNavigate();
-  const demo = useDemoOrder(data.isDemo ? data.orderId : "__none__");
-  const o: Order | DemoOrder | undefined = data.isDemo ? demo : data.order;
-  if (!o) return null;
+  const { orderId } = Route.useLoaderData();
 
-  const s = supplierById(o.supplierId);
-  const total = (o as DemoOrder).totalPhp ?? o.totalPhp;
-  const isDemo = data.isDemo;
+  // Hydrate mock order to localStorage on first view (client-only)
+  useEffect(() => { ensureDemoOrder(orderId); }, [orderId]);
 
+  const o = useDemoOrder(orderId);
+  const role = useDemoRole();
+
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadStage, setUploadStage] = useState<StageKey>("preparing");
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [releasing, setReleasing] = useState(false);
-  const [showReview, setShowReview] = useState(false);
+  const [disputeOpen, setDisputeOpen] = useState(false);
 
-  // For demo orders, auto-advance through fulfillment states for visual effect.
-  useEffect(() => {
-    if (!isDemo || !demo) return;
-    const order = demo as DemoOrder;
-    const idx = FULFILL_STEPS.findIndex((s) => s.state === order.escrowState);
-    if (idx < 0 || idx >= 3) return; // stop at "Delivered" — buyer must confirm
-    const t = setTimeout(() => {
-      saveDemoOrder({ ...order, escrowState: FULFILL_STEPS[idx + 1].state });
-    }, 4500);
-    return () => clearTimeout(t);
-  }, [isDemo, demo]);
-
-  // Open confirm modal once order auto-arrives at "Delivered"
-  useEffect(() => {
-    if (isDemo && demo?.escrowState === "Delivered — Awaiting Confirmation") {
-      const t = setTimeout(() => setConfirmOpen(true), 1200);
-      return () => clearTimeout(t);
+  if (!o) {
+    // First-render SSR / pre-hydration fallback
+    const mock = MOCK_ORDERS.find((x) => x.id === orderId);
+    if (!mock) {
+      return <AppShell><div className="p-20 text-center text-muted-foreground">Loading order…</div></AppShell>;
     }
-  }, [isDemo, demo?.escrowState]);
-
-  const stepIdx = FULFILL_STEPS.findIndex((step) => step.state === o.escrowState);
-
-  function handleConfirmYes() {
-    if (!isDemo) return;
-    setReleasing(true);
-    setTimeout(() => {
-      saveDemoOrder({ ...(demo as DemoOrder), escrowState: "Released to Supplier" });
-      setConfirmOpen(false);
-      setTimeout(() => {
-        setReleasing(false);
-        setShowReview(true);
-      }, 1800);
-    }, 600);
+    return <AppShell><div className="p-20 text-center text-muted-foreground">Loading order…</div></AppShell>;
   }
 
-  function handleReorder() {
-    if (!o) return;
-    o.items.forEach((it) => addToCart(it.productId, it.qty));
-    navigate({ to: "/checkout" });
+  const s = supplierById(o.supplierId);
+  const firstProduct = productById(o.items[0].productId);
+  const cur = currentStage(o);
+  const isDisputed = o.escrowState === "Disputed";
+  const isComplete = o.escrowState === "Released to Supplier";
+
+  const productTitleLine = o.items.length === 1
+    ? `${firstProduct.title} — ${o.items[0].qty.toLocaleString()} ${firstProduct.unit}`
+    : `${firstProduct.title} + ${o.items.length - 1} more`;
+
+  function openUpload(stage: StageKey) {
+    setUploadStage(stage);
+    setUploadOpen(true);
+  }
+
+  function handleAdvance(to: StageKey) {
+    advanceStage(o!.id, to);
+    toast.success(`Marked as ${STEPS.find(s => s.key === to)?.title}`);
+    pushNotification({
+      role: "buyer", kind: "order",
+      title: `Order ${o!.id.toUpperCase()} update`,
+      body: `Supplier marked as ${STEPS.find(s => s.key === to)?.title}.`,
+      href: `/orders/${o!.id}`,
+    });
+  }
+
+  function handleConfirmDelivery() {
+    confirmDeliveryAndRelease(o!.id);
+    setConfirmOpen(false);
+    toast.success("Delivery confirmed — escrow released to supplier");
+    pushNotification({
+      role: "supplier", kind: "escrow",
+      title: `Escrow released for ${o!.id.toUpperCase()}`,
+      body: "Buyer confirmed delivery. Funds released to your account.",
+      href: `/orders/${o!.id}`,
+    });
+  }
+
+  function handleDispute(issueType: string, description: string) {
+    disputeOrder(o!.id, { issueType, description, at: new Date().toLocaleString("en-PH") });
+    setDisputeOpen(false);
+    toast.error("Problem reported — escrow frozen while we review");
+    pushNotification({
+      role: "supplier", kind: "dispute",
+      title: `Dispute opened on ${o!.id.toUpperCase()}`,
+      body: `${issueType} — escrow frozen`,
+      href: `/orders/${o!.id}`,
+    });
+    pushNotification({
+      role: "admin", kind: "dispute",
+      title: `Dispute needs review`,
+      body: `${o!.id.toUpperCase()} · ${issueType}`,
+      href: "/admin/safety",
+    });
   }
 
   return (
     <AppShell>
+      {/* Header */}
       <div className="bg-muted/40 border-b">
-        <div className="mx-auto max-w-7xl px-4 py-6">
+        <div className="mx-auto max-w-5xl px-4 py-5">
           <Link to="/orders" className="text-xs text-muted-foreground hover:text-primary">← All orders</Link>
-          <div className="flex flex-wrap items-end justify-between gap-3 mt-2">
-            <div>
-              <h1 className="font-display text-3xl">Order {o.id.toUpperCase()}</h1>
-              <div className="text-sm text-muted-foreground">Placed {o.placed} · with {s.name}</div>
-            </div>
-            <div className="text-right">
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                {o.escrowState === "Released to Supplier" ? "Released" : "Escrow holding"}
-              </div>
-              <div className="font-display text-3xl text-primary">{formatPhp(total)}</div>
-            </div>
+          <div className="mt-1 flex flex-wrap items-baseline justify-between gap-2">
+            <h1 className="font-display text-3xl">Order {o.id.toUpperCase()}</h1>
+            <StatusBadge state={o.escrowState} />
           </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-6 grid lg:grid-cols-[1fr_340px] gap-6">
-        <div className="space-y-6">
-          {/* Tracking map */}
-          <TrackingMap stepIdx={stepIdx} dest={(o as DemoOrder).shippingDest ?? s.location} origin={s.location} />
+      <div className="mx-auto max-w-5xl px-4 py-6 space-y-6">
+        {/* Top: summary + protection */}
+        <div className="grid md:grid-cols-[1.4fr_1fr] gap-4">
+          {/* Summary */}
+          <div className="rounded-xl border bg-card p-5 shadow-sm">
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Order Summary</div>
+            <div className="mt-2 flex items-start justify-between gap-3">
+              <div>
+                <div className="font-display text-xl leading-tight">{productTitleLine}</div>
+                <Link
+                  to="/suppliers/$id" params={{ id: s.id }}
+                  className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary"
+                >
+                  {s.name}
+                  {s.verified && (
+                    <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-success">
+                      <BadgeCheck size={12} /> Verified
+                    </span>
+                  )}
+                </Link>
+              </div>
+              <div className="text-right shrink-0">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Total</div>
+                <div className="font-display text-2xl text-primary">{formatPhp(o.totalPhp)}</div>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+              <SummaryField label="Placed" value={o.placed} />
+              <SummaryField label="Delivery" value={o.address?.business ?? "—"} sub={o.address?.address} />
+              <SummaryField label="Payment" value={o.payment} />
+              <SummaryField label="Status" value={STEPS.find(x => x.key === cur)?.title ?? "In progress"} />
+            </div>
+          </div>
 
-          {/* Horizontal fulfillment progress */}
-          <div className="rounded-lg border bg-card p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold">Fulfillment progress</h2>
-              <span className="chip chip-primary inline-flex items-center gap-1">
-                <Truck size={12} /> Seller-fulfilled
+          {/* Buyer protection */}
+          <div className={`rounded-xl border-2 p-5 ${isDisputed ? "border-destructive/50 bg-destructive/5" : "border-success/40 bg-success/5"}`}>
+            <div className="flex items-center gap-2 text-success font-semibold">
+              {isDisputed ? <AlertTriangle size={18} className="text-destructive" /> : <ShieldCheck size={18} />}
+              <span className={isDisputed ? "text-destructive" : ""}>
+                {isDisputed ? "Escrow Frozen — Under Review" : "Buyer Protection Active"}
               </span>
             </div>
-            <ol className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              {FULFILL_STEPS.map((step, i) => {
-                const done = i < stepIdx;
-                const current = i === stepIdx;
-                return (
-                  <li key={step.label} className="relative flex sm:flex-col items-center sm:text-center gap-2 sm:gap-0">
-                    <div
-                      className={`size-10 rounded-full grid place-items-center border-2 transition-all ${
-                        done ? "bg-success border-success text-white"
-                          : current ? "bg-primary border-primary text-white animate-pulse"
-                          : "bg-background border-border text-muted-foreground"
-                      }`}
-                    >
-                      {done ? <CheckCircle2 size={18} /> : step.icon}
-                    </div>
-                    <div className="sm:mt-2">
-                      <div className={`text-xs font-semibold leading-tight ${current ? "text-primary" : done ? "" : "text-muted-foreground"}`}>
-                        {step.label}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground hidden sm:block">{step.sub}</div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
+            <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+              {isDisputed
+                ? "You reported a problem with this order. Your payment is held by PSG while our safety team reviews the dispute."
+                : "Your payment is held safely in escrow. The supplier only gets paid after you confirm the order was delivered correctly."}
+            </p>
+            <ul className="mt-3 space-y-1.5 text-xs">
+              <ProtBullet done={!!o.stages?.funded}>Escrow Funded</ProtBullet>
+              <ProtBullet done={(o.proofs?.length ?? 0) > 0}>Supplier uploads proof at each step</ProtBullet>
+              <ProtBullet done={!!o.stages?.buyer_confirmed}>Buyer confirms delivery before release</ProtBullet>
+            </ul>
           </div>
-
-          {/* Escrow timeline */}
-          <div className="rounded-lg border bg-card p-5">
-            <h2 className="font-semibold mb-4">Escrow timeline</h2>
-            <EscrowTimeline state={o.escrowState} />
-          </div>
-
-          {/* Items */}
-          <div className="rounded-lg border bg-card overflow-hidden">
-            <div className="px-4 py-3 border-b font-semibold">Items</div>
-            <table className="w-full text-sm">
-              <thead className="bg-muted text-xs uppercase text-muted-foreground">
-                <tr><th className="text-left px-4 py-2">Product</th><th className="text-right px-4 py-2">Qty</th><th className="text-right px-4 py-2">Unit</th><th className="text-right px-4 py-2">Total</th></tr>
-              </thead>
-              <tbody>
-                {o.items.map((it: { productId: string; qty: number; price: number }, i: number) => {
-                  const p = productById(it.productId);
-                  return (
-                    <tr key={i} className="border-t">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <img src={p.image} alt="" className="size-12 rounded object-cover" />
-                          <div>
-                            <Link to="/products/$id" params={{ id: p.id }} className="font-medium hover:text-primary">{p.title}</Link>
-                            <div className="text-xs text-muted-foreground">{p.category}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-right">{it.qty}</td>
-                      <td className="px-4 py-3 text-right">{formatPhp(it.price)}</td>
-                      <td className="px-4 py-3 text-right font-semibold">{formatPhp(it.qty * it.price)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <div className="px-4 py-3 border-t bg-muted/40 text-sm space-y-1">
-              {isDemo && (
-                <>
-                  <Row label="Subtotal" value={formatPhp((o as DemoOrder).subtotal)} />
-                  <Row label="Shipping" value={formatPhp((o as DemoOrder).shippingCost)} />
-                </>
-              )}
-              {!isDemo && <Row label="Subtotal" value={formatPhp(total)} />}
-              <Row label="PSG escrow fee (3%)" value={formatPhp(Math.round(total * 0.03))} sub />
-              <div className="flex items-center justify-between pt-2 border-t mt-2">
-                <span className="font-semibold">{o.escrowState === "Released to Supplier" ? "Released to supplier" : "Held in escrow"}</span>
-                <span className="font-display text-xl text-primary">{formatPhp(total + Math.round(total * 0.03))}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="grid sm:grid-cols-3 gap-3">
-            {o.escrowState === "Delivered — Awaiting Confirmation" && (
-              <button
-                onClick={() => setConfirmOpen(true)}
-                className="bg-success text-success-foreground font-semibold rounded-md py-3 hover:opacity-90"
-              >
-                ✓ Confirm delivery & release
-              </button>
-            )}
-            {o.escrowState === "Released to Supplier" && (
-              <>
-                <button
-                  onClick={handleReorder}
-                  className="bg-primary text-primary-foreground font-semibold rounded-md py-3 hover:bg-primary/90 flex items-center justify-center gap-2"
-                >
-                  <Repeat size={16} /> Reorder Again
-                </button>
-                {!(o as DemoOrder).review && (
-                  <button
-                    onClick={() => setShowReview(true)}
-                    className="border-2 border-gold text-foreground font-semibold rounded-md py-3 hover:bg-gold/5 flex items-center justify-center gap-2"
-                  >
-                    <Star size={16} /> Leave Review
-                  </button>
-                )}
-              </>
-            )}
-            <Link to="/messages" className="border rounded-md py-3 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-muted">
-              <MessageSquare size={14} /> Message supplier
-            </Link>
-            <button className="border border-destructive/40 text-destructive rounded-md py-3 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-destructive/5">
-              <ShieldAlert size={14} /> Open a dispute
-            </button>
-          </div>
-
-          {/* Big Reorder CTA at the end */}
-          {o.escrowState === "Released to Supplier" && (
-            <button
-              onClick={handleReorder}
-              className="w-full gradient-hero text-white rounded-lg py-6 flex items-center justify-center gap-3 hover:opacity-95 shadow-lg group"
-            >
-              <Repeat size={22} className="group-hover:rotate-180 transition-transform duration-500" />
-              <span className="font-display text-2xl">Reorder Again</span>
-              <span className="text-sm opacity-80">— same items, same supplier</span>
-            </button>
-          )}
-
-          {(o as DemoOrder).review && <ReviewSummary r={(o as DemoOrder).review!} />}
         </div>
 
-        {/* Side */}
-        <aside className="space-y-4">
-          <Link to="/suppliers/$id" params={{ id: s.id }} className="block rounded-lg border bg-card p-4 hover:shadow-md">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Supplier</div>
-            <div className="font-semibold">{s.name}</div>
-            <div className="text-xs text-muted-foreground">{s.location}</div>
-            <div className="text-xs mt-2">Response time: {s.responseTime}</div>
-          </Link>
+        {/* Actions */}
+        <ActionBar
+          order={o} role={role} isDisputed={isDisputed} isComplete={isComplete}
+          onSupplierAdvance={handleAdvance}
+          onSupplierUpload={() => openUpload(cur === "released" ? "delivered" : cur)}
+          onBuyerConfirm={() => setConfirmOpen(true)}
+          onBuyerReport={() => setDisputeOpen(true)}
+        />
 
-          <div className="rounded-lg border bg-card p-4 text-sm space-y-1">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">Delivery to</div>
-            <div className="font-medium">{(o as DemoOrder).address?.business ?? "Lola Nena's Commissary"}</div>
-            <div className="text-muted-foreground text-xs">{(o as DemoOrder).address?.address ?? "14 Roces Ave, Project 8, Quezon City"}</div>
-            {(o as DemoOrder).address?.phone && (
-              <div className="text-muted-foreground text-xs">{(o as DemoOrder).address.phone}</div>
+        {/* Timeline */}
+        <div className="rounded-xl border bg-card p-5">
+          <div className="mb-1 font-display text-xl">Order Timeline</div>
+          <p className="text-xs text-muted-foreground mb-5">
+            Track each step from order creation to delivery confirmation.
+          </p>
+          <ol className="relative">
+            {STEPS.map((step, i) => {
+              const rec = o.stages?.[step.key];
+              const done = !!rec;
+              const isCurrent = step.key === cur && !isComplete;
+              const stepProofs = (o.proofs ?? []).filter((p) => p.stage === step.key);
+              const status: "Completed" | "Current" | "Waiting" =
+                done && !isCurrent ? "Completed" : isCurrent ? "Current" : "Waiting";
+              const isLast = i === STEPS.length - 1;
+              return (
+                <li key={step.key} className="relative pl-10 pb-6">
+                  {!isLast && <span className="absolute left-[15px] top-8 bottom-0 w-0.5 bg-border" />}
+                  <span
+                    className={`absolute left-0 top-1 size-8 rounded-full grid place-items-center border-2 ${
+                      done ? "bg-success border-success text-white"
+                        : isCurrent ? "bg-primary border-primary text-white animate-pulse"
+                        : "bg-background border-border text-muted-foreground"
+                    }`}
+                  >
+                    {done ? <CheckCircle2 size={16} /> : isCurrent ? <Clock size={16} /> : <Circle size={14} />}
+                  </span>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <div className="font-semibold text-sm">{step.title}</div>
+                    <StepBadge status={status} />
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-0.5">{step.blurb}</div>
+                  {rec?.at && <div className="text-[10px] text-muted-foreground mt-1">{rec.at}{rec.note ? ` · ${rec.note}` : ""}</div>}
+
+                  {/* Proofs */}
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    {stepProofs.length === 0
+                      ? <EmptyProof />
+                      : stepProofs.map((p) => <ProofCard key={p.id} proof={p} />)}
+                  </div>
+
+                  {/* Supplier per-step upload */}
+                  {role === "supplier" && !isDisputed && !isComplete && (done || isCurrent) && (
+                    <button
+                      onClick={() => openUpload(step.key)}
+                      className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                    >
+                      <Upload size={12} /> Upload proof for this step
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+            {isDisputed && (
+              <li className="relative pl-10">
+                <span className="absolute left-0 top-1 size-8 rounded-full grid place-items-center border-2 bg-destructive border-destructive text-white">
+                  <AlertTriangle size={16} />
+                </span>
+                <div className="font-semibold text-sm text-destructive">Dispute Opened</div>
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  {o.dispute?.issueType} · {o.dispute?.at}
+                </div>
+                {o.dispute?.description && (
+                  <div className="text-xs mt-1 p-2 rounded bg-destructive/5 border border-destructive/20">{o.dispute.description}</div>
+                )}
+              </li>
             )}
-          </div>
-
-          {isDemo && (
-            <div className="rounded-lg border bg-card p-4 text-sm">
-              <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">Payment method</div>
-              <div className="font-medium capitalize">{(o as DemoOrder).payment}</div>
-            </div>
-          )}
-
-          <div className="rounded-lg gradient-ink text-white p-4 text-sm">
-            <div className="text-xs uppercase tracking-wider text-[oklch(0.78_0.15_75)] font-semibold mb-2">Escrow protection</div>
-            <p className="opacity-90">Funds are held by PSG until you confirm delivery. Open a dispute within 72 hours if there's an issue — we'll mediate.</p>
-          </div>
-        </aside>
+          </ol>
+        </div>
       </div>
 
-      {confirmOpen && (
-        <ConfirmDeliveryModal
-          onYes={handleConfirmYes}
-          onNo={() => setConfirmOpen(false)}
+      {uploadOpen && (
+        <UploadProofModal
+          stage={uploadStage}
+          onClose={() => setUploadOpen(false)}
+          onSave={(payload) => {
+            addProof(o.id, { ...payload, uploadedBy: s.name });
+            setUploadOpen(false);
+            toast.success("Proof uploaded");
+            pushNotification({
+              role: "buyer", kind: "order",
+              title: `New proof on ${o.id.toUpperCase()}`,
+              body: `${payload.type} — ${payload.fileName}`,
+              href: `/orders/${o.id}`,
+            });
+          }}
         />
       )}
-      {releasing && <ReleaseAnimation />}
-      {showReview && (
-        <ReviewModal
-          onClose={() => setShowReview(false)}
-          onSubmit={(r) => {
-            if (isDemo) saveDemoOrder({ ...(demo as DemoOrder), review: r });
-            setShowReview(false);
-          }}
+      {confirmOpen && (
+        <ConfirmDeliveryModal
+          onCancel={() => setConfirmOpen(false)}
+          onConfirm={handleConfirmDelivery}
+        />
+      )}
+      {disputeOpen && (
+        <DisputeModal
+          onClose={() => setDisputeOpen(false)}
+          onSubmit={handleDispute}
         />
       )}
     </AppShell>
   );
 }
 
-function TrackingMap({ stepIdx, dest, origin }: { stepIdx: number; dest: string; origin: string }) {
-  // Position truck along an SVG path based on stepIdx (0..4)
-  const progress = Math.max(0, Math.min(1, stepIdx / (FULFILL_STEPS.length - 1)));
+// =================== Small UI pieces ===================
+
+function SummaryField({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-lg border bg-card overflow-hidden">
-      <div className="px-4 py-3 border-b flex items-center justify-between">
-        <div className="font-semibold flex items-center gap-2"><MapPin size={16} className="text-primary" /> Live tracking</div>
-        <span className="text-xs text-muted-foreground">{origin} → {dest}</span>
+    <div>
+      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div className="font-medium">{value}</div>
+      {sub && <div className="text-[10px] text-muted-foreground">{sub}</div>}
+    </div>
+  );
+}
+
+function ProtBullet({ done, children }: { done: boolean; children: React.ReactNode }) {
+  return (
+    <li className="flex items-center gap-2">
+      {done
+        ? <CheckCircle2 size={14} className="text-success shrink-0" />
+        : <Circle size={14} className="text-muted-foreground shrink-0" />}
+      <span className={done ? "" : "text-muted-foreground"}>{children}</span>
+    </li>
+  );
+}
+
+function StatusBadge({ state }: { state: string }) {
+  const map: Record<string, string> = {
+    "Released to Supplier": "chip-verified",
+    "Disputed": "",
+    "Funds Held in Escrow": "chip-gold",
+    "Preparing Shipment": "chip-gold",
+    "In Transit": "chip-gold",
+    "Delivered — Awaiting Confirmation": "chip-primary",
+    "Awaiting Supplier Acceptance": "chip-primary",
+  };
+  const cls = state === "Disputed"
+    ? "bg-destructive/10 text-destructive border border-destructive/30"
+    : "";
+  return <span className={`chip ${map[state] ?? ""} ${cls}`}>{state}</span>;
+}
+
+function StepBadge({ status }: { status: "Completed" | "Current" | "Waiting" }) {
+  const cls = status === "Completed"
+    ? "bg-success/10 text-success border-success/30"
+    : status === "Current"
+    ? "bg-primary/10 text-primary border-primary/30"
+    : "bg-muted text-muted-foreground border-border";
+  return <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}>{status}</span>;
+}
+
+function EmptyProof() {
+  return (
+    <div className="rounded-lg border border-dashed bg-muted/30 p-3 text-xs text-muted-foreground flex items-center gap-2">
+      <ImageIcon size={14} /> No proof uploaded yet
+    </div>
+  );
+}
+
+function ProofCard({ proof }: { proof: Proof }) {
+  return (
+    <div className="rounded-lg border bg-card p-3 text-xs">
+      <div className="flex items-center gap-2">
+        <div className="size-10 rounded bg-muted grid place-items-center text-muted-foreground shrink-0">
+          <ImageIcon size={18} />
+        </div>
+        <div className="min-w-0">
+          <div className="font-semibold truncate">{proof.type}</div>
+          <div className="text-muted-foreground truncate">{proof.fileName}</div>
+        </div>
       </div>
-      <div className="relative h-56 bg-gradient-to-br from-[oklch(0.95_0.04_180)] via-[oklch(0.96_0.02_90)] to-[oklch(0.93_0.04_60)] overflow-hidden">
-        {/* faux map grid */}
-        <svg className="absolute inset-0 w-full h-full opacity-30" preserveAspectRatio="none">
-          <defs>
-            <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-              <path d="M 32 0 L 0 0 0 32" fill="none" stroke="oklch(0.4 0.05 60)" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-        {/* route line */}
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 600 220" preserveAspectRatio="none">
-          <path
-            d="M 40 170 C 160 150, 220 60, 320 100 S 500 180, 560 50"
-            fill="none"
-            stroke="oklch(0.58 0.22 27 / 0.25)"
-            strokeWidth="4"
-            strokeDasharray="6 6"
-          />
-          <path
-            id="route"
-            d="M 40 170 C 160 150, 220 60, 320 100 S 500 180, 560 50"
-            fill="none"
-            stroke="oklch(0.58 0.22 27)"
-            strokeWidth="3"
-            pathLength={1}
-            strokeDasharray={`${progress} 1`}
-          />
-          {/* origin pin */}
-          <circle cx="40" cy="170" r="7" fill="oklch(0.62 0.16 150)" />
-          <circle cx="40" cy="170" r="3" fill="white" />
-          {/* dest pin */}
-          <circle cx="560" cy="50" r="9" fill="oklch(0.58 0.22 27)" />
-          <circle cx="560" cy="50" r="4" fill="white" />
-        </svg>
-        {/* truck */}
-        <div
-          className="absolute transition-all duration-1000 ease-out"
-          style={{ left: `${5 + progress * 88}%`, top: `${72 - progress * 50}%` }}
+      <div className="mt-2 text-[10px] text-muted-foreground">
+        Uploaded by {proof.uploadedBy} · {proof.at}
+      </div>
+      {proof.notes && <div className="mt-1 text-[11px]">{proof.notes}</div>}
+      <button className="mt-2 w-full text-[11px] font-semibold border rounded py-1 hover:bg-muted">View Proof</button>
+    </div>
+  );
+}
+
+// =================== Action bar ===================
+
+function ActionBar({
+  order, role, isDisputed, isComplete,
+  onSupplierAdvance, onSupplierUpload, onBuyerConfirm, onBuyerReport,
+}: {
+  order: DemoOrder;
+  role: "buyer" | "supplier" | "admin";
+  isDisputed: boolean;
+  isComplete: boolean;
+  onSupplierAdvance: (to: StageKey) => void;
+  onSupplierUpload: () => void;
+  onBuyerConfirm: () => void;
+  onBuyerReport: () => void;
+}) {
+  const cur = currentStage(order);
+  const next = nextStage(order);
+
+  if (isDisputed) {
+    return (
+      <div className="rounded-xl border-2 border-destructive/40 bg-destructive/5 p-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="text-sm">
+          <div className="font-semibold text-destructive flex items-center gap-1.5"><AlertTriangle size={14} /> Dispute in progress</div>
+          <div className="text-xs text-muted-foreground">Our safety team is reviewing. You'll be notified when it's resolved.</div>
+        </div>
+        <Link to="/messages" className="border rounded-md px-4 py-2 text-sm font-semibold bg-card hover:bg-muted flex items-center gap-1.5">
+          <MessageSquare size={14} /> Message Supplier
+        </Link>
+      </div>
+    );
+  }
+
+  if (isComplete) {
+    return (
+      <div className="rounded-xl border-2 border-success/40 bg-success/5 p-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="text-sm">
+          <div className="font-semibold text-success flex items-center gap-1.5"><CheckCircle2 size={14} /> Order complete</div>
+          <div className="text-xs text-muted-foreground">Escrow released. Thank you for using PSG.</div>
+        </div>
+        <Link to="/messages" className="border rounded-md px-4 py-2 text-sm font-semibold bg-card hover:bg-muted flex items-center gap-1.5">
+          <MessageSquare size={14} /> Message Supplier
+        </Link>
+      </div>
+    );
+  }
+
+  if (role === "supplier") {
+    const nextLabel: Partial<Record<StageKey, string>> = {
+      confirmed: "Confirm Order",
+      preparing: "Mark as Preparing",
+      ready: "Mark as Ready for Pickup",
+      transit: "Mark as In Transit",
+      delivered: "Mark as Delivered",
+    };
+    return (
+      <div className="rounded-xl border bg-card p-4 grid sm:grid-cols-2 gap-3">
+        <button
+          onClick={onSupplierUpload}
+          className="border rounded-md py-3 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-muted"
         >
-          <div className="bg-primary text-white rounded-full p-2 shadow-lg animate-bounce">
-            <Truck size={20} />
-          </div>
-        </div>
-        {/* labels */}
-        <div className="absolute bottom-2 left-3 text-xs font-semibold text-foreground/80 bg-white/70 px-2 py-0.5 rounded">📍 {origin}</div>
-        <div className="absolute top-2 right-3 text-xs font-semibold text-foreground/80 bg-white/70 px-2 py-0.5 rounded">🏁 {dest}</div>
-      </div>
-      <div className="px-4 py-2 bg-muted/40 text-xs flex items-center justify-between">
-        <span className="font-medium">{FULFILL_STEPS[Math.max(0, stepIdx)]?.label}</span>
-        <span className="text-muted-foreground">{Math.round(progress * 100)}% of route complete</span>
-      </div>
-    </div>
-  );
-}
-
-function ConfirmDeliveryModal({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
-  return (
-    <div className="fixed inset-0 bg-black/60 z-50 grid place-items-center p-4 animate-fade-in">
-      <div className="bg-card rounded-xl max-w-md w-full p-6 text-center shadow-2xl animate-scale-in">
-        <div className="size-16 rounded-full bg-gold/15 grid place-items-center mx-auto mb-3">
-          <PackageCheck size={32} className="text-gold" />
-        </div>
-        <h2 className="font-display text-2xl">Did you receive your order?</h2>
-        <p className="text-sm text-muted-foreground mt-1">Confirming delivery releases escrow funds to the supplier.</p>
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <button onClick={onNo} className="border-2 rounded-md py-3 font-semibold hover:bg-muted">No, not yet</button>
-          <button onClick={onYes} className="bg-success text-success-foreground rounded-md py-3 font-semibold hover:opacity-90">
-            ✓ Yes, received
+          <Upload size={16} /> Upload Proof
+        </button>
+        {next && nextLabel[next] ? (
+          <button
+            onClick={() => onSupplierAdvance(next)}
+            className="bg-primary text-primary-foreground rounded-md py-3 font-semibold text-sm hover:bg-primary/90"
+          >
+            {nextLabel[next]}
           </button>
-        </div>
-        <button onClick={onNo} className="mt-3 text-xs text-muted-foreground hover:underline">Report an issue instead</button>
+        ) : (
+          <div className="grid place-items-center text-xs text-muted-foreground">Waiting for buyer to confirm delivery</div>
+        )}
       </div>
+    );
+  }
+
+  // Buyer / admin view
+  const canConfirm = cur === "delivered";
+  return (
+    <div className="rounded-xl border bg-card p-4 grid sm:grid-cols-3 gap-3">
+      <button
+        onClick={onBuyerConfirm}
+        disabled={!canConfirm}
+        className="bg-success text-success-foreground rounded-md py-3 font-semibold text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        <CheckCircle2 size={16} /> Confirm Delivery
+      </button>
+      <button
+        onClick={onBuyerReport}
+        className="border-2 border-destructive/40 text-destructive rounded-md py-3 font-semibold text-sm hover:bg-destructive/5 flex items-center justify-center gap-2"
+      >
+        <ShieldAlert size={16} /> Report Problem
+      </button>
+      <Link
+        to="/messages"
+        className="border rounded-md py-3 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-muted"
+      >
+        <MessageSquare size={16} /> Message Supplier
+      </Link>
     </div>
   );
 }
 
-function ReleaseAnimation() {
-  return (
-    <div className="fixed inset-0 bg-black/70 z-50 grid place-items-center animate-fade-in">
-      <div className="text-center text-white">
-        <div className="size-28 mx-auto rounded-full bg-success/20 border-4 border-success grid place-items-center mb-4 animate-scale-in">
-          <Sparkles size={56} className="text-gold animate-pulse" />
-        </div>
-        <div className="font-display text-4xl">Payment Released</div>
-        <div className="text-sm opacity-80 mt-1">Funds successfully transferred to supplier</div>
-      </div>
-    </div>
-  );
-}
+// =================== Modals ===================
 
-function ReviewModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: (r: NonNullable<DemoOrder["review"]>) => void }) {
-  const [rating, setRating] = useState(5);
-  const [quality, setQuality] = useState(5);
-  const [packaging, setPackaging] = useState(5);
-  const [delivery, setDelivery] = useState(5);
-  const [communication, setCommunication] = useState(5);
-  const [comment, setComment] = useState("");
+const PROOF_TYPES: ProofType[] = [
+  "Packed goods photo", "Packing list", "Delivery receipt",
+  "Driver details", "Proof of delivery", "Invoice", "Other",
+];
+
+function UploadProofModal({
+  stage, onClose, onSave,
+}: {
+  stage: StageKey;
+  onClose: () => void;
+  onSave: (p: { stage: StageKey; type: ProofType; fileName: string; notes?: string }) => void;
+}) {
+  const [type, setType] = useState<ProofType>("Packed goods photo");
+  const [notes, setNotes] = useState("");
+  const [fileName, setFileName] = useState("");
+
+  const suggested: Record<ProofType, string> = {
+    "Packed goods photo": "packed-goods.jpg",
+    "Packing list": "packing-list.pdf",
+    "Delivery receipt": "delivery-receipt.pdf",
+    "Driver details": "driver-details.pdf",
+    "Proof of delivery": "proof-of-delivery.jpg",
+    "Invoice": "invoice.pdf",
+    "Other": "attachment.pdf",
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 grid place-items-center p-4 animate-fade-in overflow-y-auto">
-      <div className="bg-card rounded-xl max-w-lg w-full shadow-2xl animate-scale-in my-8">
-        <div className="px-6 py-4 border-b flex items-center justify-between">
-          <div className="font-display text-2xl">Rate this order</div>
-          <button onClick={onClose} className="p-1 hover:bg-muted rounded"><X size={18} /></button>
+    <div className="fixed inset-0 bg-black/60 z-50 grid place-items-center p-4 animate-fade-in" onClick={onClose}>
+      <div className="bg-card rounded-xl max-w-md w-full shadow-2xl animate-scale-in" onClick={(e) => e.stopPropagation()}>
+        <div className="border-b px-5 py-3 flex items-center justify-between">
+          <div className="font-display text-lg flex items-center gap-2"><Upload size={18} /> Upload Order Proof</div>
+          <button onClick={onClose} className="p-1 hover:bg-muted rounded"><X size={16} /></button>
         </div>
-        <div className="p-6 space-y-4">
-          <div className="text-center">
-            <Stars value={rating} onChange={setRating} large />
-            <div className="text-xs text-muted-foreground mt-1">Overall rating</div>
+        <div className="p-5 space-y-3 text-sm">
+          <div className="text-xs text-muted-foreground">
+            Adding to step: <span className="font-semibold text-foreground">{STEPS.find(s => s.key === stage)?.title}</span>
           </div>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <Bucket label="Product Quality" value={quality} onChange={setQuality} />
-            <Bucket label="Packaging" value={packaging} onChange={setPackaging} />
-            <Bucket label="Delivery" value={delivery} onChange={setDelivery} />
-            <Bucket label="Communication" value={communication} onChange={setCommunication} />
-          </div>
-          <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Comments</label>
+          <label className="block">
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Proof type</div>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value as ProofType)}
+              className="w-full border rounded-md px-3 py-2 bg-card"
+            >
+              {PROOF_TYPES.map((t) => <option key={t}>{t}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Notes</div>
             <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Tell other buyers about this supplier…"
-              className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-card min-h-[88px]"
+              rows={3}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Add context (e.g. Driver Juan Dela Cruz · Plate NCR 4821)"
+              className="w-full border rounded-md px-3 py-2"
+            />
+          </label>
+          <div className="rounded-md border-2 border-dashed p-4 text-center bg-muted/30">
+            <FileText size={18} className="mx-auto text-muted-foreground" />
+            <div className="text-xs text-muted-foreground mt-1">Drop file or click to upload (demo — file not required)</div>
+            <input
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
+              placeholder={suggested[type]}
+              className="mt-2 w-full text-center text-xs border rounded px-2 py-1 bg-card"
             />
           </div>
         </div>
-        <div className="px-6 py-4 border-t flex gap-3 justify-end">
-          <button onClick={onClose} className="px-4 py-2 rounded-md text-sm font-semibold hover:bg-muted">Skip</button>
+        <div className="border-t px-5 py-3 flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 text-sm rounded-md border">Cancel</button>
           <button
-            onClick={() => onSubmit({ rating, quality, packaging, delivery, communication, comment })}
-            className="bg-primary text-white px-5 py-2 rounded-md font-semibold hover:bg-primary/90"
+            onClick={() => onSave({ stage, type, fileName: fileName.trim() || suggested[type], notes: notes.trim() || undefined })}
+            className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground font-semibold"
           >
-            Submit Review
+            Save Proof
           </button>
         </div>
       </div>
@@ -455,57 +572,81 @@ function ReviewModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: (r:
   );
 }
 
-function Bucket({ label, value, onChange }: { label: string; value: number; onChange: (n: number) => void }) {
+function ConfirmDeliveryModal({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
   return (
-    <div className="border rounded-md px-3 py-2 flex items-center justify-between">
-      <span className="text-xs font-medium">{label}</span>
-      <Stars value={value} onChange={onChange} />
-    </div>
-  );
-}
-
-function Stars({ value, onChange, large }: { value: number; onChange: (n: number) => void; large?: boolean }) {
-  return (
-    <div className="inline-flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <button key={n} onClick={() => onChange(n)} type="button">
-          <Star
-            size={large ? 32 : 16}
-            className={n <= value ? "fill-[oklch(0.78_0.15_75)] text-[oklch(0.78_0.15_75)]" : "text-muted-foreground"}
-          />
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ReviewSummary({ r }: { r: NonNullable<DemoOrder["review"]> }) {
-  return (
-    <div className="rounded-lg border bg-card p-5">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="font-semibold">Your review</h2>
-        <Stars value={r.rating} onChange={() => {}} />
+    <div className="fixed inset-0 bg-black/60 z-50 grid place-items-center p-4 animate-fade-in" onClick={onCancel}>
+      <div className="bg-card rounded-xl max-w-md w-full p-6 text-center shadow-2xl animate-scale-in" onClick={(e) => e.stopPropagation()}>
+        <div className="size-14 rounded-full bg-success/15 grid place-items-center mx-auto mb-3">
+          <ShieldCheck size={28} className="text-success" />
+        </div>
+        <h2 className="font-display text-xl">Confirm delivery?</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Only confirm if the goods were delivered correctly. This will release escrow to the supplier.
+        </p>
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <button onClick={onCancel} className="border-2 rounded-md py-2.5 font-semibold hover:bg-muted">Cancel</button>
+          <button onClick={onConfirm} className="bg-success text-success-foreground rounded-md py-2.5 font-semibold hover:opacity-90">
+            Confirm and Release Escrow
+          </button>
+        </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-        {[
-          ["Quality", r.quality], ["Packaging", r.packaging],
-          ["Delivery", r.delivery], ["Communication", r.communication],
-        ].map(([k, v]) => (
-          <div key={k as string} className="rounded bg-muted/40 p-2 text-center">
-            <div className="text-muted-foreground uppercase">{k}</div>
-            <div className="font-semibold text-base">{v}/5</div>
+    </div>
+  );
+}
+
+const DISPUTE_TYPES = [
+  "Item not delivered", "Wrong item", "Missing quantity", "Damaged goods",
+  "Fake product", "Late delivery", "Supplier not responding", "Other",
+];
+
+function DisputeModal({
+  onClose, onSubmit,
+}: {
+  onClose: () => void;
+  onSubmit: (issueType: string, description: string) => void;
+}) {
+  const [issue, setIssue] = useState(DISPUTE_TYPES[0]);
+  const [desc, setDesc] = useState("");
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 grid place-items-center p-4 animate-fade-in" onClick={onClose}>
+      <div className="bg-card rounded-xl max-w-md w-full shadow-2xl animate-scale-in" onClick={(e) => e.stopPropagation()}>
+        <div className="border-b px-5 py-3 flex items-center justify-between">
+          <div className="font-display text-lg text-destructive flex items-center gap-2"><ShieldAlert size={18} /> Report a Problem</div>
+          <button onClick={onClose} className="p-1 hover:bg-muted rounded"><X size={16} /></button>
+        </div>
+        <div className="p-5 space-y-3 text-sm">
+          <p className="text-xs text-muted-foreground">
+            Filing a report will freeze escrow while our safety team reviews the issue.
+          </p>
+          <label className="block">
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Issue type</div>
+            <select value={issue} onChange={(e) => setIssue(e.target.value)} className="w-full border rounded-md px-3 py-2 bg-card">
+              {DISPUTE_TYPES.map((d) => <option key={d}>{d}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Description</div>
+            <textarea
+              rows={4} value={desc} onChange={(e) => setDesc(e.target.value)}
+              placeholder="Describe what went wrong…"
+              className="w-full border rounded-md px-3 py-2"
+            />
+          </label>
+          <div className="rounded-md border-2 border-dashed p-3 text-center bg-muted/30 text-xs text-muted-foreground">
+            <ImageIcon size={16} className="mx-auto" />
+            Upload evidence (demo — attach photos here)
           </div>
-        ))}
+        </div>
+        <div className="border-t px-5 py-3 flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 text-sm rounded-md border">Cancel</button>
+          <button
+            onClick={() => onSubmit(issue, desc.trim())}
+            className="px-4 py-2 text-sm rounded-md bg-destructive text-destructive-foreground font-semibold"
+          >
+            Submit Report
+          </button>
+        </div>
       </div>
-      {r.comment && <p className="mt-3 text-sm italic text-muted-foreground">"{r.comment}"</p>}
-    </div>
-  );
-}
-
-function Row({ label, value, sub }: { label: string; value: string; sub?: boolean }) {
-  return (
-    <div className={`flex items-center justify-between ${sub ? "text-xs text-muted-foreground" : ""}`}>
-      <span>{label}</span><span>{value}</span>
     </div>
   );
 }
