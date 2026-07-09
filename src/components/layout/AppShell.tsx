@@ -1,8 +1,10 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Bell, MessageSquare, Search, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
+import { MessageSquare, Search, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
 import { useSession, signOut } from "@/lib/auth";
+import { NotificationBell } from "./NotificationBell";
+import { RoleSwitcher } from "./RoleSwitcher";
 
 
 const navLinks = [
@@ -84,12 +86,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="ml-auto flex items-center gap-1 md:gap-2">
             <Link to="/messages" className="p-2 rounded hover:bg-muted relative">
               <MessageSquare size={20} />
-              <span className="absolute top-1 right-1 size-2 bg-primary rounded-full" />
             </Link>
-            <button className="p-2 rounded hover:bg-muted relative">
-              <Bell size={20} />
-              <span className="absolute top-1 right-1 size-2 bg-primary rounded-full" />
-            </button>
+            <NotificationBell />
             <Link to="/checkout" className="p-2 rounded hover:bg-muted relative">
               <ShoppingCart size={20} />
               {cartCount > 0 && (
@@ -98,6 +96,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </span>
               )}
             </Link>
+            <RoleSwitcher />
 
             {user ? (
               <div className="relative">

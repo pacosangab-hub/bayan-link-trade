@@ -1,77 +1,105 @@
+# PSG Demo — Full MVP Wire-Up (localStorage only)
 
-# Redesign RFQ Center → "Get Supplier Quotes"
+Rip out all broken backend calls. Ship a stable, clickable demo where Messages is the center of gravity: chat → custom request → custom offer → order → escrow → completion, with notifications updating throughout.
 
-Transform the RFQ pages from a static list into a functional B2B procurement workflow with clear buyer and supplier journeys. All existing routes for products, suppliers, orders, and messages remain untouched.
+## Scope
 
-## Scope of files
+Frontend-only. No Supabase, no server functions, no API keys. All state lives in `localStorage` behind a small set of stores. Existing `offers-store.ts` / `rfq-store.ts` / `cart.ts` become the pattern for everything else.
 
-- **Rewrite** `src/routes/rfq.tsx` — hero, "How it works", tabs (Buyer Requests / Supplier Leads), dashboard stats, cards with next-action labels.
-- **Rewrite** `src/routes/rfq.$id.tsx` — split layout with buyer brief + status timeline (left) and quote comparison table with "Recommended Best Value" (right); Choose Supplier confirmation modal → "Supplier Selected" state.
-- **Rewrite** `src/routes/rfq.new.tsx` — 4-step guided form (What you need → Budget & delivery → Requirements → Review) with progress indicator; redirects to new RFQ detail with success toast.
-- **Extend** `src/lib/mock-data.ts` — add the 5 demo Filipino B2B RFQs (rice, tissue, espresso, boxes, chicken), extend `RFQ` type with `unit`, `recurring`, `deliveryLocation`, `nextAction`, and expand status union to: Draft, Open, Receiving Quotes, Awaiting Decision, Supplier Selected, Order Created, Completed, Closed.
-- **New** `src/components/rfq/SubmitQuoteModal.tsx` — supplier quote-submission modal (price/unit, total, MOQ, lead time, delivery fee, payment terms, stock, message, upload placeholder) with success toast.
-- **New** `src/components/rfq/ChooseSupplierModal.tsx` — confirmation modal used from the detail page.
-- **New** `src/lib/rfq-store.ts` — lightweight localStorage store (mirroring `src/lib/cart.ts` pattern with `useSyncExternalStore` + reference-stable cache) for demo-created RFQs, submitted quotes, and selected supplier so state persists across navigation.
+## 1. Demo state layer (`src/lib/demo/`)
 
-No changes to `AppShell` nav label ("RFQ Center" stays in top nav); the in-page H1 becomes "Get Supplier Quotes" with "RFQ Marketplace" eyebrow.
+Central persistence + pub-sub so every screen updates live.
 
-## Page 1 — `/rfq` (list)
+- `store.ts` — tiny `createStore<T>(key, seed)` helper: `get`, `set`, `update`, `subscribe`, `useStore()` hook. Wraps `localStorage` with JSON + versioning. One `resetAll()` export.
+- `session.ts` — active demo role: `buyer | supplier | admin`. Hook `useDemoRole()`. Header dropdown ("View as Buyer/Supplier/Admin") writes here.
+- `messages-store.ts` — conversations + messages. Message kinds: `text | custom_request | custom_offer | order_created | system`. Sending a message updates `lastMessage`, `updatedAt`, unread counter for the other side, and pushes a notification.
+- `orders-store.ts` — orders + timeline events + escrow state machine. Actions: `createFromOffer`, `fundEscrow`, `markPreparing`, `markReady`, `markInTransit`, `markDelivered`, `confirmDelivery` (releases escrow), `openDispute`, `resolveDispute`, `refund`. Each transition appends a timeline entry and fires notifications.
+- `notifications-store.ts` — per-role inbox. `push({role, title, body, href, kind})`, `markRead`, `markAllRead`, `unreadCount(role)`. Bell subscribes.
+- `safety-store.ts` — reports + off-platform keyword list + restricted categories.
+- `seed.ts` — bootstraps rich demo data on first load (conversations with sample custom request + offer cards mid-thread, 3 orders in different states, notifications, reports). `resetDemoData()` re-runs seed.
 
-**Hero (bold red band):**
-- Eyebrow: RFQ Marketplace
-- H1: Get Supplier Quotes
-- Sub: Post what your business needs. Verified suppliers will send prices, lead times, and delivery terms.
-- Primary CTA: `+ Post a Quote Request` → `/rfq/new`
-- Secondary: How it works (scrolls to steps)
+`offers-store.ts` / `rfq-store.ts` / `cart.ts` are refactored to use `createStore` so everything shares one pattern.
 
-**3-step strip** (icon cards): Post what you need · Suppliers send quotes · Compare and choose.
+## 2. Messages (`/messages`)
 
-**Tabs:** Buyer Requests (default) · Supplier Leads.
+Rewrite `src/routes/messages.tsx` + new components under `src/components/messages/`.
 
-**Buyer Requests tab:**
-- 4 stat cards: Open Requests, Quotes Received, Awaiting Decision, Completed Orders.
-- RFQ cards showing category + status + posted-ago, title, buyer, and 5 stat boxes (Quantity, Budget, Delivery location, Needed by, Quotes received).
-- Prominent next-action ribbon (e.g. "3 new quotes — Review now", "No quotes yet — Share request").
-- Actions: **View Quotes** (primary → detail), Edit Request, Close Request.
+- Left: conversation list from store, unread badge, search filter, "Report" link on active chat header.
+- Right: header (supplier/buyer name, verification badge, "View profile", "Report"), safety banner ("Never pay outside PSG escrow…"), message list rendering per-kind:
+  - `text` → bubble
+  - `custom_request` → `CustomRequestCard` (buyer-side actions: Edit/Cancel; supplier-side: Send Custom Offer / Ask Follow-up / Decline)
+  - `custom_offer` → `CustomOfferCard` (buyer: Accept / Request Changes / Reject / Message; supplier: Revise / Withdraw)
+  - `order_created` → `OrderCreatedCard` (View Order → `/orders/$id`)
+- Composer: textarea + Send + paperclip. Paperclip opens `AttachmentMenu` whose contents depend on `useDemoRole()`:
+  - Buyer: Send Custom Request, Attach Product, Attach Order, Upload File (placeholder)
+  - Supplier: Send Custom Offer, Attach Product, Attach Quote, Upload File
+- Off-platform keyword check on Send → `OffPlatformWarningModal` ("Continue sending?"). Continue still sends but flags message.
+- Accepting an offer in-chat → confirm modal → `ordersStore.createFromOffer(offer)` → posts `order_created` card in the same thread → navigate to `/orders/$id` (buyer choice via toast action).
 
-**Supplier Leads tab:**
-- Header "Find Buyers Looking for Your Products" + filter bar (Category, Location, Budget, Deadline, Recurring, Sort).
-- Cards show buyer, product, quantity, budget, location, deadline, existing-quotes count, verified badge.
-- Primary action: **Submit Quote** → opens `SubmitQuoteModal`.
+Reuse/extend existing `RequestCustomQuoteModal` and `SendCustomOfferModal` — swap their submit handlers to write into `messages-store` (post as message kind) instead of the separate offers list. `offers.index.tsx` reads from the same store so /offers stays a mirror view.
 
-## Page 2 — `/rfq/:id` (detail)
+## 3. Orders
 
-Two-column layout.
+- `/orders` (`orders.tsx`): read from store, View → `/orders/$id`.
+- `/orders/$id` (`orders.$id.tsx` — rewrite): full detail page with buyer/supplier panels, items table, delivery info, escrow panel, timeline, "Open conversation" link back to Messages.
+- Role-scoped action bar (driven by `useDemoRole()`):
+  - Buyer: Pay with Demo Escrow, Message Supplier, Report Problem, Confirm Delivery, Request Refund
+  - Supplier: Confirm Order, Mark Preparing, Mark Ready, Mark In Transit, Mark Delivered, Request Escrow Release
+  - Admin: Freeze Escrow, Release, Refund, Partial Refund, Resolve Dispute, Suspend Supplier
+- Each button calls the corresponding `ordersStore` action → status/escrow update → timeline entry → notifications for the counterparty.
+- `ReportProblemModal` (reasons + evidence placeholder) → sets dispute, freezes escrow, notifies admin + supplier.
 
-**Left:** buyer brief, quantity, target budget, delivery location, deadline, notes, attachments placeholder, status timeline (Draft → Open → Receiving Quotes → Awaiting Decision → Supplier Selected → Order Created → Completed).
+## 4. Notifications
 
-**Right:** quote comparison table with columns Supplier, Price, Delivery time, MOQ, Rating, Verification, Action. Best-value quote gets a gold "Recommended Best Value" badge (scored by price + rating + lead time). Row actions: View Supplier (→ `/suppliers/$id`), Message (→ `/messages`), **Choose Supplier** (opens `ChooseSupplierModal`).
+- `NotificationBell` in `AppShell` header: unread badge from `notifications-store` scoped by current role.
+- Dropdown: list with icon per kind, title/body/time, click → `href`, per-item Mark read, "Mark all read".
+- All store actions above push here so counts update live.
 
-**Choose Supplier modal:** confirmation copy about moving to order creation + escrow. Confirm sets status to Supplier Selected via `rfq-store`, and swaps the right pane to an Order Summary card with a "Continue to Checkout" CTA (routes to existing `/checkout`).
+## 5. Safety
 
-## Page 3 — `/rfq/new` (guided form)
+- Persistent safety banner in Messages (already partly there — strengthen copy).
+- Off-platform keyword warning modal.
+- Report modal reachable from Messages header and Order detail; writes to `safety-store`.
+- Verified badge component reused on: supplier cards, product cards, message header, offer cards, order detail.
+- Restricted-category banner on product detail for high-risk categories (pharma, chemicals, mining, cosmetics, food manufacturing, medical).
+- Explosives/blasting items rendered with "Restricted — Admin Approval Required" and disabled checkout.
+- Attachment placeholder note: "Files are scanned and logged for safety in the real version."
+- New route `/admin/safety` (`admin.safety.tsx`): tabs for reported conversations, disputed orders, unverified suppliers, off-platform flags, suspended accounts, with admin actions wired to stores.
 
-Multi-step wizard with a top progress bar (Step X of 4). Uses local component state; final submit writes a new RFQ into `rfq-store`, navigates to `/rfq/:id` for the new id, and fires a success toast: "Your quote request is live. Verified suppliers can now submit offers."
+## 6. Product catalog expansion
 
-- Step 1 – What do you need: product name, category, quantity, unit, one-time vs recurring.
-- Step 2 – Budget & delivery: target budget, delivery location, needed-by date, preferred schedule.
-- Step 3 – Supplier requirements: verified-only toggle, required documents (multi-select chips), notes.
-- Step 4 – Review & post: summary card + Post Request button.
+- Rewrite `src/lib/mock-data.ts` (or add `src/lib/demo/catalog.ts`) with 90+ products across the 20 industries listed, each with: name, category, industry, supplier, price/range, unit, MOQ, location, rating, verification, lead time, image (use existing placeholder set or category-tinted SVGs — no image gen).
+- Filters on `/products`: category, industry, region, supplier type, verified only, price range, MOQ, sort (relevance/price/rating/newest). Persist filter state in `localStorage`.
+- Product card buttons all functional: View Product, Request Quote (→ Messages + auto-open request modal), Message Supplier (→ Messages), View Supplier.
 
-Back/Next buttons; validation is light (required fields only) to keep demo smooth.
+## 7. Cross-linking to Messages
 
-## Data & status model
+- Product detail: Request Custom Quote → navigate `/messages?supplier=<id>&intent=request` → messages route reads query, opens/creates thread, auto-opens `RequestCustomQuoteModal` prefilled with product.
+- Supplier profile: same pattern for Message + Request Custom Quote.
+- RFQ quote row: Message Supplier, Ask for Custom Offer (opens Messages with intent), Accept Quote (existing flow).
 
-Extend `RFQ` type and seed 5 realistic entries listed in the brief. Statuses use consistent chip colors: gray (Draft/Closed), blue (Open/Receiving Quotes), amber (Awaiting Decision), green (Supplier Selected/Order Created/Completed). `nextAction` is derived per card.
+## 8. Header / account dropdown
+
+- Add role switcher ("View as Buyer / Supplier / Admin") in `AppShell` account menu.
+- Bell component beside it.
+- Rebuilds bell + action menus reactively when role changes.
+
+## 9. Reset
+
+- Admin settings / `/admin` gets a "Reset Demo Data" button calling `resetAll()` + `seed()`.
+
+## 10. Cleanup
+
+- Remove or stub any remaining calls to `useSuppliers`/`db.ts` backend paths that trigger "This page didn't load." Replace with sync reads from stores.
+- Keep Supabase integration files untouched (auto-generated) but ensure no route imports them at load time.
 
 ## Technical notes
 
-- All navigation uses `<Link to="/rfq/$id" params={{ id }}>` — never string interpolation.
-- Modals use existing shadcn `Dialog`.
-- Toasts via existing `sonner`.
-- `rfq-store` follows the same reference-stable `useSyncExternalStore` pattern as `src/lib/cart.ts` to avoid the infinite-loop issue fixed previously.
-- No backend changes — pure frontend + localStorage.
+- All new state hooks use `useSyncExternalStore` via the `createStore` helper for consistent rerenders and SSR safety (`typeof window` guard, initial snapshot = seed).
+- Reads that happen in route loaders stay out — everything is client-only to avoid SSR/localStorage mismatches. Route components render skeletons then hydrate from the store.
+- No new npm deps.
+- No changes to auth, Supabase clients, server functions, or `src/routeTree.gen.ts` (router plugin regenerates).
 
-## Acceptance mapping
+## Deliverables checklist (maps to acceptance criteria)
 
-Each item in the brief's acceptance criteria (1–10) is covered: clarity within 5 seconds (hero + 3-step + tabs), separated workflows (tabs), guided posting (4-step wizard), quote comparison (detail table with best-value badge), supplier submission (modal), choose-supplier flow (confirmation + order handoff), all buttons wired to real routes/modals with demo data, PSG branding preserved, existing routes untouched.
+Messages send/persist · paperclip menu · in-chat custom request · in-chat custom offer · accept → order · Orders detail + status buttons · demo escrow fund/release/dispute/refund · notifications created + bell dropdown · off-platform warning · report/dispute · `/admin/safety` · 90+ products across 20 industries · filters · product/supplier/RFQ → Messages links · no dead buttons · no broken pages · localStorage persistence · Reset Demo Data.
