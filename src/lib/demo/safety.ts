@@ -15,6 +15,8 @@ export type Report = {
 const KEY = "psg_safety_reports_v1";
 const isBrowser = typeof window !== "undefined";
 const listeners = new Set<() => void>();
+const EMPTY_REPORTS: Report[] = [];
+let cache: { raw: string; value: Report[] } | undefined;
 
 if (isBrowser) {
   window.addEventListener("psg-safety-change", () => listeners.forEach((l) => l()));
@@ -22,10 +24,24 @@ if (isBrowser) {
 }
 function subscribe(cb: () => void) { listeners.add(cb); return () => listeners.delete(cb); }
 
-function read(): Report[] { if (!isBrowser) return []; try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; } }
+function read(): Report[] {
+  if (!isBrowser) return EMPTY_REPORTS;
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return EMPTY_REPORTS;
+    if (cache?.raw === raw) return cache.value;
+    const value = JSON.parse(raw) as Report[];
+    cache = { raw, value };
+    return value;
+  } catch {
+    return EMPTY_REPORTS;
+  }
+}
 function write(list: Report[]) {
   if (!isBrowser) return;
-  localStorage.setItem(KEY, JSON.stringify(list));
+  const raw = JSON.stringify(list);
+  cache = { raw, value: list };
+  localStorage.setItem(KEY, raw);
   window.dispatchEvent(new CustomEvent("psg-safety-change"));
 }
 
@@ -41,7 +57,7 @@ function seed() {
 seed();
 
 export function getReports() { return read(); }
-export function useReports(): Report[] { return useSyncExternalStore(subscribe, read, () => []); }
+export function useReports(): Report[] { return useSyncExternalStore(subscribe, read, () => EMPTY_REPORTS); }
 
 export function createReport(r: Omit<Report, "id" | "createdAt" | "status">) {
   const all = read();

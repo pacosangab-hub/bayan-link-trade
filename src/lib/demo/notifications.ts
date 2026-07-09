@@ -25,6 +25,9 @@ export type Notification = {
 const KEY = "psg_notifications_v1";
 const isBrowser = typeof window !== "undefined";
 const listeners = new Set<() => void>();
+const EMPTY_NOTIFICATIONS: Notification[] = [];
+let cache: { raw: string; value: Notification[] } | undefined;
+const roleCache = new Map<DemoRole, { source: Notification[]; value: Notification[] }>();
 
 if (isBrowser) {
   window.addEventListener("psg-notif-change", () => listeners.forEach((l) => l()));
@@ -33,12 +36,25 @@ if (isBrowser) {
 function subscribe(cb: () => void) { listeners.add(cb); return () => listeners.delete(cb); }
 
 function read(): Notification[] {
-  if (!isBrowser) return [];
-  try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; }
+  if (!isBrowser) return EMPTY_NOTIFICATIONS;
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return EMPTY_NOTIFICATIONS;
+    if (cache?.raw === raw) return cache.value;
+    const value = JSON.parse(raw) as Notification[];
+    cache = { raw, value };
+    roleCache.clear();
+    return value;
+  } catch {
+    return EMPTY_NOTIFICATIONS;
+  }
 }
 function write(list: Notification[]) {
   if (!isBrowser) return;
-  localStorage.setItem(KEY, JSON.stringify(list));
+  const raw = JSON.stringify(list);
+  cache = { raw, value: list };
+  roleCache.clear();
+  localStorage.setItem(KEY, raw);
   window.dispatchEvent(new CustomEvent("psg-notif-change"));
 }
 
@@ -63,7 +79,12 @@ seed();
 
 export function getAllNotifications(): Notification[] { return read(); }
 export function getForRole(role: DemoRole): Notification[] {
-  return read().filter((n) => n.role === role).sort((a, b) => Number(a.read) - Number(b.read));
+  const all = read();
+  const cached = roleCache.get(role);
+  if (cached?.source === all) return cached.value;
+  const value = all.filter((n) => n.role === role).sort((a, b) => Number(a.read) - Number(b.read));
+  roleCache.set(role, { source: all, value });
+  return value;
 }
 export function unreadCount(role: DemoRole): number {
   return read().filter((n) => n.role === role && !n.read).length;
@@ -83,7 +104,7 @@ export function markAllRead(role: DemoRole) {
 }
 
 export function useNotificationsForRole(role: DemoRole): Notification[] {
-  return useSyncExternalStore(subscribe, () => getForRole(role), () => []);
+  return useSyncExternalStore(subscribe, () => getForRole(role), () => EMPTY_NOTIFICATIONS);
 }
 export function useUnreadCount(role: DemoRole): number {
   return useSyncExternalStore(subscribe, () => unreadCount(role), () => 0);
