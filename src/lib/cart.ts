@@ -2,7 +2,7 @@
 // Prototype-only — no backend, all reads in-memory with cross-tab sync.
 
 import { useSyncExternalStore } from "react";
-import { products, productById, formatPhp } from "./mock-data";
+import { products, productById, formatPhp, orders as MOCK_ORDERS } from "./mock-data";
 import type { EscrowState } from "./mock-data";
 
 export type CartItem = { productId: string; qty: number };
