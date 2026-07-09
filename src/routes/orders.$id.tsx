@@ -87,6 +87,7 @@ function OrderDetail() {
   }
 
   function handleReorder() {
+    if (!o) return;
     o.items.forEach((it) => addToCart(it.productId, it.qty));
     navigate({ to: "/checkout" });
   }
