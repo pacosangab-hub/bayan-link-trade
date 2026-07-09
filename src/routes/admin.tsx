@@ -1,7 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { DemoSafetyCenter } from "@/components/admin/DemoSafetyCenter";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin Safety Center — PSG" }] }),
-  component: DemoSafetyCenter,
+  component: () => <Outlet />,
 });
