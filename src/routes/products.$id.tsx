@@ -351,32 +351,51 @@ function ProductDetail() {
               <span className="font-display text-2xl text-primary">{formatPhp(total)}</span>
             </div>
 
+            {p.restricted && (
+              <div className="mt-4 rounded-md bg-destructive/10 text-destructive text-xs p-3 flex items-start gap-2">
+                <ShieldCheck size={14} className="mt-0.5 shrink-0" />
+                <div>
+                  <div className="font-semibold">Restricted category — Admin approval required</div>
+                  <div className="opacity-90">This product cannot be purchased directly. Submit a compliance-reviewed custom quote to proceed.</div>
+                </div>
+              </div>
+            )}
+            {p.compliance && !p.restricted && (
+              <div className="mt-4 rounded-md bg-primary/5 text-primary text-xs p-2.5 flex items-center gap-2">
+                <ShieldCheck size={14} /> {p.compliance}
+              </div>
+            )}
+
             <div className="mt-4 grid grid-cols-2 gap-2">
-              <button
-                onClick={handleBuyNow}
-                disabled={belowMoq}
-                className="col-span-2 bg-primary text-primary-foreground font-semibold rounded-md py-3 hover:bg-primary/90 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Zap size={16} /> Buy Now
-              </button>
-              <button
-                onClick={handleAddToCart}
-                disabled={belowMoq}
-                className="border-2 border-primary text-primary font-semibold rounded-md py-2.5 hover:bg-primary/5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ShoppingCart size={16} /> Add to Cart
-              </button>
+              {!p.restricted && (
+                <>
+                  <button
+                    onClick={handleBuyNow}
+                    disabled={belowMoq}
+                    className="col-span-2 bg-primary text-primary-foreground font-semibold rounded-md py-3 hover:bg-primary/90 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Zap size={16} /> Buy Now
+                  </button>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={belowMoq}
+                    className="border-2 border-primary text-primary font-semibold rounded-md py-2.5 hover:bg-primary/5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ShoppingCart size={16} /> Add to Cart
+                  </button>
+                </>
+              )}
               <button
                 onClick={() => setCustomOpen(true)}
                 className="border-2 border-gold text-ink font-semibold rounded-md py-2.5 hover:bg-gold/10 flex items-center justify-center gap-2 col-span-2 bg-gold/5"
               >
-                <FileText size={14} /> Request Custom Quote
+                <FileText size={14} /> {p.restricted ? "Request Quote — Compliance Review Required" : "Request Custom Quote"}
               </button>
               <Link
                 to="/messages"
                 className="border rounded-md py-2.5 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-muted"
               >
-                <MessageSquare size={14} /> Chat Supplier
+                <MessageSquare size={14} /> Message Supplier
               </Link>
               <button
                 onClick={() => {
@@ -388,6 +407,7 @@ function ProductDetail() {
                 <Heart size={14} className={isSaved ? "fill-primary" : ""} /> {isSaved ? "Saved" : "Save"}
               </button>
             </div>
+
 
             <div className="mt-4 flex items-center gap-2 text-xs text-success">
               <ShieldCheck size={14} /> Funds held by PSG until you confirm delivery.
