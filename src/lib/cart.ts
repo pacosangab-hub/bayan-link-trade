@@ -191,6 +191,9 @@ export function useDemoOrder(id: string): DemoOrder | undefined {
     () => undefined
   );
 }
+export function useDemoOrders(): DemoOrder[] {
+  return useSyncExternalStore(subscribe, getDemoOrders, () => EMPTY_ORDERS);
+}
 
 export function tierPriceFor(productId: string, qty: number): number {
   const p = productById(productId);

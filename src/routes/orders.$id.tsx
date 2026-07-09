@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { supplierById, productById, formatPhp, orders as MOCK_ORDERS } from "@/lib/mock-data";
 import {
@@ -16,45 +16,34 @@ import { pushNotification } from "@/lib/demo/notifications";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/orders/$id")({
-  loader: ({ params }) => {
-    const isMock = MOCK_ORDERS.some((x) => x.id === params.id);
-    if (!isMock && !params.id.startsWith("ord_")) throw notFound();
-    return { orderId: params.id };
-  },
   head: ({ params }) => ({ meta: [{ title: `Order ${params.id} — PSG` }] }),
-  notFoundComponent: () => (
-    <AppShell><div className="p-20 text-center">Order not found</div></AppShell>
-  ),
-  errorComponent: ({ reset }) => (
-    <AppShell>
-      <div className="p-12 text-center">
-        <button onClick={reset} className="text-primary font-semibold">Retry</button>
-      </div>
-    </AppShell>
-  ),
-  component: OrderDetail,
+  component: OrderDetailPage,
 });
 
 // ---- Timeline definition ----
-const STEPS: { key: StageKey; title: string; blurb: string }[] = [
-  { key: "created",         title: "Order Created",     blurb: "Order details generated from accepted offer." },
-  { key: "funded",          title: "Escrow Funded",     blurb: "Your payment is being held safely by PSG." },
-  { key: "confirmed",       title: "Supplier Confirmed", blurb: "Supplier accepted the order and started fulfillment." },
-  { key: "preparing",       title: "Preparing Shipment", blurb: "Goods are being picked, packed and labeled." },
-  { key: "ready",           title: "Ready for Pickup",   blurb: "Goods are staged at the warehouse for pickup." },
-  { key: "transit",         title: "In Transit",         blurb: "Shipment is on the way to the delivery address." },
-  { key: "delivered",       title: "Delivered",          blurb: "Shipment arrived at the buyer's location." },
-  { key: "buyer_confirmed", title: "Buyer Confirmed",    blurb: "Buyer confirmed the order was received correctly." },
-  { key: "released",        title: "Escrow Released",    blurb: "Funds released to the supplier — order complete." },
+const STEPS: { key: StageKey; title: string; blurb: string; proofLabel: string }[] = [
+  { key: "created",         title: "Order Created",     blurb: "Order details generated from accepted offer.", proofLabel: "Custom offer accepted" },
+  { key: "funded",          title: "Escrow Funded",     blurb: "Your payment is being held safely by PSG.", proofLabel: "Demo escrow funded" },
+  { key: "confirmed",       title: "Supplier Confirmed", blurb: "Supplier accepted the order and started fulfillment.", proofLabel: "Supplier confirmation" },
+  { key: "preparing",       title: "Preparing Shipment", blurb: "Goods are being picked, packed and labeled.", proofLabel: "Packed goods photo" },
+  { key: "ready",           title: "Ready for Pickup",   blurb: "Goods are staged at the warehouse for pickup.", proofLabel: "Packing list" },
+  { key: "transit",         title: "In Transit",         blurb: "Shipment is on the way to the delivery address.", proofLabel: "Driver details" },
+  { key: "delivered",       title: "Delivered",          blurb: "Shipment arrived at the buyer's location.", proofLabel: "Proof of delivery" },
+  { key: "buyer_confirmed", title: "Buyer Confirmed",    blurb: "Buyer confirmed the order was received correctly.", proofLabel: "Buyer confirmation" },
+  { key: "released",        title: "Escrow Released",    blurb: "Funds released to the supplier — order complete.", proofLabel: "Escrow release receipt" },
 ];
 
-function OrderDetail() {
-  const { orderId } = Route.useLoaderData();
+function OrderDetailPage() {
+  const { id } = Route.useParams();
+  const [hydrated, setHydrated] = useState(false);
 
   // Hydrate mock order to localStorage on first view (client-only)
-  useEffect(() => { ensureDemoOrder(orderId); }, [orderId]);
+  useEffect(() => {
+    ensureDemoOrder(id);
+    setHydrated(true);
+  }, [id]);
 
-  const o = useDemoOrder(orderId);
+  const o = useDemoOrder(id);
   const role = useDemoRole();
 
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -63,11 +52,7 @@ function OrderDetail() {
   const [disputeOpen, setDisputeOpen] = useState(false);
 
   if (!o) {
-    // First-render SSR / pre-hydration fallback
-    const mock = MOCK_ORDERS.find((x) => x.id === orderId);
-    if (!mock) {
-      return <AppShell><div className="p-20 text-center text-muted-foreground">Loading order…</div></AppShell>;
-    }
+    if (hydrated && !MOCK_ORDERS.some((x) => x.id === id)) return <OrderNotFound orderId={id} />;
     return <AppShell><div className="p-20 text-center text-muted-foreground">Loading order…</div></AppShell>;
   }
 
@@ -168,9 +153,10 @@ function OrderDetail() {
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
               <SummaryField label="Placed" value={o.placed} />
-              <SummaryField label="Delivery" value={o.address?.business ?? "—"} sub={o.address?.address} />
+              <SummaryField label="Delivery location" value={o.address?.business ?? "—"} sub={o.address?.address} />
+              <SummaryField label="Order status" value={STEPS.find(x => x.key === cur)?.title ?? "In progress"} />
+              <SummaryField label="Escrow status" value={o.escrowState} />
               <SummaryField label="Payment" value={o.payment} />
-              <SummaryField label="Status" value={STEPS.find(x => x.key === cur)?.title ?? "In progress"} />
             </div>
           </div>
 
@@ -241,7 +227,7 @@ function OrderDetail() {
                   {/* Proofs */}
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     {stepProofs.length === 0
-                      ? <EmptyProof />
+                      ? <EmptyProof label={step.proofLabel} />
                       : stepProofs.map((p) => <ProofCard key={p.id} proof={p} />)}
                   </div>
 
@@ -308,6 +294,22 @@ function OrderDetail() {
   );
 }
 
+function OrderNotFound({ orderId }: { orderId: string }) {
+  return (
+    <AppShell>
+      <div className="mx-auto max-w-md px-4 py-20 text-center">
+        <h1 className="font-display text-3xl">Order not found</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          We couldn't find order <span className="font-mono">{orderId}</span> in the demo orders saved on this device.
+        </p>
+        <Link to="/orders" className="mt-6 inline-flex rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+          Back to Orders
+        </Link>
+      </div>
+    </AppShell>
+  );
+}
+
 // =================== Small UI pieces ===================
 
 function SummaryField({ label, value, sub }: { label: string; value: string; sub?: string }) {
@@ -356,10 +358,10 @@ function StepBadge({ status }: { status: "Completed" | "Current" | "Waiting" }) 
   return <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}>{status}</span>;
 }
 
-function EmptyProof() {
+function EmptyProof({ label }: { label: string }) {
   return (
     <div className="rounded-lg border border-dashed bg-muted/30 p-3 text-xs text-muted-foreground flex items-center gap-2">
-      <ImageIcon size={14} /> No proof uploaded yet
+      <ImageIcon size={14} /> Waiting for {label}
     </div>
   );
 }
@@ -440,7 +442,7 @@ function ActionBar({
       delivered: "Mark as Delivered",
     };
     return (
-      <div className="rounded-xl border bg-card p-4 grid sm:grid-cols-2 gap-3">
+      <div className="rounded-xl border bg-card p-4 grid sm:grid-cols-3 gap-3">
         <button
           onClick={onSupplierUpload}
           className="border rounded-md py-3 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-muted"
@@ -457,6 +459,9 @@ function ActionBar({
         ) : (
           <div className="grid place-items-center text-xs text-muted-foreground">Waiting for buyer to confirm delivery</div>
         )}
+        <Link to="/messages" className="border rounded-md py-3 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-muted">
+          <MessageSquare size={16} /> Message Buyer
+        </Link>
       </div>
     );
   }
