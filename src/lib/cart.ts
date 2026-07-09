@@ -253,13 +253,9 @@ function nowLabel() {
 export function ensureDemoOrder(id: string): DemoOrder | undefined {
   const existing = getDemoOrder(id);
   if (existing) return existing;
-  const mock = products.length ? undefined : undefined; // avoid unused import warning
-  void mock;
-  // dynamic import-safe access — mock orders live in mock-data
-  const { orders: MOCK_ORDERS, productById: pById } = require("./mock-data") as typeof import("./mock-data");
   const o = MOCK_ORDERS.find((x) => x.id === id);
   if (!o) return undefined;
-  const p = pById(o.items[0].productId);
+  const p = productById(o.items[0].productId);
   const hydrated: DemoOrder = {
     id: o.id,
     buyer: o.buyer,
