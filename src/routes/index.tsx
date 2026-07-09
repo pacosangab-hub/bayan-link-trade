@@ -30,7 +30,7 @@ function Home() {
               <span className="text-[oklch(0.95_0.12_85)]">Sell wider.</span>
             </h1>
             <p className="mt-5 text-lg text-white/90 max-w-lg">
-              PSG connects Philippine manufacturers, farmers, and distributors directly with restaurants, hotels, pharmacies, and sari-sari stores — with escrow on every order.
+              PSG Supply Gateway connects business buyers with trusted manufacturers, wholesalers, distributors, and logistics partners to source products, request custom quotes, manage orders, and pay safely through escrow.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link to="/products" className="bg-white text-primary font-semibold px-6 py-3 rounded-md hover:bg-white/95 inline-flex items-center gap-2">
