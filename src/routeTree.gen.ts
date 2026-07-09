@@ -25,6 +25,7 @@ import { Route as RfqIndexRouteImport } from './routes/rfq.index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as OffersIndexRouteImport } from './routes/offers.index'
 import { Route as CustomRequestsIndexRouteImport } from './routes/custom-requests.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
 import { Route as RfqNewRouteImport } from './routes/rfq.new'
 import { Route as RfqIdRouteImport } from './routes/rfq.$id'
@@ -119,6 +120,11 @@ const CustomRequestsIndexRoute = CustomRequestsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => CustomRequestsRoute,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const SuppliersIdRoute = SuppliersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -210,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/products/': typeof ProductsIndexRoute
@@ -218,7 +225,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/docs': typeof DocsRoute
@@ -237,6 +243,7 @@ export interface FileRoutesByTo {
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
+  '/admin': typeof AdminIndexRoute
   '/custom-requests': typeof CustomRequestsIndexRoute
   '/offers': typeof OffersIndexRoute
   '/products': typeof ProductsIndexRoute
@@ -269,6 +276,7 @@ export interface FileRoutesById {
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
   '/suppliers/$id': typeof SuppliersIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/products/': typeof ProductsIndexRoute
@@ -302,6 +310,7 @@ export interface FileRouteTypes {
     | '/rfq/$id'
     | '/rfq/new'
     | '/suppliers/$id'
+    | '/admin/'
     | '/custom-requests/'
     | '/offers/'
     | '/products/'
@@ -310,7 +319,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/auth'
     | '/checkout'
     | '/docs'
@@ -329,6 +337,7 @@ export interface FileRouteTypes {
     | '/rfq/$id'
     | '/rfq/new'
     | '/suppliers/$id'
+    | '/admin'
     | '/custom-requests'
     | '/offers'
     | '/products'
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/rfq/$id'
     | '/rfq/new'
     | '/suppliers/$id'
+    | '/admin/'
     | '/custom-requests/'
     | '/offers/'
     | '/products/'
@@ -500,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CustomRequestsIndexRouteImport
       parentRoute: typeof CustomRequestsRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/suppliers/$id': {
       id: '/suppliers/$id'
       path: '/$id'
@@ -596,10 +613,12 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminSafetyRoute: typeof AdminSafetyRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminSafetyRoute: AdminSafetyRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
