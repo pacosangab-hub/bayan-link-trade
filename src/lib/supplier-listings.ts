@@ -76,27 +76,39 @@ export const UNIT_OPTIONS = [
 ];
 
 const listeners = new Set<() => void>();
-function emit() { listeners.forEach((l) => l()); }
-function subscribe(cb: () => void) { listeners.add(cb); return () => listeners.delete(cb); }
+let cache: SupplierListing[] | null = null;
+const EMPTY: SupplierListing[] = [];
 
-function read(): SupplierListing[] {
-  if (typeof window === "undefined") return [];
+function loadFromStorage(): SupplierListing[] {
+  if (typeof window === "undefined") return EMPTY;
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) return JSON.parse(raw);
   } catch {}
   const seed = seedListings();
-  localStorage.setItem(KEY, JSON.stringify(seed));
+  try { localStorage.setItem(KEY, JSON.stringify(seed)); } catch {}
   return seed;
 }
+
+function read(): SupplierListing[] {
+  if (typeof window === "undefined") return EMPTY;
+  if (cache === null) cache = loadFromStorage();
+  return cache;
+}
+
+function emit() { listeners.forEach((l) => l()); }
+function subscribe(cb: () => void) { listeners.add(cb); return () => listeners.delete(cb); }
+
 function write(list: SupplierListing[]) {
-  localStorage.setItem(KEY, JSON.stringify(list));
+  cache = list;
+  try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {}
   emit();
 }
 
 export function useSupplierListings(): SupplierListing[] {
-  return useSyncExternalStore(subscribe, read, () => []);
+  return useSyncExternalStore(subscribe, read, () => EMPTY);
 }
+
 
 export function getListing(id: string) {
   return read().find((l) => l.id === id);
