@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
+import { Component, type ReactNode } from "react";
 
 export const Route = createFileRoute("/supplier-portal")({
   head: () => ({ meta: [{ title: "Supplier Portal — PSG" }] }),
@@ -8,12 +9,10 @@ export const Route = createFileRoute("/supplier-portal")({
 
 const tabs = [
   { to: "/supplier-portal", label: "Dashboard", exact: true },
-  { to: "/supplier-portal/products", label: "My Products" },
+  { to: "/supplier-portal/products", label: "My Listings" },
   { to: "/supplier-portal/products/new", label: "Add Product" },
-  { to: "/supplier-portal/products/bulk-upload", label: "Bulk Upload" },
   { to: "/supplier-portal/quote-requests", label: "Quote Requests" },
   { to: "/supplier-portal/orders", label: "Orders" },
-  { to: "/supplier-portal/messages", label: "Messages" },
   { to: "/supplier-portal/verification", label: "Verification" },
 ];
 
@@ -24,9 +23,9 @@ function SupplierPortalLayout() {
       <div className="bg-muted/40 border-b">
         <div className="mx-auto max-w-7xl px-4 pt-6">
           <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Supplier portal</div>
-          <h1 className="font-display text-3xl">Supplier Portal</h1>
+          <h1 className="font-display text-3xl">Manage Your Supplier Listings</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage your products, quote requests, orders, and verification.
+            Add products, receive quote requests, and turn buyer inquiries into orders.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
             <span className="font-semibold">Bulacan Grain & Rice Mills Inc.</span>
@@ -61,7 +60,6 @@ function SupplierPortalLayout() {
   );
 }
 
-import { Component, type ReactNode } from "react";
 class ErrorBoundary extends Component<{ children: ReactNode }, { err: Error | null }> {
   state = { err: null as Error | null };
   static getDerivedStateFromError(err: Error) { return { err }; }
