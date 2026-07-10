@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { Component, type ReactNode } from "react";
+import { ShieldCheck, Plus, Upload, MessageSquare } from "lucide-react";
 
 export const Route = createFileRoute("/supplier-portal")({
   head: () => ({ meta: [{ title: "Supplier Portal — PSG" }] }),
@@ -9,12 +10,12 @@ export const Route = createFileRoute("/supplier-portal")({
 
 const tabs = [
   { to: "/supplier-portal", label: "Dashboard", exact: true },
-  { to: "/supplier-portal/products", label: "My Listings" },
-  { to: "/supplier-portal/products/new", label: "Add Product" },
+  { to: "/supplier-portal/products", label: "Listings" },
   { to: "/supplier-portal/quote-requests", label: "Quote Requests" },
   { to: "/supplier-portal/orders", label: "Orders" },
-  { to: "/supplier-portal/verification", label: "Verification" },
 ];
+
+const VERIFIED = true;
 
 function SupplierPortalLayout() {
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -22,17 +23,41 @@ function SupplierPortalLayout() {
     <AppShell>
       <div className="bg-muted/40 border-b">
         <div className="mx-auto max-w-7xl px-4 pt-6">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Supplier portal</div>
-          <h1 className="font-display text-3xl">Manage Your Supplier Listings</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Add products, receive quote requests, and turn buyer inquiries into orders.
-          </p>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-            <span className="font-semibold">Bulacan Grain & Rice Mills Inc.</span>
-            <span className="chip chip-verified">Verified Supplier</span>
-            <span className="chip chip-gold">Gold Supplier</span>
-            <span className="text-muted-foreground">· Malolos, Bulacan</span>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Supplier</div>
+              <h1 className="font-display text-3xl">Supplier Portal</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Add products, reply to buyers, and manage orders.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+                <span className="font-semibold">Bulacan Grain & Rice Mills Inc.</span>
+                <span className="chip chip-verified">Verified Supplier</span>
+                <span className="chip chip-gold">Gold Supplier</span>
+                <span className="text-muted-foreground">· Malolos, Bulacan</span>
+              </div>
+            </div>
+            <Link
+              to="/supplier-portal/verification"
+              className="inline-flex items-center gap-2 rounded-md border bg-card px-3 py-2 text-xs font-semibold hover:border-primary/60"
+            >
+              <ShieldCheck size={14} className={VERIFIED ? "text-success" : "text-amber-600"} />
+              Verification: {VERIFIED ? "Complete" : "Needs documents"}
+            </Link>
           </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link to="/supplier-portal/products/new" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-semibold">
+              <Plus size={14} /> Add Product
+            </Link>
+            <Link to="/supplier-portal/products/bulk-upload" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
+              <Upload size={14} /> Bulk Upload
+            </Link>
+            <Link to="/supplier-portal/quote-requests" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
+              <MessageSquare size={14} /> View Quote Requests
+            </Link>
+          </div>
+
           <nav className="mt-4 flex gap-1 overflow-x-auto text-sm -mb-px">
             {tabs.map((t) => {
               const active = t.exact ? path === t.to : path.startsWith(t.to);
