@@ -50,9 +50,6 @@ function SupplierPortalLayout() {
             <Link to="/supplier-portal/products/new" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-semibold">
               <Plus size={14} /> Add Product
             </Link>
-            <Link to="/supplier-portal/products/bulk-upload" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
-              <Upload size={14} /> Bulk Upload
-            </Link>
             <Link to="/supplier-portal/quote-requests" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
               <MessageSquare size={14} /> View Quote Requests
             </Link>
