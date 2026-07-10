@@ -140,17 +140,20 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         {open && (
-          <div className="md:hidden border-t px-4 py-3 space-y-1">
-            {[...navLinks, ...dashboards].map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                onClick={() => setOpen(false)}
-                className="block py-2 text-sm font-medium"
-              >
-                {l.label}
-              </Link>
-            ))}
+          <div className="md:hidden border-t px-4 py-3 space-y-3">
+            <GlobalSearch />
+            <div className="space-y-1">
+              {[...navLinks, ...dashboards].map((l) => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className="block py-2 text-sm font-medium"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </header>
