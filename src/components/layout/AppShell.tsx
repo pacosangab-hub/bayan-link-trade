@@ -1,10 +1,11 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { MessageSquare, Search, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
+import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
 import { useSession, signOut } from "@/lib/auth";
 import { NotificationBell } from "./NotificationBell";
 import { RoleSwitcher } from "./RoleSwitcher";
+import { GlobalSearch } from "@/components/search/GlobalSearch";
 
 
 const navLinks = [

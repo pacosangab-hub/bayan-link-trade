@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as SupplierPortalRouteImport } from './routes/supplier-portal'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as RfqRouteImport } from './routes/rfq'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as OrdersRouteImport } from './routes/orders'
@@ -59,6 +60,11 @@ const SuppliersRoute = SuppliersRouteImport.update({
 const SupplierPortalRoute = SupplierPortalRouteImport.update({
   id: '/supplier-portal',
   path: '/supplier-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RfqRoute = RfqRouteImport.update({
@@ -274,6 +280,7 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
+  '/search': typeof SearchRoute
   '/supplier-portal': typeof SupplierPortalRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/admin/product-review': typeof AdminProductReviewRoute
@@ -311,6 +318,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
+  '/search': typeof SearchRoute
   '/suppliers': typeof SuppliersRouteWithChildren
   '/admin/product-review': typeof AdminProductReviewRoute
   '/admin/safety': typeof AdminSafetyRoute
@@ -354,6 +362,7 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
+  '/search': typeof SearchRoute
   '/supplier-portal': typeof SupplierPortalRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/admin/product-review': typeof AdminProductReviewRoute
@@ -399,6 +408,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/products'
     | '/rfq'
+    | '/search'
     | '/supplier-portal'
     | '/suppliers'
     | '/admin/product-review'
@@ -436,6 +446,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/docs'
     | '/messages'
+    | '/search'
     | '/suppliers'
     | '/admin/product-review'
     | '/admin/safety'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/products'
     | '/rfq'
+    | '/search'
     | '/supplier-portal'
     | '/suppliers'
     | '/admin/product-review'
@@ -522,6 +534,7 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   RfqRoute: typeof RfqRouteWithChildren
+  SearchRoute: typeof SearchRoute
   SupplierPortalRoute: typeof SupplierPortalRouteWithChildren
   SuppliersRoute: typeof SuppliersRouteWithChildren
   DashboardBuyerRoute: typeof DashboardBuyerRoute
@@ -544,6 +557,13 @@ declare module '@tanstack/react-router' {
       path: '/supplier-portal'
       fullPath: '/supplier-portal'
       preLoaderRoute: typeof SupplierPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rfq': {
@@ -966,6 +986,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   RfqRoute: RfqRouteWithChildren,
+  SearchRoute: SearchRoute,
   SupplierPortalRoute: SupplierPortalRouteWithChildren,
   SuppliersRoute: SuppliersRouteWithChildren,
   DashboardBuyerRoute: DashboardBuyerRoute,
