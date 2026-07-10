@@ -1,10 +1,11 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { MessageSquare, Search, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
+import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
 import { useSession, signOut } from "@/lib/auth";
 import { NotificationBell } from "./NotificationBell";
 import { RoleSwitcher } from "./RoleSwitcher";
+import { GlobalSearch } from "@/components/search/GlobalSearch";
 
 
 const navLinks = [
@@ -68,21 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
 
           <div className="hidden md:flex flex-1 max-w-2xl">
-            <div className="flex w-full border-2 border-primary rounded-md overflow-hidden">
-              <select className="px-3 text-sm bg-muted border-r outline-none">
-                <option>All</option>
-                <option>Products</option>
-                <option>Suppliers</option>
-                <option>RFQs</option>
-              </select>
-              <input
-                className="flex-1 px-3 py-2 text-sm outline-none"
-                placeholder="Search rice, cement, paracetamol, tilapia…"
-              />
-              <button className="bg-primary text-primary-foreground px-5 grid place-items-center">
-                <Search size={18} />
-              </button>
-            </div>
+            <GlobalSearch />
           </div>
 
           <div className="ml-auto flex items-center gap-1 md:gap-2">
@@ -153,17 +140,20 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         {open && (
-          <div className="md:hidden border-t px-4 py-3 space-y-1">
-            {[...navLinks, ...dashboards].map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                onClick={() => setOpen(false)}
-                className="block py-2 text-sm font-medium"
-              >
-                {l.label}
-              </Link>
-            ))}
+          <div className="md:hidden border-t px-4 py-3 space-y-3">
+            <GlobalSearch />
+            <div className="space-y-1">
+              {[...navLinks, ...dashboards].map((l) => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className="block py-2 text-sm font-medium"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </header>
