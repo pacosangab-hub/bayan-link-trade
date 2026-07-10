@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as SupplierPortalRouteImport } from './routes/supplier-portal'
 import { Route as RfqRouteImport } from './routes/rfq'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as OrdersRouteImport } from './routes/orders'
@@ -21,6 +22,7 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SupplierPortalIndexRouteImport } from './routes/supplier-portal.index'
 import { Route as RfqIndexRouteImport } from './routes/rfq.index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
@@ -39,11 +41,20 @@ import { Route as DashboardSupplierRouteImport } from './routes/dashboard.suppli
 import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
 import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
 import { Route as AdminSafetyRouteImport } from './routes/admin.safety'
+import { Route as AdminProductReviewRouteImport } from './routes/admin.product-review'
+import { Route as SupplierPortalProductsIndexRouteImport } from './routes/supplier-portal.products.index'
+import { Route as SupplierPortalProductsNewRouteImport } from './routes/supplier-portal.products.new'
+import { Route as SupplierPortalProductsBulkUploadRouteImport } from './routes/supplier-portal.products.bulk-upload'
 import { Route as OffersIdCheckoutRouteImport } from './routes/offers.$id.checkout'
 
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
   path: '/suppliers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupplierPortalRoute = SupplierPortalRouteImport.update({
+  id: '/supplier-portal',
+  path: '/supplier-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RfqRoute = RfqRouteImport.update({
@@ -100,6 +111,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SupplierPortalIndexRoute = SupplierPortalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SupplierPortalRoute,
 } as any)
 const RfqIndexRoute = RfqIndexRouteImport.update({
   id: '/',
@@ -191,6 +207,29 @@ const AdminSafetyRoute = AdminSafetyRouteImport.update({
   path: '/safety',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminProductReviewRoute = AdminProductReviewRouteImport.update({
+  id: '/product-review',
+  path: '/product-review',
+  getParentRoute: () => AdminRoute,
+} as any)
+const SupplierPortalProductsIndexRoute =
+  SupplierPortalProductsIndexRouteImport.update({
+    id: '/products/',
+    path: '/products/',
+    getParentRoute: () => SupplierPortalRoute,
+  } as any)
+const SupplierPortalProductsNewRoute =
+  SupplierPortalProductsNewRouteImport.update({
+    id: '/products/new',
+    path: '/products/new',
+    getParentRoute: () => SupplierPortalRoute,
+  } as any)
+const SupplierPortalProductsBulkUploadRoute =
+  SupplierPortalProductsBulkUploadRouteImport.update({
+    id: '/products/bulk-upload',
+    path: '/products/bulk-upload',
+    getParentRoute: () => SupplierPortalRoute,
+  } as any)
 const OffersIdCheckoutRoute = OffersIdCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -209,7 +248,9 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
+  '/supplier-portal': typeof SupplierPortalRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
+  '/admin/product-review': typeof AdminProductReviewRoute
   '/admin/safety': typeof AdminSafetyRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -228,7 +269,11 @@ export interface FileRoutesByFullPath {
   '/orders/': typeof OrdersIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
+  '/supplier-portal/': typeof SupplierPortalIndexRoute
   '/offers/$id/checkout': typeof OffersIdCheckoutRoute
+  '/supplier-portal/products/bulk-upload': typeof SupplierPortalProductsBulkUploadRoute
+  '/supplier-portal/products/new': typeof SupplierPortalProductsNewRoute
+  '/supplier-portal/products/': typeof SupplierPortalProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -237,6 +282,7 @@ export interface FileRoutesByTo {
   '/docs': typeof DocsRoute
   '/messages': typeof MessagesRoute
   '/suppliers': typeof SuppliersRouteWithChildren
+  '/admin/product-review': typeof AdminProductReviewRoute
   '/admin/safety': typeof AdminSafetyRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -255,7 +301,11 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersIndexRoute
   '/products': typeof ProductsIndexRoute
   '/rfq': typeof RfqIndexRoute
+  '/supplier-portal': typeof SupplierPortalIndexRoute
   '/offers/$id/checkout': typeof OffersIdCheckoutRoute
+  '/supplier-portal/products/bulk-upload': typeof SupplierPortalProductsBulkUploadRoute
+  '/supplier-portal/products/new': typeof SupplierPortalProductsNewRoute
+  '/supplier-portal/products': typeof SupplierPortalProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -270,7 +320,9 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
+  '/supplier-portal': typeof SupplierPortalRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
+  '/admin/product-review': typeof AdminProductReviewRoute
   '/admin/safety': typeof AdminSafetyRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -289,7 +341,11 @@ export interface FileRoutesById {
   '/orders/': typeof OrdersIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
+  '/supplier-portal/': typeof SupplierPortalIndexRoute
   '/offers/$id/checkout': typeof OffersIdCheckoutRoute
+  '/supplier-portal/products/bulk-upload': typeof SupplierPortalProductsBulkUploadRoute
+  '/supplier-portal/products/new': typeof SupplierPortalProductsNewRoute
+  '/supplier-portal/products/': typeof SupplierPortalProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -305,7 +361,9 @@ export interface FileRouteTypes {
     | '/orders'
     | '/products'
     | '/rfq'
+    | '/supplier-portal'
     | '/suppliers'
+    | '/admin/product-review'
     | '/admin/safety'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
@@ -324,7 +382,11 @@ export interface FileRouteTypes {
     | '/orders/'
     | '/products/'
     | '/rfq/'
+    | '/supplier-portal/'
     | '/offers/$id/checkout'
+    | '/supplier-portal/products/bulk-upload'
+    | '/supplier-portal/products/new'
+    | '/supplier-portal/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -333,6 +395,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/messages'
     | '/suppliers'
+    | '/admin/product-review'
     | '/admin/safety'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
@@ -351,7 +414,11 @@ export interface FileRouteTypes {
     | '/orders'
     | '/products'
     | '/rfq'
+    | '/supplier-portal'
     | '/offers/$id/checkout'
+    | '/supplier-portal/products/bulk-upload'
+    | '/supplier-portal/products/new'
+    | '/supplier-portal/products'
   id:
     | '__root__'
     | '/'
@@ -365,7 +432,9 @@ export interface FileRouteTypes {
     | '/orders'
     | '/products'
     | '/rfq'
+    | '/supplier-portal'
     | '/suppliers'
+    | '/admin/product-review'
     | '/admin/safety'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
@@ -384,7 +453,11 @@ export interface FileRouteTypes {
     | '/orders/'
     | '/products/'
     | '/rfq/'
+    | '/supplier-portal/'
     | '/offers/$id/checkout'
+    | '/supplier-portal/products/bulk-upload'
+    | '/supplier-portal/products/new'
+    | '/supplier-portal/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -399,6 +472,7 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   RfqRoute: typeof RfqRouteWithChildren
+  SupplierPortalRoute: typeof SupplierPortalRouteWithChildren
   SuppliersRoute: typeof SuppliersRouteWithChildren
   DashboardBuyerRoute: typeof DashboardBuyerRoute
   DashboardSupplierRoute: typeof DashboardSupplierRoute
@@ -413,6 +487,13 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/suppliers'
       preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/supplier-portal': {
+      id: '/supplier-portal'
+      path: '/supplier-portal'
+      fullPath: '/supplier-portal'
+      preLoaderRoute: typeof SupplierPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rfq': {
@@ -491,6 +572,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/supplier-portal/': {
+      id: '/supplier-portal/'
+      path: '/'
+      fullPath: '/supplier-portal/'
+      preLoaderRoute: typeof SupplierPortalIndexRouteImport
+      parentRoute: typeof SupplierPortalRoute
     }
     '/rfq/': {
       id: '/rfq/'
@@ -618,6 +706,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSafetyRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/product-review': {
+      id: '/admin/product-review'
+      path: '/product-review'
+      fullPath: '/admin/product-review'
+      preLoaderRoute: typeof AdminProductReviewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/supplier-portal/products/': {
+      id: '/supplier-portal/products/'
+      path: '/products'
+      fullPath: '/supplier-portal/products/'
+      preLoaderRoute: typeof SupplierPortalProductsIndexRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
+    '/supplier-portal/products/new': {
+      id: '/supplier-portal/products/new'
+      path: '/products/new'
+      fullPath: '/supplier-portal/products/new'
+      preLoaderRoute: typeof SupplierPortalProductsNewRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
+    '/supplier-portal/products/bulk-upload': {
+      id: '/supplier-portal/products/bulk-upload'
+      path: '/products/bulk-upload'
+      fullPath: '/supplier-portal/products/bulk-upload'
+      preLoaderRoute: typeof SupplierPortalProductsBulkUploadRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
     '/offers/$id/checkout': {
       id: '/offers/$id/checkout'
       path: '/checkout'
@@ -629,11 +745,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminProductReviewRoute: typeof AdminProductReviewRoute
   AdminSafetyRoute: typeof AdminSafetyRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminProductReviewRoute: AdminProductReviewRoute,
   AdminSafetyRoute: AdminSafetyRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -720,6 +838,24 @@ const RfqRouteChildren: RfqRouteChildren = {
 
 const RfqRouteWithChildren = RfqRoute._addFileChildren(RfqRouteChildren)
 
+interface SupplierPortalRouteChildren {
+  SupplierPortalIndexRoute: typeof SupplierPortalIndexRoute
+  SupplierPortalProductsBulkUploadRoute: typeof SupplierPortalProductsBulkUploadRoute
+  SupplierPortalProductsNewRoute: typeof SupplierPortalProductsNewRoute
+  SupplierPortalProductsIndexRoute: typeof SupplierPortalProductsIndexRoute
+}
+
+const SupplierPortalRouteChildren: SupplierPortalRouteChildren = {
+  SupplierPortalIndexRoute: SupplierPortalIndexRoute,
+  SupplierPortalProductsBulkUploadRoute: SupplierPortalProductsBulkUploadRoute,
+  SupplierPortalProductsNewRoute: SupplierPortalProductsNewRoute,
+  SupplierPortalProductsIndexRoute: SupplierPortalProductsIndexRoute,
+}
+
+const SupplierPortalRouteWithChildren = SupplierPortalRoute._addFileChildren(
+  SupplierPortalRouteChildren,
+)
+
 interface SuppliersRouteChildren {
   SuppliersIdRoute: typeof SuppliersIdRoute
 }
@@ -744,6 +880,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   RfqRoute: RfqRouteWithChildren,
+  SupplierPortalRoute: SupplierPortalRouteWithChildren,
   SuppliersRoute: SuppliersRouteWithChildren,
   DashboardBuyerRoute: DashboardBuyerRoute,
   DashboardSupplierRoute: DashboardSupplierRoute,

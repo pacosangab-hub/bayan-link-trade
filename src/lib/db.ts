@@ -9,6 +9,7 @@ import {
   orders as MOCK_ORDERS,
 } from "@/lib/mock-data";
 import { getAllRfqs, getRfq } from "@/lib/rfq-store";
+import { useSupplierListings, listingToProduct } from "@/lib/supplier-listings";
 import type { Product, Supplier, RFQ } from "@/lib/mock-data";
 
 // ---------- adapters (kept for backward-compat with any external imports)
@@ -36,14 +37,21 @@ function supplierAsBusiness(s: Supplier) {
 
 // ---------- queries
 export function useProducts() {
+  const listings = useSupplierListings();
+  const uploaded = listings
+    .filter((l) => l.status === "Active")
+    .map((l) => {
+      const p = listingToProduct(l) as Product;
+      const s = MOCK_SUPPLIERS.find((x) => x.id === p.supplierId);
+      return { product: p, supplier: s ? supplierAsBusiness(s) : null };
+    });
+  const base = MOCK_PRODUCTS.map((product) => {
+    const s = MOCK_SUPPLIERS.find((x) => x.id === product.supplierId);
+    return { product, supplier: s ? supplierAsBusiness(s) : null };
+  });
   return useQuery({
-    queryKey: ["products"],
-    queryFn: async () => {
-      return MOCK_PRODUCTS.map((product) => {
-        const s = MOCK_SUPPLIERS.find((x) => x.id === product.supplierId);
-        return { product, supplier: s ? supplierAsBusiness(s) : null };
-      });
-    },
+    queryKey: ["products", listings.length, listings.map((l) => l.status).join(",")],
+    queryFn: async () => [...uploaded, ...base],
   });
 }
 
