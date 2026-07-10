@@ -69,21 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
 
           <div className="hidden md:flex flex-1 max-w-2xl">
-            <div className="flex w-full border-2 border-primary rounded-md overflow-hidden">
-              <select className="px-3 text-sm bg-muted border-r outline-none">
-                <option>All</option>
-                <option>Products</option>
-                <option>Suppliers</option>
-                <option>RFQs</option>
-              </select>
-              <input
-                className="flex-1 px-3 py-2 text-sm outline-none"
-                placeholder="Search rice, cement, paracetamol, tilapia…"
-              />
-              <button className="bg-primary text-primary-foreground px-5 grid place-items-center">
-                <Search size={18} />
-              </button>
-            </div>
+            <GlobalSearch />
           </div>
 
           <div className="ml-auto flex items-center gap-1 md:gap-2">
