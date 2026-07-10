@@ -49,7 +49,6 @@ import { Route as AdminSafetyRouteImport } from './routes/admin.safety'
 import { Route as AdminProductReviewRouteImport } from './routes/admin.product-review'
 import { Route as SupplierPortalProductsIndexRouteImport } from './routes/supplier-portal.products.index'
 import { Route as SupplierPortalProductsNewRouteImport } from './routes/supplier-portal.products.new'
-import { Route as SupplierPortalProductsBulkUploadRouteImport } from './routes/supplier-portal.products.bulk-upload'
 import { Route as OffersIdCheckoutRouteImport } from './routes/offers.$id.checkout'
 
 const SuppliersRoute = SuppliersRouteImport.update({
@@ -256,12 +255,6 @@ const SupplierPortalProductsNewRoute =
     path: '/products/new',
     getParentRoute: () => SupplierPortalRoute,
   } as any)
-const SupplierPortalProductsBulkUploadRoute =
-  SupplierPortalProductsBulkUploadRouteImport.update({
-    id: '/products/bulk-upload',
-    path: '/products/bulk-upload',
-    getParentRoute: () => SupplierPortalRoute,
-  } as any)
 const OffersIdCheckoutRoute = OffersIdCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -308,7 +301,6 @@ export interface FileRoutesByFullPath {
   '/rfq/': typeof RfqIndexRoute
   '/supplier-portal/': typeof SupplierPortalIndexRoute
   '/offers/$id/checkout': typeof OffersIdCheckoutRoute
-  '/supplier-portal/products/bulk-upload': typeof SupplierPortalProductsBulkUploadRoute
   '/supplier-portal/products/new': typeof SupplierPortalProductsNewRoute
   '/supplier-portal/products/': typeof SupplierPortalProductsIndexRoute
 }
@@ -345,7 +337,6 @@ export interface FileRoutesByTo {
   '/rfq': typeof RfqIndexRoute
   '/supplier-portal': typeof SupplierPortalIndexRoute
   '/offers/$id/checkout': typeof OffersIdCheckoutRoute
-  '/supplier-portal/products/bulk-upload': typeof SupplierPortalProductsBulkUploadRoute
   '/supplier-portal/products/new': typeof SupplierPortalProductsNewRoute
   '/supplier-portal/products': typeof SupplierPortalProductsIndexRoute
 }
@@ -390,7 +381,6 @@ export interface FileRoutesById {
   '/rfq/': typeof RfqIndexRoute
   '/supplier-portal/': typeof SupplierPortalIndexRoute
   '/offers/$id/checkout': typeof OffersIdCheckoutRoute
-  '/supplier-portal/products/bulk-upload': typeof SupplierPortalProductsBulkUploadRoute
   '/supplier-portal/products/new': typeof SupplierPortalProductsNewRoute
   '/supplier-portal/products/': typeof SupplierPortalProductsIndexRoute
 }
@@ -436,7 +426,6 @@ export interface FileRouteTypes {
     | '/rfq/'
     | '/supplier-portal/'
     | '/offers/$id/checkout'
-    | '/supplier-portal/products/bulk-upload'
     | '/supplier-portal/products/new'
     | '/supplier-portal/products/'
   fileRoutesByTo: FileRoutesByTo
@@ -473,7 +462,6 @@ export interface FileRouteTypes {
     | '/rfq'
     | '/supplier-portal'
     | '/offers/$id/checkout'
-    | '/supplier-portal/products/bulk-upload'
     | '/supplier-portal/products/new'
     | '/supplier-portal/products'
   id:
@@ -517,7 +505,6 @@ export interface FileRouteTypes {
     | '/rfq/'
     | '/supplier-portal/'
     | '/offers/$id/checkout'
-    | '/supplier-portal/products/bulk-upload'
     | '/supplier-portal/products/new'
     | '/supplier-portal/products/'
   fileRoutesById: FileRoutesById
@@ -825,13 +812,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupplierPortalProductsNewRouteImport
       parentRoute: typeof SupplierPortalRoute
     }
-    '/supplier-portal/products/bulk-upload': {
-      id: '/supplier-portal/products/bulk-upload'
-      path: '/products/bulk-upload'
-      fullPath: '/supplier-portal/products/bulk-upload'
-      preLoaderRoute: typeof SupplierPortalProductsBulkUploadRouteImport
-      parentRoute: typeof SupplierPortalRoute
-    }
     '/offers/$id/checkout': {
       id: '/offers/$id/checkout'
       path: '/checkout'
@@ -942,7 +922,6 @@ interface SupplierPortalRouteChildren {
   SupplierPortalQuoteRequestsRoute: typeof SupplierPortalQuoteRequestsRoute
   SupplierPortalVerificationRoute: typeof SupplierPortalVerificationRoute
   SupplierPortalIndexRoute: typeof SupplierPortalIndexRoute
-  SupplierPortalProductsBulkUploadRoute: typeof SupplierPortalProductsBulkUploadRoute
   SupplierPortalProductsNewRoute: typeof SupplierPortalProductsNewRoute
   SupplierPortalProductsIndexRoute: typeof SupplierPortalProductsIndexRoute
 }
@@ -953,7 +932,6 @@ const SupplierPortalRouteChildren: SupplierPortalRouteChildren = {
   SupplierPortalQuoteRequestsRoute: SupplierPortalQuoteRequestsRoute,
   SupplierPortalVerificationRoute: SupplierPortalVerificationRoute,
   SupplierPortalIndexRoute: SupplierPortalIndexRoute,
-  SupplierPortalProductsBulkUploadRoute: SupplierPortalProductsBulkUploadRoute,
   SupplierPortalProductsNewRoute: SupplierPortalProductsNewRoute,
   SupplierPortalProductsIndexRoute: SupplierPortalProductsIndexRoute,
 }
@@ -997,13 +975,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

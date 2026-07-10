@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { duplicateListing, updateStatus, useSupplierListings } from "@/lib/supplier-listings";
 import { StatusChip } from "./supplier-portal.index";
-import { Plus, Upload } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/supplier-portal/products/")({
   component: MyListings,
@@ -16,9 +16,6 @@ function MyListings() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-semibold text-lg">Listings ({listings.length})</h2>
         <div className="flex gap-2">
-          <Link to="/supplier-portal/products/bulk-upload" className="inline-flex items-center gap-2 border px-3 py-2 rounded-md text-sm font-semibold">
-            <Upload size={14} /> Bulk Upload
-          </Link>
           <Link to="/supplier-portal/products/new" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-semibold">
             <Plus size={14} /> Add Product
           </Link>

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSupplierListings } from "@/lib/supplier-listings";
-import { Plus, Upload, MessageSquare, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plus, MessageSquare, ArrowRight, AlertCircle, CheckCircle2, ListChecks } from "lucide-react";
 import { orders, rfqs } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/supplier-portal/")({
@@ -33,11 +33,11 @@ function PortalDashboard() {
           primary
         />
         <ActionCard
-          to="/supplier-portal/products/bulk-upload"
-          icon={<Upload size={22} />}
-          title="Bulk Upload"
-          desc="Paste or upload many products at once."
-          cta="Bulk Upload"
+          to="/supplier-portal/products"
+          icon={<ListChecks size={22} />}
+          title="Manage Listings"
+          desc="Edit, duplicate, or pause your products."
+          cta="View Listings"
         />
         <ActionCard
           to="/supplier-portal/quote-requests"
