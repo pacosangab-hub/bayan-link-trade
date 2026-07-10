@@ -10,10 +10,11 @@ const tabs = [
   { to: "/supplier-portal", label: "Dashboard", exact: true },
   { to: "/supplier-portal/products", label: "My Products" },
   { to: "/supplier-portal/products/new", label: "Add Product" },
-  { to: "/orders", label: "Orders" },
-  { to: "/messages", label: "Messages" },
-  { to: "/offers", label: "Offers" },
-  { to: "/onboarding/supplier", label: "Verification" },
+  { to: "/supplier-portal/products/bulk-upload", label: "Bulk Upload" },
+  { to: "/supplier-portal/quote-requests", label: "Quote Requests" },
+  { to: "/supplier-portal/orders", label: "Orders" },
+  { to: "/supplier-portal/messages", label: "Messages" },
+  { to: "/supplier-portal/verification", label: "Verification" },
 ];
 
 function SupplierPortalLayout() {
