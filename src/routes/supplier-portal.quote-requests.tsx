@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { rfqs, formatPhp } from "@/lib/mock-data";
+import { rfqs } from "@/lib/mock-data";
 import { MessageSquare, Send } from "lucide-react";
 
 export const Route = createFileRoute("/supplier-portal/quote-requests")({
@@ -35,7 +35,7 @@ function QuoteRequestsPage() {
           </div>
         ))}
       </div>
-      <div className="text-xs text-muted-foreground">Amounts shown in {formatPhp(1)}.replace(/\d/g,'')}} PHP.</div>
+      <div className="text-xs text-muted-foreground">Amounts shown in PHP.</div>
     </div>
   );
 }
