@@ -587,6 +587,72 @@ export type Database = {
           },
         ]
       }
+      disputes: {
+        Row: {
+          admin_decision: string | null
+          admin_user_id: string | null
+          created_at: string
+          description: string
+          dispute_status: Database["public"]["Enums"]["dispute_status"]
+          evidence_urls: string[]
+          id: string
+          opened_by_business_id: string | null
+          opened_by_user_id: string | null
+          order_id: string
+          reason: Database["public"]["Enums"]["dispute_reason"]
+          resolved_at: string | null
+          supplier_response: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_decision?: string | null
+          admin_user_id?: string | null
+          created_at?: string
+          description: string
+          dispute_status?: Database["public"]["Enums"]["dispute_status"]
+          evidence_urls?: string[]
+          id?: string
+          opened_by_business_id?: string | null
+          opened_by_user_id?: string | null
+          order_id: string
+          reason: Database["public"]["Enums"]["dispute_reason"]
+          resolved_at?: string | null
+          supplier_response?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_decision?: string | null
+          admin_user_id?: string | null
+          created_at?: string
+          description?: string
+          dispute_status?: Database["public"]["Enums"]["dispute_status"]
+          evidence_urls?: string[]
+          id?: string
+          opened_by_business_id?: string | null
+          opened_by_user_id?: string | null
+          order_id?: string
+          reason?: Database["public"]["Enums"]["dispute_reason"]
+          resolved_at?: string | null
+          supplier_response?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_opened_by_business_id_fkey"
+            columns: ["opened_by_business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escrow_transactions: {
         Row: {
           amount: number
@@ -842,6 +908,7 @@ export type Database = {
           message_type: Database["public"]["Enums"]["message_type"]
           related_offer_id: string | null
           related_order_id: string | null
+          related_request_id: string | null
           sender_business_id: string | null
           sender_user_id: string | null
         }
@@ -854,6 +921,7 @@ export type Database = {
           message_type?: Database["public"]["Enums"]["message_type"]
           related_offer_id?: string | null
           related_order_id?: string | null
+          related_request_id?: string | null
           sender_business_id?: string | null
           sender_user_id?: string | null
         }
@@ -866,6 +934,7 @@ export type Database = {
           message_type?: Database["public"]["Enums"]["message_type"]
           related_offer_id?: string | null
           related_order_id?: string | null
+          related_request_id?: string | null
           sender_business_id?: string | null
           sender_user_id?: string | null
         }
@@ -889,6 +958,13 @@ export type Database = {
             columns: ["related_order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_related_request_id_fkey"
+            columns: ["related_request_id"]
+            isOneToOne: false
+            referencedRelation: "custom_requests"
             referencedColumns: ["id"]
           },
           {
@@ -947,6 +1023,60 @@ export type Database = {
           },
         ]
       }
+      order_events: {
+        Row: {
+          created_at: string
+          created_by_business_id: string | null
+          created_by_user_id: string | null
+          description: string | null
+          event_at: string
+          event_type: Database["public"]["Enums"]["order_event_type"]
+          id: string
+          metadata: Json
+          order_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_business_id?: string | null
+          created_by_user_id?: string | null
+          description?: string | null
+          event_at?: string
+          event_type: Database["public"]["Enums"]["order_event_type"]
+          id?: string
+          metadata?: Json
+          order_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by_business_id?: string | null
+          created_by_user_id?: string | null
+          description?: string | null
+          event_at?: string
+          event_type?: Database["public"]["Enums"]["order_event_type"]
+          id?: string
+          metadata?: Json
+          order_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_events_created_by_business_id_fkey"
+            columns: ["created_by_business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -994,6 +1124,70 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_proofs: {
+        Row: {
+          created_at: string
+          event_id: string | null
+          file_name: string | null
+          file_url: string
+          id: string
+          notes: string | null
+          order_id: string
+          proof_type: Database["public"]["Enums"]["order_proof_type"]
+          uploaded_at: string
+          uploaded_by_business_id: string | null
+          uploaded_by_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_id?: string | null
+          file_name?: string | null
+          file_url: string
+          id?: string
+          notes?: string | null
+          order_id: string
+          proof_type: Database["public"]["Enums"]["order_proof_type"]
+          uploaded_at?: string
+          uploaded_by_business_id?: string | null
+          uploaded_by_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string | null
+          file_name?: string | null
+          file_url?: string
+          id?: string
+          notes?: string | null
+          order_id?: string
+          proof_type?: Database["public"]["Enums"]["order_proof_type"]
+          uploaded_at?: string
+          uploaded_by_business_id?: string | null
+          uploaded_by_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_proofs_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "order_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_proofs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_proofs_uploaded_by_business_id_fkey"
+            columns: ["uploaded_by_business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
         ]
@@ -1085,6 +1279,7 @@ export type Database = {
       products: {
         Row: {
           category_id: string | null
+          compliance_status: Database["public"]["Enums"]["product_compliance_status"]
           created_at: string
           description: string | null
           fixed_price: number | null
@@ -1093,15 +1288,19 @@ export type Database = {
           is_active: boolean
           is_featured: boolean
           lead_time: string | null
+          listing_status: Database["public"]["Enums"]["product_listing_status"]
           location: string | null
           minimum_order_quantity: number | null
           price_max: number | null
           price_min: number | null
+          price_type: Database["public"]["Enums"]["product_price_type"]
           rating: number | null
           region: string | null
+          service_regions: string[]
           slug: string | null
           stock_status: Database["public"]["Enums"]["product_stock_status"]
           supplier_business_id: string
+          tags: string[]
           title: string
           total_orders: number | null
           unit: string | null
@@ -1109,6 +1308,7 @@ export type Database = {
         }
         Insert: {
           category_id?: string | null
+          compliance_status?: Database["public"]["Enums"]["product_compliance_status"]
           created_at?: string
           description?: string | null
           fixed_price?: number | null
@@ -1117,15 +1317,19 @@ export type Database = {
           is_active?: boolean
           is_featured?: boolean
           lead_time?: string | null
+          listing_status?: Database["public"]["Enums"]["product_listing_status"]
           location?: string | null
           minimum_order_quantity?: number | null
           price_max?: number | null
           price_min?: number | null
+          price_type?: Database["public"]["Enums"]["product_price_type"]
           rating?: number | null
           region?: string | null
+          service_regions?: string[]
           slug?: string | null
           stock_status?: Database["public"]["Enums"]["product_stock_status"]
           supplier_business_id: string
+          tags?: string[]
           title: string
           total_orders?: number | null
           unit?: string | null
@@ -1133,6 +1337,7 @@ export type Database = {
         }
         Update: {
           category_id?: string | null
+          compliance_status?: Database["public"]["Enums"]["product_compliance_status"]
           created_at?: string
           description?: string | null
           fixed_price?: number | null
@@ -1141,15 +1346,19 @@ export type Database = {
           is_active?: boolean
           is_featured?: boolean
           lead_time?: string | null
+          listing_status?: Database["public"]["Enums"]["product_listing_status"]
           location?: string | null
           minimum_order_quantity?: number | null
           price_max?: number | null
           price_min?: number | null
+          price_type?: Database["public"]["Enums"]["product_price_type"]
           rating?: number | null
           region?: string | null
+          service_regions?: string[]
           slug?: string | null
           stock_status?: Database["public"]["Enums"]["product_stock_status"]
           supplier_business_id?: string
+          tags?: string[]
           title?: string
           total_orders?: number | null
           unit?: string | null
@@ -1401,6 +1610,47 @@ export type Database = {
           },
         ]
       }
+      search_logs: {
+        Row: {
+          business_id: string | null
+          clicked_result_id: string | null
+          clicked_result_type: string | null
+          created_at: string
+          filters: Json
+          id: string
+          query: string | null
+          user_id: string | null
+        }
+        Insert: {
+          business_id?: string | null
+          clicked_result_id?: string | null
+          clicked_result_type?: string | null
+          created_at?: string
+          filters?: Json
+          id?: string
+          query?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          business_id?: string | null
+          clicked_result_id?: string | null
+          clicked_result_type?: string | null
+          created_at?: string
+          filters?: Json
+          id?: string
+          query?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_logs_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipment_events: {
         Row: {
           created_at: string
@@ -1519,6 +1769,7 @@ export type Database = {
           created_at: string
           documents_verified: boolean | null
           id: string
+          is_escrow_ready: boolean
           is_gold_supplier: boolean | null
           rating: number | null
           response_time: string | null
@@ -1534,6 +1785,7 @@ export type Database = {
           created_at?: string
           documents_verified?: boolean | null
           id?: string
+          is_escrow_ready?: boolean
           is_gold_supplier?: boolean | null
           rating?: number | null
           response_time?: string | null
@@ -1549,6 +1801,7 @@ export type Database = {
           created_at?: string
           documents_verified?: boolean | null
           id?: string
+          is_escrow_ready?: boolean
           is_gold_supplier?: boolean | null
           rating?: number | null
           response_time?: string | null
@@ -1673,6 +1926,24 @@ export type Database = {
         | "rejected"
         | "converted_to_order"
         | "expired"
+      dispute_reason:
+        | "item_not_delivered"
+        | "wrong_item"
+        | "missing_quantity"
+        | "damaged_goods"
+        | "fake_product"
+        | "late_delivery"
+        | "supplier_not_responding"
+        | "payment_issue"
+        | "other"
+      dispute_status:
+        | "open"
+        | "under_review"
+        | "awaiting_buyer"
+        | "awaiting_supplier"
+        | "resolved_buyer"
+        | "resolved_supplier"
+        | "cancelled"
       escrow_status:
         | "not_started"
         | "awaiting_payment"
@@ -1717,6 +1988,29 @@ export type Database = {
         | "message"
         | "verification"
         | "system"
+      order_event_type:
+        | "order_created"
+        | "escrow_funded"
+        | "supplier_confirmed"
+        | "preparing_shipment"
+        | "ready_for_pickup"
+        | "in_transit"
+        | "delivered"
+        | "buyer_confirmed"
+        | "escrow_released"
+        | "dispute_opened"
+        | "dispute_resolved"
+        | "cancelled"
+        | "note"
+      order_proof_type:
+        | "packed_goods_photo"
+        | "packing_list"
+        | "invoice"
+        | "delivery_receipt"
+        | "driver_details"
+        | "proof_of_delivery"
+        | "signed_receiving_copy"
+        | "other"
       order_source_type:
         | "product_checkout"
         | "rfq_quote"
@@ -1734,6 +2028,22 @@ export type Database = {
         | "disputed"
         | "cancelled"
       payment_status: "unpaid" | "paid_demo" | "refunded"
+      product_compliance_status:
+        | "no_review_needed"
+        | "docs_required"
+        | "pending_review"
+        | "approved"
+        | "rejected"
+        | "restricted"
+      product_listing_status:
+        | "draft"
+        | "pending_review"
+        | "active"
+        | "needs_changes"
+        | "rejected"
+        | "paused"
+        | "archived"
+      product_price_type: "fixed" | "range" | "quote_only"
       product_stock_status:
         | "in_stock"
         | "low_stock"
@@ -1913,6 +2223,26 @@ export const Constants = {
         "converted_to_order",
         "expired",
       ],
+      dispute_reason: [
+        "item_not_delivered",
+        "wrong_item",
+        "missing_quantity",
+        "damaged_goods",
+        "fake_product",
+        "late_delivery",
+        "supplier_not_responding",
+        "payment_issue",
+        "other",
+      ],
+      dispute_status: [
+        "open",
+        "under_review",
+        "awaiting_buyer",
+        "awaiting_supplier",
+        "resolved_buyer",
+        "resolved_supplier",
+        "cancelled",
+      ],
       escrow_status: [
         "not_started",
         "awaiting_payment",
@@ -1962,6 +2292,31 @@ export const Constants = {
         "verification",
         "system",
       ],
+      order_event_type: [
+        "order_created",
+        "escrow_funded",
+        "supplier_confirmed",
+        "preparing_shipment",
+        "ready_for_pickup",
+        "in_transit",
+        "delivered",
+        "buyer_confirmed",
+        "escrow_released",
+        "dispute_opened",
+        "dispute_resolved",
+        "cancelled",
+        "note",
+      ],
+      order_proof_type: [
+        "packed_goods_photo",
+        "packing_list",
+        "invoice",
+        "delivery_receipt",
+        "driver_details",
+        "proof_of_delivery",
+        "signed_receiving_copy",
+        "other",
+      ],
       order_source_type: [
         "product_checkout",
         "rfq_quote",
@@ -1981,6 +2336,24 @@ export const Constants = {
         "cancelled",
       ],
       payment_status: ["unpaid", "paid_demo", "refunded"],
+      product_compliance_status: [
+        "no_review_needed",
+        "docs_required",
+        "pending_review",
+        "approved",
+        "rejected",
+        "restricted",
+      ],
+      product_listing_status: [
+        "draft",
+        "pending_review",
+        "active",
+        "needs_changes",
+        "rejected",
+        "paused",
+        "archived",
+      ],
+      product_price_type: ["fixed", "range", "quote_only"],
       product_stock_status: [
         "in_stock",
         "low_stock",
