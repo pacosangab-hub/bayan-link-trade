@@ -30,10 +30,16 @@ const searchSchema = z.object({
   productId: z.string().optional(),
 });
 
+import { RequireAuth } from "@/components/auth/RequireAuth";
+
 export const Route = createFileRoute("/messages")({
   head: () => ({ meta: [{ title: "Messages — PSG" }] }),
   validateSearch: (s) => searchSchema.parse(s),
-  component: Messages,
+  component: () => (
+    <RequireAuth>
+      <Messages />
+    </RequireAuth>
+  ),
 });
 
 function Messages() {
