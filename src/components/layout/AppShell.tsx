@@ -1,11 +1,13 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
+import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
-import { useSession, signOut } from "@/lib/auth";
 import { NotificationBell } from "./NotificationBell";
 import { RoleSwitcher } from "./RoleSwitcher";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
+import { useAuth, signOutLocal } from "@/lib/auth-store";
+import { supabase } from "@/integrations/supabase/client";
+import { LoginModal } from "@/components/auth/LoginModal";
 
 
 const navLinks = [
@@ -27,14 +29,29 @@ const dashboards = [
   { to: "/docs", label: "PRD & Architecture" },
 ];
 
+const ROLE_LABEL: Record<string, string> = {
+  buyer: "Buyer",
+  supplier: "Supplier",
+  admin: "Admin",
+  both: "Buyer + Supplier",
+};
+
 export function AppShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const cartCount = useCartCount();
-  const { user } = useSession();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const initials = (user?.user_metadata?.full_name || user?.email || "U").split(" ").map((s: string) => s[0]).slice(0, 2).join("").toUpperCase();
+  const initials = (user?.fullName || user?.email || "U").split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
+
+  async function handleSignOut() {
+    setMenuOpen(false);
+    try { await supabase.auth.signOut(); } catch { /* demo mode */ }
+    signOutLocal();
+    navigate({ to: "/" });
+  }
+
 
 
   return (
@@ -85,31 +102,49 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Link>
             <RoleSwitcher />
 
-            {user ? (
+            {isAuthenticated && user ? (
               <div className="relative">
                 <button onClick={() => setMenuOpen((v) => !v)}
-                  className="hidden md:flex items-center gap-2 ml-2 pl-3 pr-2 py-1.5 rounded-md border hover:bg-muted text-sm">
+                  className="hidden md:flex items-center gap-2 ml-2 pl-2 pr-2 py-1.5 rounded-md border hover:bg-muted text-sm">
                   <div className="size-7 rounded-full bg-gradient-to-br from-primary to-gold grid place-items-center text-white text-xs font-bold">{initials}</div>
-                  <span className="font-medium max-w-[120px] truncate">{user.user_metadata?.full_name || user.email}</span>
+                  <span className="leading-tight text-left">
+                    <div className="font-semibold text-xs truncate max-w-[140px]">{user.fullName || user.email}</div>
+                    <div className="text-[10px] text-muted-foreground truncate max-w-[140px]">
+                      {user.businessName || "PSG member"} · <span className="text-primary font-semibold">{ROLE_LABEL[user.role] || user.role}</span>
+                    </div>
+                  </span>
                   <ChevronDown size={14} />
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-60 bg-popover border rounded-md shadow-lg py-1 z-50">
+                  <div className="absolute right-0 top-full mt-1 w-64 bg-popover border rounded-md shadow-lg py-1 z-50">
+                    <div className="px-3 py-2 border-b">
+                      <div className="font-semibold text-sm truncate">{user.fullName}</div>
+                      <div className="text-[11px] text-muted-foreground truncate">{user.businessName}</div>
+                      <div className="mt-1 inline-flex text-[10px] uppercase tracking-widest font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{ROLE_LABEL[user.role]}</div>
+                    </div>
                     {dashboards.map((d) => (
                       <Link key={d.to} to={d.to} onClick={() => setMenuOpen(false)}
                         className="block px-3 py-2 text-sm hover:bg-muted">{d.label}</Link>
                     ))}
                     <div className="border-t my-1" />
-                    <button onClick={async () => { setMenuOpen(false); await signOut(); navigate({ to: "/" }); }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted">Sign out</button>
+                    <button onClick={handleSignOut}
+                      className="w-full inline-flex items-center gap-2 text-left px-3 py-2 text-sm hover:bg-muted">
+                      <LogOut size={14} /> Log out
+                    </button>
                   </div>
                 )}
               </div>
             ) : (
-              <Link to="/auth" className="hidden md:inline-flex items-center gap-1.5 ml-2 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90">
-                <LogIn size={14} /> Sign in
-              </Link>
+              <div className="hidden md:flex items-center gap-2 ml-2">
+                <Link to="/login" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-sm font-semibold hover:bg-muted">
+                  <LogIn size={14} /> Log In
+                </Link>
+                <Link to="/signup" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90">
+                  <UserPlus size={14} /> Sign Up
+                </Link>
+              </div>
             )}
+
             <button className="md:hidden p-2" onClick={() => setOpen((v) => !v)}>
               <Menu size={22} />
             </button>
@@ -192,6 +227,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </footer>
+      <LoginModal />
     </div>
   );
 }
+

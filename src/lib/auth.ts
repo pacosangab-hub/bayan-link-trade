@@ -1,37 +1,58 @@
-// Demo auth — no backend. Returns a persistent demo buyer session.
+// Compatibility shim. New code should import from `@/lib/auth-store`.
+// This keeps existing pages (which read `useSession().user`) working while
+// the header + guards use the real auth state.
 import { useQuery } from "@tanstack/react-query";
+import { useAuth, signOutLocal, DEMO_USERS } from "@/lib/auth-store";
+import { supabase } from "@/integrations/supabase/client";
 
-const DEMO_USER = {
-  id: "demo_user_1",
-  email: "demo@psg.ph",
-  user_metadata: {
-    full_name: "Lola Nena's Carinderia Group",
-  },
-};
-
-const DEMO_SESSION = {
-  access_token: "demo",
-  user: DEMO_USER,
-} as any;
+// Shape older callers expect (mimics Supabase user with user_metadata).
+function toLegacyUser(u: ReturnType<typeof useAuth>["user"]) {
+  const source = u ?? DEMO_USERS.buyer; // fall back to demo buyer for old pages
+  return {
+    id: source.id,
+    email: source.email,
+    user_metadata: {
+      full_name: source.fullName,
+      business_name: source.businessName,
+      role: source.role,
+    },
+  };
+}
 
 export function useSession() {
-  return { session: DEMO_SESSION, user: DEMO_USER, loading: false };
+  const { user } = useAuth();
+  const legacy = toLegacyUser(user);
+  return {
+    session: user ? ({ access_token: "local", user: legacy } as any) : null,
+    user: legacy,
+    loading: false,
+  };
 }
 
 export function useMyBusinesses() {
+  const { user } = useAuth();
   return useQuery({
-    queryKey: ["my-businesses"],
+    queryKey: ["my-businesses", user?.id],
     queryFn: async () => [
-      { id: "biz_demo", business_name: "Lola Nena's Carinderia Group", is_buyer: true, is_supplier: false },
+      {
+        id: "biz_local",
+        business_name: user?.businessName || "Lola Nena's Carinderia Group",
+        is_buyer: user?.role !== "supplier",
+        is_supplier: user?.role === "supplier" || user?.role === "both",
+      },
     ],
   });
 }
 
 export function useIsAdmin() {
-  return useQuery({ queryKey: ["is-admin"], queryFn: async () => true });
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ["is-admin", user?.id],
+    queryFn: async () => user?.role === "admin",
+  });
 }
 
 export async function signOut() {
-  // demo mode — no-op
-  return;
+  try { await supabase.auth.signOut(); } catch { /* demo */ }
+  signOutLocal();
 }
