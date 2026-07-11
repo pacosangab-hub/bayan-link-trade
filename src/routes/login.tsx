@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { DEMO_USERS, setAuthUser, useAuth } from "@/lib/auth-store";
@@ -24,9 +24,9 @@ function LoginPage() {
   const [busy, setBusy] = useState(false);
   const target = redirect || "/";
 
-  if (isAuthenticated) {
-    navigate({ to: target, replace: true });
-  }
+  useEffect(() => {
+    if (isAuthenticated) navigate({ to: target, replace: true });
+  }, [isAuthenticated, target]);
 
   function go() { navigate({ to: target, replace: true }); }
 
