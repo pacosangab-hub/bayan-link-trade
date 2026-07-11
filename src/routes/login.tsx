@@ -24,9 +24,9 @@ function LoginPage() {
   const [busy, setBusy] = useState(false);
   const target = redirect || "/";
 
-  if (isAuthenticated) {
-    navigate({ to: target, replace: true });
-  }
+  useEffect(() => {
+    if (isAuthenticated) navigate({ to: target, replace: true });
+  }, [isAuthenticated, target]);
 
   function go() { navigate({ to: target, replace: true }); }
 
