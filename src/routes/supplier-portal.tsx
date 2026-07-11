@@ -3,9 +3,15 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Component, type ReactNode } from "react";
 import { ShieldCheck, Plus, Upload, MessageSquare } from "lucide-react";
 
+import { RequireAuth } from "@/components/auth/RequireAuth";
+
 export const Route = createFileRoute("/supplier-portal")({
   head: () => ({ meta: [{ title: "Supplier Portal — PSG" }] }),
-  component: SupplierPortalLayout,
+  component: () => (
+    <RequireAuth roles={["supplier", "admin"]}>
+      <SupplierPortalLayout />
+    </RequireAuth>
+  ),
 });
 
 const tabs = [
