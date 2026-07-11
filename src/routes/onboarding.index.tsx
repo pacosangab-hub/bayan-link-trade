@@ -164,7 +164,7 @@ function OnboardingPage() {
           </div>
         )}
 
-        <Outlet />
+        
       </div>
       <style>{`.input{width:100%;border:1px solid var(--color-input);border-radius:.5rem;padding:.6rem .75rem;background:var(--color-background);font-size:.875rem}`}</style>
     </AppShell>
