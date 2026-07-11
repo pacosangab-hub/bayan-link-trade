@@ -30,20 +30,29 @@ function emit() {
   if (isBrowser) window.dispatchEvent(new CustomEvent(EVT));
 }
 
+let cachedRaw: string | null | undefined;
+let cachedUser: AuthUser | null = null;
+
 export function getAuthUser(): AuthUser | null {
   if (!isBrowser) return null;
+  let raw: string | null = null;
+  try { raw = localStorage.getItem(KEY); } catch { raw = null; }
+  if (raw === cachedRaw) return cachedUser;
+  cachedRaw = raw;
   try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as AuthUser) : null;
+    cachedUser = raw ? (JSON.parse(raw) as AuthUser) : null;
   } catch {
-    return null;
+    cachedUser = null;
   }
+  return cachedUser;
 }
 
 export function setAuthUser(user: AuthUser | null) {
   if (!isBrowser) return;
   if (user) localStorage.setItem(KEY, JSON.stringify(user));
   else localStorage.removeItem(KEY);
+  // Invalidate cache so next getAuthUser reads fresh
+  cachedRaw = undefined;
   emit();
 }
 
