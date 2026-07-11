@@ -1,11 +1,13 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn } from "lucide-react";
+import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
-import { useSession, signOut } from "@/lib/auth";
 import { NotificationBell } from "./NotificationBell";
 import { RoleSwitcher } from "./RoleSwitcher";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
+import { useAuth, signOutLocal } from "@/lib/auth-store";
+import { supabase } from "@/integrations/supabase/client";
+import { LoginModal } from "@/components/auth/LoginModal";
 
 
 const navLinks = [
@@ -27,14 +29,29 @@ const dashboards = [
   { to: "/docs", label: "PRD & Architecture" },
 ];
 
+const ROLE_LABEL: Record<string, string> = {
+  buyer: "Buyer",
+  supplier: "Supplier",
+  admin: "Admin",
+  both: "Buyer + Supplier",
+};
+
 export function AppShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const cartCount = useCartCount();
-  const { user } = useSession();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const initials = (user?.user_metadata?.full_name || user?.email || "U").split(" ").map((s: string) => s[0]).slice(0, 2).join("").toUpperCase();
+  const initials = (user?.fullName || user?.email || "U").split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
+
+  async function handleSignOut() {
+    setMenuOpen(false);
+    try { await supabase.auth.signOut(); } catch { /* demo mode */ }
+    signOutLocal();
+    navigate({ to: "/" });
+  }
+
 
 
   return (
