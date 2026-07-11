@@ -5,7 +5,7 @@ import { useAuth, setAuthUser, getAuthUser } from "@/lib/auth-store";
 import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/onboarding")({
+export const Route = createFileRoute("/onboarding/")({
   head: () => ({ meta: [{ title: "Get Started — PSG" }] }),
   component: OnboardingPage,
 });

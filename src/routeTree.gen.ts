@@ -17,7 +17,6 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as RfqRouteImport } from './routes/rfq'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as OrdersRouteImport } from './routes/orders'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as LoginRouteImport } from './routes/login'
@@ -32,6 +31,7 @@ import { Route as SupplierPortalIndexRouteImport } from './routes/supplier-porta
 import { Route as RfqIndexRouteImport } from './routes/rfq.index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
+import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
 import { Route as OffersIndexRouteImport } from './routes/offers.index'
 import { Route as CustomRequestsIndexRouteImport } from './routes/custom-requests.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -94,11 +94,6 @@ const ProductsRoute = ProductsRouteImport.update({
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OffersRoute = OffersRouteImport.update({
@@ -171,6 +166,11 @@ const OrdersIndexRoute = OrdersIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrdersRoute,
 } as any)
+const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
+  id: '/onboarding/',
+  path: '/onboarding/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OffersIndexRoute = OffersIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -234,14 +234,14 @@ const OrdersIdRoute = OrdersIdRouteImport.update({
   getParentRoute: () => OrdersRoute,
 } as any)
 const OnboardingSupplierRoute = OnboardingSupplierRouteImport.update({
-  id: '/supplier',
-  path: '/supplier',
-  getParentRoute: () => OnboardingRoute,
+  id: '/onboarding/supplier',
+  path: '/onboarding/supplier',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingBuyerRoute = OnboardingBuyerRouteImport.update({
-  id: '/buyer',
-  path: '/buyer',
-  getParentRoute: () => OnboardingRoute,
+  id: '/onboarding/buyer',
+  path: '/onboarding/buyer',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const OffersIdRoute = OffersIdRouteImport.update({
   id: '/$id',
@@ -302,7 +302,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/offers': typeof OffersRouteWithChildren
-  '/onboarding': typeof OnboardingRouteWithChildren
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
@@ -331,6 +330,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
@@ -347,7 +347,6 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
-  '/onboarding': typeof OnboardingRouteWithChildren
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
   '/suppliers': typeof SuppliersRouteWithChildren
@@ -372,6 +371,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/custom-requests': typeof CustomRequestsIndexRoute
   '/offers': typeof OffersIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
   '/orders': typeof OrdersIndexRoute
   '/products': typeof ProductsIndexRoute
   '/rfq': typeof RfqIndexRoute
@@ -392,7 +392,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/offers': typeof OffersRouteWithChildren
-  '/onboarding': typeof OnboardingRouteWithChildren
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
@@ -421,6 +420,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/rfq/': typeof RfqIndexRoute
@@ -442,7 +442,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/messages'
     | '/offers'
-    | '/onboarding'
     | '/orders'
     | '/products'
     | '/rfq'
@@ -471,6 +470,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/custom-requests/'
     | '/offers/'
+    | '/onboarding/'
     | '/orders/'
     | '/products/'
     | '/rfq/'
@@ -487,7 +487,6 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/messages'
-    | '/onboarding'
     | '/search'
     | '/signup'
     | '/suppliers'
@@ -512,6 +511,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/custom-requests'
     | '/offers'
+    | '/onboarding'
     | '/orders'
     | '/products'
     | '/rfq'
@@ -531,7 +531,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/messages'
     | '/offers'
-    | '/onboarding'
     | '/orders'
     | '/products'
     | '/rfq'
@@ -560,6 +559,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/custom-requests/'
     | '/offers/'
+    | '/onboarding/'
     | '/orders/'
     | '/products/'
     | '/rfq/'
@@ -580,7 +580,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MessagesRoute: typeof MessagesRoute
   OffersRoute: typeof OffersRouteWithChildren
-  OnboardingRoute: typeof OnboardingRouteWithChildren
   OrdersRoute: typeof OrdersRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   RfqRoute: typeof RfqRouteWithChildren
@@ -591,6 +590,9 @@ export interface RootRouteChildren {
   UnauthorizedRoute: typeof UnauthorizedRoute
   DashboardBuyerRoute: typeof DashboardBuyerRoute
   DashboardSupplierRoute: typeof DashboardSupplierRoute
+  OnboardingBuyerRoute: typeof OnboardingBuyerRoute
+  OnboardingSupplierRoute: typeof OnboardingSupplierRoute
+  OnboardingIndexRoute: typeof OnboardingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -649,13 +651,6 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/offers': {
@@ -756,6 +751,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIndexRouteImport
       parentRoute: typeof OrdersRoute
     }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof OnboardingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/offers/': {
       id: '/offers/'
       path: '/'
@@ -842,17 +844,17 @@ declare module '@tanstack/react-router' {
     }
     '/onboarding/supplier': {
       id: '/onboarding/supplier'
-      path: '/supplier'
+      path: '/onboarding/supplier'
       fullPath: '/onboarding/supplier'
       preLoaderRoute: typeof OnboardingSupplierRouteImport
-      parentRoute: typeof OnboardingRoute
+      parentRoute: typeof rootRouteImport
     }
     '/onboarding/buyer': {
       id: '/onboarding/buyer'
-      path: '/buyer'
+      path: '/onboarding/buyer'
       fullPath: '/onboarding/buyer'
       preLoaderRoute: typeof OnboardingBuyerRouteImport
-      parentRoute: typeof OnboardingRoute
+      parentRoute: typeof rootRouteImport
     }
     '/offers/$id': {
       id: '/offers/$id'
@@ -973,20 +975,6 @@ const OffersRouteChildren: OffersRouteChildren = {
 const OffersRouteWithChildren =
   OffersRoute._addFileChildren(OffersRouteChildren)
 
-interface OnboardingRouteChildren {
-  OnboardingBuyerRoute: typeof OnboardingBuyerRoute
-  OnboardingSupplierRoute: typeof OnboardingSupplierRoute
-}
-
-const OnboardingRouteChildren: OnboardingRouteChildren = {
-  OnboardingBuyerRoute: OnboardingBuyerRoute,
-  OnboardingSupplierRoute: OnboardingSupplierRoute,
-}
-
-const OnboardingRouteWithChildren = OnboardingRoute._addFileChildren(
-  OnboardingRouteChildren,
-)
-
 interface OrdersRouteChildren {
   OrdersIdRoute: typeof OrdersIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
@@ -1075,7 +1063,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MessagesRoute: MessagesRoute,
   OffersRoute: OffersRouteWithChildren,
-  OnboardingRoute: OnboardingRouteWithChildren,
   OrdersRoute: OrdersRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   RfqRoute: RfqRouteWithChildren,
@@ -1086,6 +1073,9 @@ const rootRouteChildren: RootRouteChildren = {
   UnauthorizedRoute: UnauthorizedRoute,
   DashboardBuyerRoute: DashboardBuyerRoute,
   DashboardSupplierRoute: DashboardSupplierRoute,
+  OnboardingBuyerRoute: OnboardingBuyerRoute,
+  OnboardingSupplierRoute: OnboardingSupplierRoute,
+  OnboardingIndexRoute: OnboardingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
