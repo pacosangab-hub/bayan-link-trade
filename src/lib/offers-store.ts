@@ -517,6 +517,7 @@ export function acceptOffer(offerId: string): DemoOrder | undefined {
   order.supplierId = cur.supplierId;
   order.buyer = cur.buyerBusiness;
   saveDemoOrder(order);
+  reserveStock(firstP.id, cur.qty, order.id);
 
   all[idx] = {
     ...cur, status: "Converted to Order", orderId: order.id,
