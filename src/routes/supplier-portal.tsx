@@ -56,7 +56,7 @@ function SupplierPortalLayout() {
               <Plus size={14} /> Add Product
             </Link>
             <Link to="/supplier-portal/quote-requests" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
-              <MessageSquare size={14} /> View Quote Requests
+              <MessageSquare size={14} /> View Buyer Requests
             </Link>
             <Link to="/supplier-portal/preview" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
               <Eye size={14} /> Preview Public Profile
