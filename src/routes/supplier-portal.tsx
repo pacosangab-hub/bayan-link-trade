@@ -36,7 +36,7 @@ function SupplierPortalLayout() {
               <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Supplier</div>
               <h1 className="font-display text-3xl">Supplier Portal</h1>
               <p className="text-sm text-muted-foreground mt-1">
-                Manage your products, buyer requests, orders, and public profile.
+                Manage your products, sales, buyer requests, orders, and public profile.
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
                 <span className="font-semibold">Bulacan Grain & Rice Mills Inc.</span>
