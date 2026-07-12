@@ -40,6 +40,7 @@ import { Route as SupplierPortalVerificationRouteImport } from './routes/supplie
 import { Route as SupplierPortalQuoteRequestsRouteImport } from './routes/supplier-portal.quote-requests'
 import { Route as SupplierPortalOrdersRouteImport } from './routes/supplier-portal.orders'
 import { Route as SupplierPortalMessagesRouteImport } from './routes/supplier-portal.messages'
+import { Route as SupplierPortalInventoryRouteImport } from './routes/supplier-portal.inventory'
 import { Route as RfqNewRouteImport } from './routes/rfq.new'
 import { Route as RfqIdRouteImport } from './routes/rfq.$id'
 import { Route as ProductsIdRouteImport } from './routes/products.$id'
@@ -213,6 +214,11 @@ const SupplierPortalMessagesRoute = SupplierPortalMessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => SupplierPortalRoute,
 } as any)
+const SupplierPortalInventoryRoute = SupplierPortalInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => SupplierPortalRoute,
+} as any)
 const RfqNewRoute = RfqNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -322,6 +328,7 @@ export interface FileRoutesByFullPath {
   '/products/$id': typeof ProductsIdRoute
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
+  '/supplier-portal/inventory': typeof SupplierPortalInventoryRoute
   '/supplier-portal/messages': typeof SupplierPortalMessagesRoute
   '/supplier-portal/orders': typeof SupplierPortalOrdersRoute
   '/supplier-portal/quote-requests': typeof SupplierPortalQuoteRequestsRoute
@@ -363,6 +370,7 @@ export interface FileRoutesByTo {
   '/products/$id': typeof ProductsIdRoute
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
+  '/supplier-portal/inventory': typeof SupplierPortalInventoryRoute
   '/supplier-portal/messages': typeof SupplierPortalMessagesRoute
   '/supplier-portal/orders': typeof SupplierPortalOrdersRoute
   '/supplier-portal/quote-requests': typeof SupplierPortalQuoteRequestsRoute
@@ -412,6 +420,7 @@ export interface FileRoutesById {
   '/products/$id': typeof ProductsIdRoute
   '/rfq/$id': typeof RfqIdRoute
   '/rfq/new': typeof RfqNewRoute
+  '/supplier-portal/inventory': typeof SupplierPortalInventoryRoute
   '/supplier-portal/messages': typeof SupplierPortalMessagesRoute
   '/supplier-portal/orders': typeof SupplierPortalOrdersRoute
   '/supplier-portal/quote-requests': typeof SupplierPortalQuoteRequestsRoute
@@ -462,6 +471,7 @@ export interface FileRouteTypes {
     | '/products/$id'
     | '/rfq/$id'
     | '/rfq/new'
+    | '/supplier-portal/inventory'
     | '/supplier-portal/messages'
     | '/supplier-portal/orders'
     | '/supplier-portal/quote-requests'
@@ -503,6 +513,7 @@ export interface FileRouteTypes {
     | '/products/$id'
     | '/rfq/$id'
     | '/rfq/new'
+    | '/supplier-portal/inventory'
     | '/supplier-portal/messages'
     | '/supplier-portal/orders'
     | '/supplier-portal/quote-requests'
@@ -551,6 +562,7 @@ export interface FileRouteTypes {
     | '/products/$id'
     | '/rfq/$id'
     | '/rfq/new'
+    | '/supplier-portal/inventory'
     | '/supplier-portal/messages'
     | '/supplier-portal/orders'
     | '/supplier-portal/quote-requests'
@@ -814,6 +826,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupplierPortalMessagesRouteImport
       parentRoute: typeof SupplierPortalRoute
     }
+    '/supplier-portal/inventory': {
+      id: '/supplier-portal/inventory'
+      path: '/inventory'
+      fullPath: '/supplier-portal/inventory'
+      preLoaderRoute: typeof SupplierPortalInventoryRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
     '/rfq/new': {
       id: '/rfq/new'
       path: '/new'
@@ -1017,6 +1036,7 @@ const RfqRouteChildren: RfqRouteChildren = {
 const RfqRouteWithChildren = RfqRoute._addFileChildren(RfqRouteChildren)
 
 interface SupplierPortalRouteChildren {
+  SupplierPortalInventoryRoute: typeof SupplierPortalInventoryRoute
   SupplierPortalMessagesRoute: typeof SupplierPortalMessagesRoute
   SupplierPortalOrdersRoute: typeof SupplierPortalOrdersRoute
   SupplierPortalQuoteRequestsRoute: typeof SupplierPortalQuoteRequestsRoute
@@ -1027,6 +1047,7 @@ interface SupplierPortalRouteChildren {
 }
 
 const SupplierPortalRouteChildren: SupplierPortalRouteChildren = {
+  SupplierPortalInventoryRoute: SupplierPortalInventoryRoute,
   SupplierPortalMessagesRoute: SupplierPortalMessagesRoute,
   SupplierPortalOrdersRoute: SupplierPortalOrdersRoute,
   SupplierPortalQuoteRequestsRoute: SupplierPortalQuoteRequestsRoute,

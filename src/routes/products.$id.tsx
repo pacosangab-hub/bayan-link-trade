@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { RequestCustomQuoteModal } from "@/components/offers/RequestCustomQuoteModal";
+import { useInventory, computeStatus, badgeForStatus, stockDisplayText } from "@/lib/inventory";
 
 export const Route = createFileRoute("/products/$id")({
   loader: ({ params }) => {
@@ -53,6 +54,12 @@ function ProductDetail() {
   const [tab, setTab] = useState<Tab>("Description");
   const [zoom, setZoom] = useState(false);
   const [customOpen, setCustomOpen] = useState(false);
+  const inv = useInventory(p.id, { unit: p.unit, supplierId: p.supplierId, leadTime: `${p.leadTimeDays}-${p.leadTimeDays + 2} days` });
+  const stockStatus = computeStatus(inv);
+  const soldOut = stockStatus === "Out of Stock";
+  const madeToOrder = stockStatus === "Made to Order";
+  const quoteOnly = stockStatus === "Quote for Availability";
+  const disableDirectBuy = soldOut || madeToOrder || quoteOnly || stockStatus === "Paused";
 
   // Build a small gallery + extras from the base image with different crops/orientations.
   const baseUrl = p.image.split("?")[0];
@@ -172,16 +179,7 @@ function ProductDetail() {
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
-                <Spec icon={<Package size={16} />} label="MOQ" value={`${p.moq} ${p.unit}`} />
-                <Spec icon={<CheckCircle2 size={16} />} label="Available stock" value="1,250 sacks" />
-                <Spec icon={<Truck size={16} />} label="Lead time" value={`${p.leadTimeDays}-${p.leadTimeDays + 2} days`} />
-                <Spec icon={<MapPin size={16} />} label="Ships from" value={p.origin} />
-              </div>
-
-              <div className="mt-4 text-sm text-success flex items-center gap-1">
-                <CheckCircle2 size={14} /> {p.stock}
-              </div>
+              <AvailabilitySection productId={p.id} unit={p.unit} moq={p.moq} leadTimeDays={p.leadTimeDays} origin={p.origin} />
             </div>
           </div>
 
@@ -367,7 +365,7 @@ function ProductDetail() {
             )}
 
             <div className="mt-4 grid grid-cols-2 gap-2">
-              {!p.restricted && (
+              {!p.restricted && !disableDirectBuy && (
                 <>
                   <button
                     onClick={handleBuyNow}
@@ -389,7 +387,12 @@ function ProductDetail() {
                 onClick={() => setCustomOpen(true)}
                 className="border-2 border-gold text-ink font-semibold rounded-md py-2.5 hover:bg-gold/10 flex items-center justify-center gap-2 col-span-2 bg-gold/5"
               >
-                <FileText size={14} /> {p.restricted ? "Request Quote — Compliance Review Required" : "Request Custom Quote"}
+                <FileText size={14} />{" "}
+                {soldOut ? "Request Restock Quote"
+                  : madeToOrder ? "Request Custom Quote"
+                  : quoteOnly ? "Check Availability"
+                  : p.restricted ? "Request Quote — Compliance Review Required"
+                  : "Request Custom Quote"}
               </button>
               <Link
                 to="/messages"
@@ -499,6 +502,38 @@ function Mini({ n, l }: { n: string; l: React.ReactNode }) {
     <div className="rounded bg-muted py-2">
       <div className="font-semibold text-sm">{n}</div>
       <div className="text-[10px] uppercase text-muted-foreground">{l}</div>
+    </div>
+  );
+}
+
+function AvailabilitySection({ productId, unit, moq, leadTimeDays, origin }: { productId: string; unit: string; moq: number; leadTimeDays: number; origin: string }) {
+  const inv = useInventory(productId, { unit, leadTime: `${leadTimeDays}-${leadTimeDays + 2} days` });
+  const status = computeStatus(inv);
+  const badge = badgeForStatus(status);
+  const trackExact = inv.trackingType === "exact";
+  return (
+    <div className="mt-5 rounded-lg border p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Availability</div>
+        <span className={`chip border text-[11px] ${badge.className}`}>{badge.label}</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 text-sm">
+        {trackExact && (
+          <Spec icon={<CheckCircle2 size={16} />} label="Available" value={`${inv.available.toLocaleString()} ${inv.unit}`} />
+        )}
+        {trackExact && inv.reserved > 0 && (
+          <Spec icon={<Package size={16} />} label="Reserved" value={`${inv.reserved} ${inv.unit}`} />
+        )}
+        <Spec icon={<Package size={16} />} label="MOQ" value={`${moq} ${unit}`} />
+        <Spec icon={<Truck size={16} />} label="Lead time" value={inv.leadTime ?? `${leadTimeDays}-${leadTimeDays + 2} days`} />
+        <Spec icon={<MapPin size={16} />} label="Ships from" value={origin} />
+        {status === "Out of Stock" && inv.restockDate && (
+          <Spec icon={<Clock size={16} />} label="Expected restock" value={inv.restockDate} />
+        )}
+      </div>
+      <div className={`text-xs ${status === "Low Stock" ? "text-amber-700" : status === "Out of Stock" ? "text-destructive" : "text-muted-foreground"}`}>
+        {stockDisplayText(inv)} · Last updated {new Date(inv.lastUpdated).toLocaleDateString()}
+      </div>
     </div>
   );
 }

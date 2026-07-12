@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSupplierListings } from "@/lib/supplier-listings";
-import { Plus, MessageSquare, ArrowRight, AlertCircle, CheckCircle2, ListChecks } from "lucide-react";
-import { orders, rfqs } from "@/lib/mock-data";
+import { Plus, MessageSquare, ArrowRight, AlertCircle, CheckCircle2, ListChecks, Boxes } from "lucide-react";
+import { orders, rfqs, products as MOCK_PRODUCTS } from "@/lib/mock-data";
+import { useInventoryMap, getInventory, computeStatus } from "@/lib/inventory";
 
 export const Route = createFileRoute("/supplier-portal/")({
   component: PortalDashboard,
@@ -9,13 +10,23 @@ export const Route = createFileRoute("/supplier-portal/")({
 
 function PortalDashboard() {
   const listings = useSupplierListings();
+  useInventoryMap();
   const active = listings.filter((l) => l.status === "Active").length;
   const pending = listings.filter((l) => l.status === "Pending Review").length;
   const openOrders = orders.length;
   const quoteReqs = rfqs.length;
 
+  const trackableIds = [
+    ...listings.map((l) => ({ id: l.id, title: l.name })),
+    ...MOCK_PRODUCTS.filter((p) => p.supplierId === "sup_001").map((p) => ({ id: p.id, title: p.title })),
+  ];
+  const lowStock = trackableIds.filter((r) => computeStatus(getInventory(r.id)) === "Low Stock");
+  const outStock = trackableIds.filter((r) => computeStatus(getInventory(r.id)) === "Out of Stock");
+
   const attention: { icon: React.ReactNode; text: string; to: string; cta: string }[] = [];
   if (quoteReqs > 0) attention.push({ icon: <MessageSquare size={14} className="text-primary" />, text: `${quoteReqs} quote request${quoteReqs === 1 ? "" : "s"} need a reply`, to: "/supplier-portal/quote-requests", cta: "Reply" });
+  if (outStock.length > 0) attention.push({ icon: <Boxes size={14} className="text-destructive" />, text: `${outStock.length} product${outStock.length === 1 ? "" : "s"} out of stock`, to: "/supplier-portal/inventory", cta: "Restock" });
+  if (lowStock.length > 0) attention.push({ icon: <Boxes size={14} className="text-amber-600" />, text: `${lowStock.length} product${lowStock.length === 1 ? "" : "s"} low stock — ${lowStock[0].title}${lowStock.length > 1 ? ` +${lowStock.length - 1} more` : ""}`, to: "/supplier-portal/inventory", cta: "Update Stock" });
   if (pending > 0) attention.push({ icon: <AlertCircle size={14} className="text-amber-600" />, text: `${pending} listing${pending === 1 ? "" : "s"} pending review`, to: "/supplier-portal/products", cta: "View" });
   if (openOrders > 0) attention.push({ icon: <AlertCircle size={14} className="text-amber-600" />, text: `${openOrders} order${openOrders === 1 ? "" : "s"} awaiting shipment`, to: "/supplier-portal/orders", cta: "Manage" });
   attention.push({ icon: <CheckCircle2 size={14} className="text-success" />, text: "Verification complete", to: "/supplier-portal/verification", cta: "View" });

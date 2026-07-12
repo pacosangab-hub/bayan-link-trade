@@ -2,6 +2,7 @@ import { Star, ShieldCheck, BadgeCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Product, Supplier, RFQ, EscrowState, RFQStatus } from "@/lib/mock-data";
 import { formatPhp, supplierById, escrowSteps } from "@/lib/mock-data";
+import { useInventory, computeStatus, badgeForStatus, stockDisplayText } from "@/lib/inventory";
 
 export function statusChipClass(s: RFQStatus): string {
   switch (s) {
@@ -45,6 +46,9 @@ export function Rating({ value, count }: { value: number; count?: number }) {
 
 export function ProductCard({ p }: { p: Product }) {
   const s = supplierById(p.supplierId);
+  const inv = useInventory(p.id, { unit: p.unit, supplierId: p.supplierId, leadTime: `${p.leadTimeDays}-${p.leadTimeDays + 2} days` });
+  const status = computeStatus(inv);
+  const badge = badgeForStatus(status);
   return (
     <Link
       to="/products/$id"
@@ -64,8 +68,9 @@ export function ProductCard({ p }: { p: Product }) {
         {p.compliance && (
           <span className="absolute top-2 left-2 chip chip-primary text-[10px]">{p.compliance}</span>
         )}
+        <span className={`absolute top-2 right-2 chip text-[10px] border ${badge.className}`}>{badge.label}</span>
         {p.restricted && (
-          <span className="absolute top-2 right-2 chip bg-destructive/90 text-white text-[10px]">Restricted</span>
+          <span className="absolute bottom-2 right-2 chip bg-destructive/90 text-white text-[10px]">Restricted</span>
         )}
       </div>
       <div className="p-3 space-y-1.5">
@@ -80,6 +85,9 @@ export function ProductCard({ p }: { p: Product }) {
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>MOQ {p.moq} {p.unit}</span>
           <Rating value={s.rating} />
+        </div>
+        <div className={`text-[11px] font-medium ${status === "Low Stock" ? "text-amber-700" : status === "Out of Stock" ? "text-destructive" : "text-muted-foreground"}`}>
+          {stockDisplayText(inv)} · Lead time {p.leadTimeDays}-{p.leadTimeDays + 2}d
         </div>
         <div className="flex items-center gap-1.5 pt-1.5 border-t mt-2">
           <span className="text-xs truncate text-foreground/80">{s.name}</span>

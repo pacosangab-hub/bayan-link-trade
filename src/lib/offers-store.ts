@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { suppliers, supplierById, products, formatPhp } from "./mock-data";
 import { escrowOrder, saveDemoOrder, type DemoOrder } from "./cart";
+import { reserveStock } from "./inventory";
 
 export type RequestStatus =
   | "New Request"
@@ -516,6 +517,7 @@ export function acceptOffer(offerId: string): DemoOrder | undefined {
   order.supplierId = cur.supplierId;
   order.buyer = cur.buyerBusiness;
   saveDemoOrder(order);
+  reserveStock(firstP.id, cur.qty, order.id);
 
   all[idx] = {
     ...cur, status: "Converted to Order", orderId: order.id,
