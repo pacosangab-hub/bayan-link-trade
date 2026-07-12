@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { Component, type ReactNode } from "react";
-import { ShieldCheck, Plus, Upload, MessageSquare } from "lucide-react";
+import { ShieldCheck, Plus, MessageSquare, Eye } from "lucide-react";
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
 
@@ -15,11 +15,12 @@ export const Route = createFileRoute("/supplier-portal")({
 });
 
 const tabs = [
-  { to: "/supplier-portal", label: "Dashboard", exact: true },
+  { to: "/supplier-portal", label: "Overview", exact: true },
   { to: "/supplier-portal/products", label: "Listings" },
   { to: "/supplier-portal/inventory", label: "Inventory" },
-  { to: "/supplier-portal/quote-requests", label: "Quote Requests" },
+  { to: "/supplier-portal/quote-requests", label: "Buyer Requests" },
   { to: "/supplier-portal/orders", label: "Orders" },
+  { to: "/supplier-portal/preview", label: "Public Preview" },
 ];
 
 const VERIFIED = true;
@@ -35,7 +36,7 @@ function SupplierPortalLayout() {
               <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Supplier</div>
               <h1 className="font-display text-3xl">Supplier Portal</h1>
               <p className="text-sm text-muted-foreground mt-1">
-                Add products, reply to buyers, and manage orders.
+                Manage your products, buyer requests, orders, and public profile.
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
                 <span className="font-semibold">Bulacan Grain & Rice Mills Inc.</span>
@@ -44,13 +45,10 @@ function SupplierPortalLayout() {
                 <span className="text-muted-foreground">· Malolos, Bulacan</span>
               </div>
             </div>
-            <Link
-              to="/supplier-portal/verification"
-              className="inline-flex items-center gap-2 rounded-md border bg-card px-3 py-2 text-xs font-semibold hover:border-primary/60"
-            >
+            <div className="inline-flex items-center gap-2 rounded-md border bg-card px-3 py-2 text-xs font-semibold">
               <ShieldCheck size={14} className={VERIFIED ? "text-success" : "text-amber-600"} />
               Verification: {VERIFIED ? "Complete" : "Needs documents"}
-            </Link>
+            </div>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -59,6 +57,9 @@ function SupplierPortalLayout() {
             </Link>
             <Link to="/supplier-portal/quote-requests" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
               <MessageSquare size={14} /> View Quote Requests
+            </Link>
+            <Link to="/supplier-portal/preview" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
+              <Eye size={14} /> Preview Public Profile
             </Link>
           </div>
 
