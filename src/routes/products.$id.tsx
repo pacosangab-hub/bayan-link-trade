@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { RequestCustomQuoteModal } from "@/components/offers/RequestCustomQuoteModal";
+import { useInventory, computeStatus, badgeForStatus, stockDisplayText } from "@/lib/inventory";
 
 export const Route = createFileRoute("/products/$id")({
   loader: ({ params }) => {
