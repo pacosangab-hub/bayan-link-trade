@@ -38,6 +38,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
 import { Route as SupplierPortalVerificationRouteImport } from './routes/supplier-portal.verification'
 import { Route as SupplierPortalQuoteRequestsRouteImport } from './routes/supplier-portal.quote-requests'
+import { Route as SupplierPortalPreviewRouteImport } from './routes/supplier-portal.preview'
 import { Route as SupplierPortalOrdersRouteImport } from './routes/supplier-portal.orders'
 import { Route as SupplierPortalMessagesRouteImport } from './routes/supplier-portal.messages'
 import { Route as SupplierPortalInventoryRouteImport } from './routes/supplier-portal.inventory'
@@ -204,6 +205,11 @@ const SupplierPortalQuoteRequestsRoute =
     path: '/quote-requests',
     getParentRoute: () => SupplierPortalRoute,
   } as any)
+const SupplierPortalPreviewRoute = SupplierPortalPreviewRouteImport.update({
+  id: '/preview',
+  path: '/preview',
+  getParentRoute: () => SupplierPortalRoute,
+} as any)
 const SupplierPortalOrdersRoute = SupplierPortalOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -331,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/supplier-portal/inventory': typeof SupplierPortalInventoryRoute
   '/supplier-portal/messages': typeof SupplierPortalMessagesRoute
   '/supplier-portal/orders': typeof SupplierPortalOrdersRoute
+  '/supplier-portal/preview': typeof SupplierPortalPreviewRoute
   '/supplier-portal/quote-requests': typeof SupplierPortalQuoteRequestsRoute
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
@@ -373,6 +380,7 @@ export interface FileRoutesByTo {
   '/supplier-portal/inventory': typeof SupplierPortalInventoryRoute
   '/supplier-portal/messages': typeof SupplierPortalMessagesRoute
   '/supplier-portal/orders': typeof SupplierPortalOrdersRoute
+  '/supplier-portal/preview': typeof SupplierPortalPreviewRoute
   '/supplier-portal/quote-requests': typeof SupplierPortalQuoteRequestsRoute
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
@@ -423,6 +431,7 @@ export interface FileRoutesById {
   '/supplier-portal/inventory': typeof SupplierPortalInventoryRoute
   '/supplier-portal/messages': typeof SupplierPortalMessagesRoute
   '/supplier-portal/orders': typeof SupplierPortalOrdersRoute
+  '/supplier-portal/preview': typeof SupplierPortalPreviewRoute
   '/supplier-portal/quote-requests': typeof SupplierPortalQuoteRequestsRoute
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
@@ -474,6 +483,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/inventory'
     | '/supplier-portal/messages'
     | '/supplier-portal/orders'
+    | '/supplier-portal/preview'
     | '/supplier-portal/quote-requests'
     | '/supplier-portal/verification'
     | '/suppliers/$id'
@@ -516,6 +526,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/inventory'
     | '/supplier-portal/messages'
     | '/supplier-portal/orders'
+    | '/supplier-portal/preview'
     | '/supplier-portal/quote-requests'
     | '/supplier-portal/verification'
     | '/suppliers/$id'
@@ -565,6 +576,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/inventory'
     | '/supplier-portal/messages'
     | '/supplier-portal/orders'
+    | '/supplier-portal/preview'
     | '/supplier-portal/quote-requests'
     | '/supplier-portal/verification'
     | '/suppliers/$id'
@@ -812,6 +824,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupplierPortalQuoteRequestsRouteImport
       parentRoute: typeof SupplierPortalRoute
     }
+    '/supplier-portal/preview': {
+      id: '/supplier-portal/preview'
+      path: '/preview'
+      fullPath: '/supplier-portal/preview'
+      preLoaderRoute: typeof SupplierPortalPreviewRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
     '/supplier-portal/orders': {
       id: '/supplier-portal/orders'
       path: '/orders'
@@ -1039,6 +1058,7 @@ interface SupplierPortalRouteChildren {
   SupplierPortalInventoryRoute: typeof SupplierPortalInventoryRoute
   SupplierPortalMessagesRoute: typeof SupplierPortalMessagesRoute
   SupplierPortalOrdersRoute: typeof SupplierPortalOrdersRoute
+  SupplierPortalPreviewRoute: typeof SupplierPortalPreviewRoute
   SupplierPortalQuoteRequestsRoute: typeof SupplierPortalQuoteRequestsRoute
   SupplierPortalVerificationRoute: typeof SupplierPortalVerificationRoute
   SupplierPortalIndexRoute: typeof SupplierPortalIndexRoute
@@ -1050,6 +1070,7 @@ const SupplierPortalRouteChildren: SupplierPortalRouteChildren = {
   SupplierPortalInventoryRoute: SupplierPortalInventoryRoute,
   SupplierPortalMessagesRoute: SupplierPortalMessagesRoute,
   SupplierPortalOrdersRoute: SupplierPortalOrdersRoute,
+  SupplierPortalPreviewRoute: SupplierPortalPreviewRoute,
   SupplierPortalQuoteRequestsRoute: SupplierPortalQuoteRequestsRoute,
   SupplierPortalVerificationRoute: SupplierPortalVerificationRoute,
   SupplierPortalIndexRoute: SupplierPortalIndexRoute,
