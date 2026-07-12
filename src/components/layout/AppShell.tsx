@@ -8,6 +8,7 @@ import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { useAuth, signOutLocal } from "@/lib/auth-store";
 import { supabase } from "@/integrations/supabase/client";
 import { LoginModal } from "@/components/auth/LoginModal";
+import psgLogo from "@/assets/psg-logo.png.asset.json";
 
 
 const navLinks = [
@@ -71,13 +72,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <div className="size-9 rounded-md gradient-hero grid place-items-center text-white font-display text-xl leading-none">
-              P
-            </div>
+            <img src={psgLogo.url} alt="PSG — Philippine Supply Gateway" className="h-10 w-10 object-contain" />
             <div className="leading-tight">
               <div className="font-display text-xl tracking-wide">PSG</div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground -mt-0.5">
-                Supply Gateway
+                Philippine Supply Gateway
               </div>
             </div>
           </Link>
@@ -195,7 +194,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       <footer className="mt-16 gradient-ink text-white/80">
         <div className="mx-auto max-w-7xl px-4 py-12 grid md:grid-cols-4 gap-8 text-sm">
           <div>
-            <div className="font-display text-2xl text-white mb-2">PSG</div>
+            <div className="flex items-center gap-2 mb-3">
+              <img src={psgLogo.url} alt="PSG logo" className="h-10 w-10 object-contain" />
+              <div className="font-display text-2xl text-white leading-none">PSG</div>
+            </div>
             <p className="opacity-80 leading-relaxed">
               The B2B wholesale gateway for Philippine commerce. Verified suppliers, RFQs, and escrow on every transaction.
             </p>
