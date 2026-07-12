@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut } from "lucide-react";
+import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut, Settings as SettingsIcon, User as UserIcon, Building2, Store, ShieldCheck, Moon, Sun } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
 import { NotificationBell } from "./NotificationBell";
@@ -8,7 +8,10 @@ import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { useAuth, signOutLocal } from "@/lib/auth-store";
 import { supabase } from "@/integrations/supabase/client";
 import { LoginModal } from "@/components/auth/LoginModal";
+import { useTheme } from "@/lib/theme";
+import { toast } from "sonner";
 import psgLogo from "@/assets/psg-logo.png.asset.json";
+
 
 
 const navLinks = [
