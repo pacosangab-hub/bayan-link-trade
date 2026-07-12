@@ -172,16 +172,7 @@ function ProductDetail() {
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
-                <Spec icon={<Package size={16} />} label="MOQ" value={`${p.moq} ${p.unit}`} />
-                <Spec icon={<CheckCircle2 size={16} />} label="Available stock" value="1,250 sacks" />
-                <Spec icon={<Truck size={16} />} label="Lead time" value={`${p.leadTimeDays}-${p.leadTimeDays + 2} days`} />
-                <Spec icon={<MapPin size={16} />} label="Ships from" value={p.origin} />
-              </div>
-
-              <div className="mt-4 text-sm text-success flex items-center gap-1">
-                <CheckCircle2 size={14} /> {p.stock}
-              </div>
+              <AvailabilitySection productId={p.id} unit={p.unit} moq={p.moq} leadTimeDays={p.leadTimeDays} origin={p.origin} />
             </div>
           </div>
 
