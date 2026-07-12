@@ -13,6 +13,7 @@ import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as SupplierPortalRouteImport } from './routes/supplier-portal'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as RfqRouteImport } from './routes/rfq'
 import { Route as ProductsRouteImport } from './routes/products'
@@ -85,6 +86,11 @@ const SupplierPortalRoute = SupplierPortalRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -372,6 +378,7 @@ export interface FileRoutesByFullPath {
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/supplier-portal': typeof SupplierPortalRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
@@ -425,6 +432,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/suppliers': typeof SuppliersRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
@@ -484,6 +492,7 @@ export interface FileRoutesById {
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/supplier-portal': typeof SupplierPortalRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
@@ -545,6 +554,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/rfq'
     | '/search'
+    | '/settings'
     | '/signup'
     | '/supplier-portal'
     | '/suppliers'
@@ -598,6 +608,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/messages'
     | '/search'
+    | '/settings'
     | '/signup'
     | '/suppliers'
     | '/unauthorized'
@@ -656,6 +667,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/rfq'
     | '/search'
+    | '/settings'
     | '/signup'
     | '/supplier-portal'
     | '/suppliers'
@@ -716,6 +728,7 @@ export interface RootRouteChildren {
   ProductsRoute: typeof ProductsRouteWithChildren
   RfqRoute: typeof RfqRouteWithChildren
   SearchRoute: typeof SearchRoute
+  SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   SupplierPortalRoute: typeof SupplierPortalRouteWithChildren
   SuppliersRoute: typeof SuppliersRouteWithChildren
@@ -755,6 +768,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -1298,6 +1318,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsRoute: ProductsRouteWithChildren,
   RfqRoute: RfqRouteWithChildren,
   SearchRoute: SearchRoute,
+  SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   SupplierPortalRoute: SupplierPortalRouteWithChildren,
   SuppliersRoute: SuppliersRouteWithChildren,

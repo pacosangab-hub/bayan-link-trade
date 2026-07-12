@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut } from "lucide-react";
+import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut, Settings as SettingsIcon, User as UserIcon, Building2, Store, ShieldCheck, Moon, Sun } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
 import { NotificationBell } from "./NotificationBell";
@@ -8,7 +8,10 @@ import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { useAuth, signOutLocal } from "@/lib/auth-store";
 import { supabase } from "@/integrations/supabase/client";
 import { LoginModal } from "@/components/auth/LoginModal";
+import { useTheme } from "@/lib/theme";
+import { toast } from "sonner";
 import psgLogo from "@/assets/psg-logo.png.asset.json";
+
 
 
 const navLinks = [
@@ -44,6 +47,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const initials = (user?.fullName || user?.email || "U").split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
+  const { resolved, setMode } = useTheme();
+  const isDark = resolved === "dark";
+  const toggleDark = () => {
+    const next = isDark ? "light" : "dark";
+    setMode(next);
+    toast.success(next === "dark" ? "Dark mode enabled" : "Light mode enabled");
+  };
+
 
   async function handleSignOut() {
     setMenuOpen(false);
@@ -120,16 +131,41 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <div className="text-[11px] text-muted-foreground truncate">{user.businessName}</div>
                       <div className="mt-1 inline-flex text-[10px] uppercase tracking-widest font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{ROLE_LABEL[user.role]}</div>
                     </div>
-                    {dashboards.map((d) => (
-                      <Link key={d.to} to={d.to} onClick={() => setMenuOpen(false)}
-                        className="block px-3 py-2 text-sm hover:bg-muted">{d.label}</Link>
-                    ))}
+                    <Link to="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                      <UserIcon size={14} /> My Account
+                    </Link>
+                    <Link to="/supplier-portal/preview" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                      <Building2 size={14} /> Business Profile
+                    </Link>
+                    <Link to="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                      <SettingsIcon size={14} /> Settings
+                    </Link>
+                    {(user.role === "supplier" || user.role === "both") && (
+                      <Link to="/supplier-portal" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                        <Store size={14} /> Supplier Portal
+                      </Link>
+                    )}
+                    {user.role === "admin" && (
+                      <Link to="/admin" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                        <ShieldCheck size={14} /> Admin Console
+                      </Link>
+                    )}
+                    <div className="border-t my-1" />
+                    <button onClick={toggleDark} className="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-muted">
+                      <span className="inline-flex items-center gap-2">
+                        {isDark ? <Moon size={14} /> : <Sun size={14} />} Dark Mode
+                      </span>
+                      <span className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${isDark ? "bg-primary" : "bg-muted-foreground/30"}`}>
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${isDark ? "translate-x-4" : "translate-x-0.5"}`} />
+                      </span>
+                    </button>
                     <div className="border-t my-1" />
                     <button onClick={handleSignOut}
                       className="w-full inline-flex items-center gap-2 text-left px-3 py-2 text-sm hover:bg-muted">
                       <LogOut size={14} /> Log out
                     </button>
                   </div>
+
                 )}
               </div>
             ) : (
