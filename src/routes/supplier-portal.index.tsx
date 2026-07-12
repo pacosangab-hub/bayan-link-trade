@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSupplierListings } from "@/lib/supplier-listings";
-import { Plus, MessageSquare, ArrowRight, AlertCircle, CheckCircle2, ListChecks } from "lucide-react";
-import { orders, rfqs } from "@/lib/mock-data";
+import { Plus, MessageSquare, ArrowRight, AlertCircle, CheckCircle2, ListChecks, Boxes } from "lucide-react";
+import { orders, rfqs, products as MOCK_PRODUCTS } from "@/lib/mock-data";
+import { useInventoryMap, getInventory, computeStatus } from "@/lib/inventory";
 
 export const Route = createFileRoute("/supplier-portal/")({
   component: PortalDashboard,
