@@ -15,7 +15,7 @@ export const Route = createFileRoute("/supplier-portal")({
 });
 
 const tabs = [
-  { to: "/supplier-portal", label: "Overview", exact: true },
+  { to: "/supplier-portal", label: "Dashboard", exact: true },
   { to: "/supplier-portal/products", label: "Listings" },
   { to: "/supplier-portal/inventory", label: "Inventory" },
   { to: "/supplier-portal/quote-requests", label: "Buyer Requests" },
@@ -36,7 +36,7 @@ function SupplierPortalLayout() {
               <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Supplier</div>
               <h1 className="font-display text-3xl">Supplier Portal</h1>
               <p className="text-sm text-muted-foreground mt-1">
-                Manage your products, buyer requests, orders, and public profile.
+                Manage your products, sales, buyer requests, orders, and public profile.
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
                 <span className="font-semibold">Bulacan Grain & Rice Mills Inc.</span>
@@ -56,7 +56,7 @@ function SupplierPortalLayout() {
               <Plus size={14} /> Add Product
             </Link>
             <Link to="/supplier-portal/quote-requests" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
-              <MessageSquare size={14} /> View Quote Requests
+              <MessageSquare size={14} /> View Buyer Requests
             </Link>
             <Link to="/supplier-portal/preview" className="inline-flex items-center gap-2 border bg-card px-4 py-2 rounded-md text-sm font-semibold">
               <Eye size={14} /> Preview Public Profile
