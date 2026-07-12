@@ -47,6 +47,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const initials = (user?.fullName || user?.email || "U").split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
+  const { resolved, setMode } = useTheme();
+  const isDark = resolved === "dark";
+  const toggleDark = () => {
+    const next = isDark ? "light" : "dark";
+    setMode(next);
+    toast.success(next === "dark" ? "Dark mode enabled" : "Light mode enabled");
+  };
+
 
   async function handleSignOut() {
     setMenuOpen(false);
