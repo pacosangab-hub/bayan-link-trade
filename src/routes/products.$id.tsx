@@ -54,6 +54,12 @@ function ProductDetail() {
   const [tab, setTab] = useState<Tab>("Description");
   const [zoom, setZoom] = useState(false);
   const [customOpen, setCustomOpen] = useState(false);
+  const inv = useInventory(p.id, { unit: p.unit, supplierId: p.supplierId, leadTime: `${p.leadTimeDays}-${p.leadTimeDays + 2} days` });
+  const stockStatus = computeStatus(inv);
+  const soldOut = stockStatus === "Out of Stock";
+  const madeToOrder = stockStatus === "Made to Order";
+  const quoteOnly = stockStatus === "Quote for Availability";
+  const disableDirectBuy = soldOut || madeToOrder || quoteOnly || stockStatus === "Paused";
 
   // Build a small gallery + extras from the base image with different crops/orientations.
   const baseUrl = p.image.split("?")[0];
