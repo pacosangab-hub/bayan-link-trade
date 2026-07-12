@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { suppliers, supplierById, products, formatPhp } from "./mock-data";
 import { escrowOrder, saveDemoOrder, type DemoOrder } from "./cart";
+import { reserveStock } from "./inventory";
 
 export type RequestStatus =
   | "New Request"
