@@ -13,7 +13,7 @@ import {
   DEMO_PAYMENTS, DEMO_DISPUTES, DEMO_REQUESTS,
 } from "@/lib/admin/demo";
 
-const NAV = [
+const NAV: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }> = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/buyers", label: "Buyers", icon: Users },
   { to: "/admin/suppliers", label: "Suppliers", icon: Factory },
@@ -24,7 +24,8 @@ const NAV = [
   { to: "/admin/disputes", label: "Disputes", icon: AlertTriangle },
   { to: "/admin/verification", label: "Verification", icon: ShieldCheck },
   { to: "/admin/safety", label: "Safety", icon: ShieldAlert },
-] as const;
+];
+
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -87,9 +88,9 @@ function AdminHeader({ onToggle }: { onToggle: () => void }) {
             className="inline-flex items-center gap-1.5 rounded px-2.5 py-1.5 text-sm hover:bg-white/10"
           >
             <span className="size-7 rounded-full bg-gold text-ink grid place-items-center font-bold text-xs">
-              {(user?.name || "A").slice(0, 1).toUpperCase()}
+              {(user?.fullName || "A").slice(0, 1).toUpperCase()}
             </span>
-            <span className="hidden sm:inline">{user?.name || "Admin"}</span>
+            <span className="hidden sm:inline">{user?.fullName || "Admin"}</span>
             <ChevronDown size={14} />
           </button>
           {menu && (
