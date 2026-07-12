@@ -52,8 +52,17 @@ import { Route as OffersIdRouteImport } from './routes/offers.$id'
 import { Route as DashboardSupplierRouteImport } from './routes/dashboard.supplier'
 import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
 import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
+import { Route as AdminVerificationRouteImport } from './routes/admin.verification'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
 import { Route as AdminSafetyRouteImport } from './routes/admin.safety'
+import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
 import { Route as AdminProductReviewRouteImport } from './routes/admin.product-review'
+import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminListingsRouteImport } from './routes/admin.listings'
+import { Route as AdminDisputesRouteImport } from './routes/admin.disputes'
+import { Route as AdminBuyersRouteImport } from './routes/admin.buyers'
 import { Route as SupplierPortalProductsIndexRouteImport } from './routes/supplier-portal.products.index'
 import { Route as SupplierPortalProductsNewRouteImport } from './routes/supplier-portal.products.new'
 import { Route as OffersIdCheckoutRouteImport } from './routes/offers.$id.checkout'
@@ -275,14 +284,59 @@ const CustomRequestsIdRoute = CustomRequestsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => CustomRequestsRoute,
 } as any)
+const AdminVerificationRoute = AdminVerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSuppliersRoute = AdminSuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSafetyRoute = AdminSafetyRouteImport.update({
   id: '/safety',
   path: '/safety',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminRequestsRoute = AdminRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProductReviewRoute = AdminProductReviewRouteImport.update({
   id: '/product-review',
   path: '/product-review',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminListingsRoute = AdminListingsRouteImport.update({
+  id: '/listings',
+  path: '/listings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDisputesRoute = AdminDisputesRouteImport.update({
+  id: '/disputes',
+  path: '/disputes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBuyersRoute = AdminBuyersRouteImport.update({
+  id: '/buyers',
+  path: '/buyers',
   getParentRoute: () => AdminRoute,
 } as any)
 const SupplierPortalProductsIndexRoute =
@@ -322,8 +376,17 @@ export interface FileRoutesByFullPath {
   '/supplier-portal': typeof SupplierPortalRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
+  '/admin/buyers': typeof AdminBuyersRoute
+  '/admin/disputes': typeof AdminDisputesRoute
+  '/admin/listings': typeof AdminListingsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/product-review': typeof AdminProductReviewRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/safety': typeof AdminSafetyRoute
+  '/admin/suppliers': typeof AdminSuppliersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/verification': typeof AdminVerificationRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -365,8 +428,17 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/suppliers': typeof SuppliersRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
+  '/admin/buyers': typeof AdminBuyersRoute
+  '/admin/disputes': typeof AdminDisputesRoute
+  '/admin/listings': typeof AdminListingsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/product-review': typeof AdminProductReviewRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/safety': typeof AdminSafetyRoute
+  '/admin/suppliers': typeof AdminSuppliersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/verification': typeof AdminVerificationRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -416,8 +488,17 @@ export interface FileRoutesById {
   '/supplier-portal': typeof SupplierPortalRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
+  '/admin/buyers': typeof AdminBuyersRoute
+  '/admin/disputes': typeof AdminDisputesRoute
+  '/admin/listings': typeof AdminListingsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/product-review': typeof AdminProductReviewRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/safety': typeof AdminSafetyRoute
+  '/admin/suppliers': typeof AdminSuppliersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/verification': typeof AdminVerificationRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -468,8 +549,17 @@ export interface FileRouteTypes {
     | '/supplier-portal'
     | '/suppliers'
     | '/unauthorized'
+    | '/admin/buyers'
+    | '/admin/disputes'
+    | '/admin/listings'
+    | '/admin/orders'
+    | '/admin/payments'
     | '/admin/product-review'
+    | '/admin/requests'
     | '/admin/safety'
+    | '/admin/suppliers'
+    | '/admin/users'
+    | '/admin/verification'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -511,8 +601,17 @@ export interface FileRouteTypes {
     | '/signup'
     | '/suppliers'
     | '/unauthorized'
+    | '/admin/buyers'
+    | '/admin/disputes'
+    | '/admin/listings'
+    | '/admin/orders'
+    | '/admin/payments'
     | '/admin/product-review'
+    | '/admin/requests'
     | '/admin/safety'
+    | '/admin/suppliers'
+    | '/admin/users'
+    | '/admin/verification'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -561,8 +660,17 @@ export interface FileRouteTypes {
     | '/supplier-portal'
     | '/suppliers'
     | '/unauthorized'
+    | '/admin/buyers'
+    | '/admin/disputes'
+    | '/admin/listings'
+    | '/admin/orders'
+    | '/admin/payments'
     | '/admin/product-review'
+    | '/admin/requests'
     | '/admin/safety'
+    | '/admin/suppliers'
+    | '/admin/users'
+    | '/admin/verification'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -922,6 +1030,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CustomRequestsIdRouteImport
       parentRoute: typeof CustomRequestsRoute
     }
+    '/admin/verification': {
+      id: '/admin/verification'
+      path: '/verification'
+      fullPath: '/admin/verification'
+      preLoaderRoute: typeof AdminVerificationRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/suppliers': {
+      id: '/admin/suppliers'
+      path: '/suppliers'
+      fullPath: '/admin/suppliers'
+      preLoaderRoute: typeof AdminSuppliersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/safety': {
       id: '/admin/safety'
       path: '/safety'
@@ -929,11 +1058,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSafetyRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/requests': {
+      id: '/admin/requests'
+      path: '/requests'
+      fullPath: '/admin/requests'
+      preLoaderRoute: typeof AdminRequestsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/product-review': {
       id: '/admin/product-review'
       path: '/product-review'
       fullPath: '/admin/product-review'
       preLoaderRoute: typeof AdminProductReviewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/payments': {
+      id: '/admin/payments'
+      path: '/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AdminPaymentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/listings': {
+      id: '/admin/listings'
+      path: '/listings'
+      fullPath: '/admin/listings'
+      preLoaderRoute: typeof AdminListingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/disputes': {
+      id: '/admin/disputes'
+      path: '/disputes'
+      fullPath: '/admin/disputes'
+      preLoaderRoute: typeof AdminDisputesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/buyers': {
+      id: '/admin/buyers'
+      path: '/buyers'
+      fullPath: '/admin/buyers'
+      preLoaderRoute: typeof AdminBuyersRouteImport
       parentRoute: typeof AdminRoute
     }
     '/supplier-portal/products/': {
@@ -961,14 +1132,32 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminBuyersRoute: typeof AdminBuyersRoute
+  AdminDisputesRoute: typeof AdminDisputesRoute
+  AdminListingsRoute: typeof AdminListingsRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProductReviewRoute: typeof AdminProductReviewRoute
+  AdminRequestsRoute: typeof AdminRequestsRoute
   AdminSafetyRoute: typeof AdminSafetyRoute
+  AdminSuppliersRoute: typeof AdminSuppliersRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminVerificationRoute: typeof AdminVerificationRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBuyersRoute: AdminBuyersRoute,
+  AdminDisputesRoute: AdminDisputesRoute,
+  AdminListingsRoute: AdminListingsRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
+  AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProductReviewRoute: AdminProductReviewRoute,
+  AdminRequestsRoute: AdminRequestsRoute,
   AdminSafetyRoute: AdminSafetyRoute,
+  AdminSuppliersRoute: AdminSuppliersRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminVerificationRoute: AdminVerificationRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
