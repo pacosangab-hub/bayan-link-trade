@@ -12,6 +12,7 @@ import {
   DEMO_BUYERS, DEMO_SUPPLIERS, DEMO_LISTINGS, DEMO_ORDERS,
   DEMO_PAYMENTS, DEMO_DISPUTES, DEMO_REQUESTS,
 } from "@/lib/admin/demo";
+import psgLogo from "@/assets/psg-logo.png.asset.json";
 
 const NAV: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }> = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -76,8 +77,8 @@ function AdminHeader({ onToggle }: { onToggle: () => void }) {
           <Menu size={20} />
         </button>
         <Link to="/admin" className="flex items-center gap-2">
-          <ShieldCheck size={18} className="text-gold" />
-          <span className="font-display text-lg">Admin Console</span>
+          <img src={psgLogo.url} alt="PSG" className="h-7 w-7 object-contain" />
+          <span className="font-display text-lg">PSG Admin Console</span>
         </Link>
         <div className="flex-1 max-w-xl mx-auto hidden md:block">
           <AdminSearch />
