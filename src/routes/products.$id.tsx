@@ -365,7 +365,7 @@ function ProductDetail() {
             )}
 
             <div className="mt-4 grid grid-cols-2 gap-2">
-              {!p.restricted && (
+              {!p.restricted && !disableDirectBuy && (
                 <>
                   <button
                     onClick={handleBuyNow}
@@ -387,7 +387,12 @@ function ProductDetail() {
                 onClick={() => setCustomOpen(true)}
                 className="border-2 border-gold text-ink font-semibold rounded-md py-2.5 hover:bg-gold/10 flex items-center justify-center gap-2 col-span-2 bg-gold/5"
               >
-                <FileText size={14} /> {p.restricted ? "Request Quote — Compliance Review Required" : "Request Custom Quote"}
+                <FileText size={14} />{" "}
+                {soldOut ? "Request Restock Quote"
+                  : madeToOrder ? "Request Custom Quote"
+                  : quoteOnly ? "Check Availability"
+                  : p.restricted ? "Request Quote — Compliance Review Required"
+                  : "Request Custom Quote"}
               </button>
               <Link
                 to="/messages"
