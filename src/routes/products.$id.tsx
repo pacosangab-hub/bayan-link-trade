@@ -505,3 +505,35 @@ function Mini({ n, l }: { n: string; l: React.ReactNode }) {
     </div>
   );
 }
+
+function AvailabilitySection({ productId, unit, moq, leadTimeDays, origin }: { productId: string; unit: string; moq: number; leadTimeDays: number; origin: string }) {
+  const inv = useInventory(productId, { unit, leadTime: `${leadTimeDays}-${leadTimeDays + 2} days` });
+  const status = computeStatus(inv);
+  const badge = badgeForStatus(status);
+  const trackExact = inv.trackingType === "exact";
+  return (
+    <div className="mt-5 rounded-lg border p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Availability</div>
+        <span className={`chip border text-[11px] ${badge.className}`}>{badge.label}</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 text-sm">
+        {trackExact && (
+          <Spec icon={<CheckCircle2 size={16} />} label="Available" value={`${inv.available.toLocaleString()} ${inv.unit}`} />
+        )}
+        {trackExact && inv.reserved > 0 && (
+          <Spec icon={<Package size={16} />} label="Reserved" value={`${inv.reserved} ${inv.unit}`} />
+        )}
+        <Spec icon={<Package size={16} />} label="MOQ" value={`${moq} ${unit}`} />
+        <Spec icon={<Truck size={16} />} label="Lead time" value={inv.leadTime ?? `${leadTimeDays}-${leadTimeDays + 2} days`} />
+        <Spec icon={<MapPin size={16} />} label="Ships from" value={origin} />
+        {status === "Out of Stock" && inv.restockDate && (
+          <Spec icon={<Clock size={16} />} label="Expected restock" value={inv.restockDate} />
+        )}
+      </div>
+      <div className={`text-xs ${status === "Low Stock" ? "text-amber-700" : status === "Out of Stock" ? "text-destructive" : "text-muted-foreground"}`}>
+        {stockDisplayText(inv)} · Last updated {new Date(inv.lastUpdated).toLocaleDateString()}
+      </div>
+    </div>
+  );
+}
