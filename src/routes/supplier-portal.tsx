@@ -15,7 +15,7 @@ export const Route = createFileRoute("/supplier-portal")({
 });
 
 const tabs = [
-  { to: "/supplier-portal", label: "Overview", exact: true },
+  { to: "/supplier-portal", label: "Dashboard", exact: true },
   { to: "/supplier-portal/products", label: "Listings" },
   { to: "/supplier-portal/inventory", label: "Inventory" },
   { to: "/supplier-portal/quote-requests", label: "Buyer Requests" },
