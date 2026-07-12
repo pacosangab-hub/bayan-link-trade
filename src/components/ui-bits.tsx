@@ -2,6 +2,7 @@ import { Star, ShieldCheck, BadgeCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Product, Supplier, RFQ, EscrowState, RFQStatus } from "@/lib/mock-data";
 import { formatPhp, supplierById, escrowSteps } from "@/lib/mock-data";
+import { useInventory, computeStatus, badgeForStatus, stockDisplayText } from "@/lib/inventory";
 
 export function statusChipClass(s: RFQStatus): string {
   switch (s) {
