@@ -110,8 +110,8 @@ function SupplierOnboarding() {
                 Our verification team will review within 24h. You'll receive an email when your supplier profile goes live.
               </p>
               <div className="mt-6 flex gap-2 justify-center">
-                <Link to="/dashboard/supplier" className="bg-primary text-primary-foreground px-5 py-2.5 rounded-md font-semibold">
-                  Go to supplier dashboard
+                <Link to="/supplier-portal" className="bg-primary text-primary-foreground px-5 py-2.5 rounded-md font-semibold">
+                  Go to Supplier Portal
                 </Link>
                 <Link to="/" className="border px-5 py-2.5 rounded-md font-semibold">Back to PSG</Link>
               </div>

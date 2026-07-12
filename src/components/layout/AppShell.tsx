@@ -20,7 +20,6 @@ const navLinks = [
 
 const dashboards = [
   { to: "/dashboard/buyer", label: "Buyer Dashboard" },
-  { to: "/dashboard/supplier", label: "Supplier Dashboard" },
   { to: "/supplier-portal", label: "Supplier Portal" },
   { to: "/admin", label: "Admin Console" },
   { to: "/admin/product-review", label: "Admin: Product Review" },
