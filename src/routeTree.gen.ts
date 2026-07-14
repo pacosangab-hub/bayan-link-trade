@@ -55,6 +55,7 @@ import { Route as OffersIdRouteImport } from './routes/offers.$id'
 import { Route as DashboardSupplierRouteImport } from './routes/dashboard.supplier'
 import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
 import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
+import { Route as BuyerPortalReordersRouteImport } from './routes/buyer-portal.reorders'
 import { Route as BuyerPortalQuoteRequestsRouteImport } from './routes/buyer-portal.quote-requests'
 import { Route as BuyerPortalOrdersRouteImport } from './routes/buyer-portal.orders'
 import { Route as BuyerPortalOffersRouteImport } from './routes/buyer-portal.offers'
@@ -305,6 +306,11 @@ const CustomRequestsIdRoute = CustomRequestsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => CustomRequestsRoute,
 } as any)
+const BuyerPortalReordersRoute = BuyerPortalReordersRouteImport.update({
+  id: '/reorders',
+  path: '/reorders',
+  getParentRoute: () => BuyerPortalRoute,
+} as any)
 const BuyerPortalQuoteRequestsRoute =
   BuyerPortalQuoteRequestsRouteImport.update({
     id: '/quote-requests',
@@ -429,6 +435,7 @@ export interface FileRoutesByFullPath {
   '/buyer-portal/offers': typeof BuyerPortalOffersRoute
   '/buyer-portal/orders': typeof BuyerPortalOrdersRoute
   '/buyer-portal/quote-requests': typeof BuyerPortalQuoteRequestsRoute
+  '/buyer-portal/reorders': typeof BuyerPortalReordersRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -486,6 +493,7 @@ export interface FileRoutesByTo {
   '/buyer-portal/offers': typeof BuyerPortalOffersRoute
   '/buyer-portal/orders': typeof BuyerPortalOrdersRoute
   '/buyer-portal/quote-requests': typeof BuyerPortalQuoteRequestsRoute
+  '/buyer-portal/reorders': typeof BuyerPortalReordersRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -552,6 +560,7 @@ export interface FileRoutesById {
   '/buyer-portal/offers': typeof BuyerPortalOffersRoute
   '/buyer-portal/orders': typeof BuyerPortalOrdersRoute
   '/buyer-portal/quote-requests': typeof BuyerPortalQuoteRequestsRoute
+  '/buyer-portal/reorders': typeof BuyerPortalReordersRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -619,6 +628,7 @@ export interface FileRouteTypes {
     | '/buyer-portal/offers'
     | '/buyer-portal/orders'
     | '/buyer-portal/quote-requests'
+    | '/buyer-portal/reorders'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -676,6 +686,7 @@ export interface FileRouteTypes {
     | '/buyer-portal/offers'
     | '/buyer-portal/orders'
     | '/buyer-portal/quote-requests'
+    | '/buyer-portal/reorders'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -741,6 +752,7 @@ export interface FileRouteTypes {
     | '/buyer-portal/offers'
     | '/buyer-portal/orders'
     | '/buyer-portal/quote-requests'
+    | '/buyer-portal/reorders'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -1124,6 +1136,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CustomRequestsIdRouteImport
       parentRoute: typeof CustomRequestsRoute
     }
+    '/buyer-portal/reorders': {
+      id: '/buyer-portal/reorders'
+      path: '/reorders'
+      fullPath: '/buyer-portal/reorders'
+      preLoaderRoute: typeof BuyerPortalReordersRouteImport
+      parentRoute: typeof BuyerPortalRoute
+    }
     '/buyer-portal/quote-requests': {
       id: '/buyer-portal/quote-requests'
       path: '/quote-requests'
@@ -1282,6 +1301,7 @@ interface BuyerPortalRouteChildren {
   BuyerPortalOffersRoute: typeof BuyerPortalOffersRoute
   BuyerPortalOrdersRoute: typeof BuyerPortalOrdersRoute
   BuyerPortalQuoteRequestsRoute: typeof BuyerPortalQuoteRequestsRoute
+  BuyerPortalReordersRoute: typeof BuyerPortalReordersRoute
   BuyerPortalIndexRoute: typeof BuyerPortalIndexRoute
 }
 
@@ -1289,6 +1309,7 @@ const BuyerPortalRouteChildren: BuyerPortalRouteChildren = {
   BuyerPortalOffersRoute: BuyerPortalOffersRoute,
   BuyerPortalOrdersRoute: BuyerPortalOrdersRoute,
   BuyerPortalQuoteRequestsRoute: BuyerPortalQuoteRequestsRoute,
+  BuyerPortalReordersRoute: BuyerPortalReordersRoute,
   BuyerPortalIndexRoute: BuyerPortalIndexRoute,
 }
 
