@@ -46,7 +46,6 @@ function SignupPage() {
         id, email, fullName, role,
         businessName: "",
         source: error ? "demo" : "supabase",
-        onboardingCompleted: false,
       });
       if (error && !/registered/i.test(error.message)) {
         toast.message("Account created in demo mode (backend unavailable).");
