@@ -1,6 +1,5 @@
 // Client-side auth store. Backs demo login and mirrors real Supabase sessions
-// so the header + guards have a single source of truth. Structured so we can
-// swap the demo path for Supabase Auth without touching call sites.
+// so the header + guards have a single source of truth.
 import { useSyncExternalStore } from "react";
 
 export type AuthRole = "buyer" | "supplier" | "admin" | "both";
@@ -12,6 +11,7 @@ export interface AuthUser {
   role: AuthRole;
   businessName: string;
   source: "demo" | "supabase";
+  onboardingCompleted?: boolean;
 }
 
 const KEY = "psg_auth_v2";
@@ -51,9 +51,14 @@ export function setAuthUser(user: AuthUser | null) {
   if (!isBrowser) return;
   if (user) localStorage.setItem(KEY, JSON.stringify(user));
   else localStorage.removeItem(KEY);
-  // Invalidate cache so next getAuthUser reads fresh
   cachedRaw = undefined;
   emit();
+}
+
+export function patchAuthUser(patch: Partial<AuthUser>) {
+  const cur = getAuthUser();
+  if (!cur) return;
+  setAuthUser({ ...cur, ...patch });
 }
 
 function subscribe(cb: () => void) {
@@ -69,22 +74,31 @@ export function useAuth() {
     role: user?.role ?? null,
     hasRole(...roles: AuthRole[]) {
       if (!user) return false;
-      if (user.role === "admin") return true;
+      if (user.role === "admin") return roles.includes("admin") || roles.length === 0 || roles.includes("buyer") || roles.includes("supplier") || roles.includes("both");
       if (user.role === "both") return roles.includes("buyer") || roles.includes("supplier") || roles.includes("both");
       return roles.includes(user.role);
     },
   };
 }
 
-// Demo presets
+// Returns the correct portal route for a given role.
+export function defaultPortalFor(role: AuthRole | null | undefined): string {
+  if (role === "admin") return "/admin";
+  if (role === "supplier") return "/supplier-portal";
+  // buyer and both → buyer portal (both can switch)
+  return "/buyer-portal";
+}
+
+// Demo presets — all marked onboardingCompleted so demo login jumps straight to the portal.
 export const DEMO_USERS: Record<"buyer" | "supplier" | "admin", AuthUser> = {
   buyer: {
     id: "demo_buyer",
-    email: "paco@lolanenas.ph",
-    fullName: "Paco Reyes",
+    email: "stefano@lolanenas.ph",
+    fullName: "Stefano San Gabriel",
     role: "buyer",
     businessName: "Lola Nena's Carinderia Group",
     source: "demo",
+    onboardingCompleted: true,
   },
   supplier: {
     id: "demo_supplier",
@@ -93,6 +107,7 @@ export const DEMO_USERS: Record<"buyer" | "supplier" | "admin", AuthUser> = {
     role: "supplier",
     businessName: "Bulacan Grain & Rice Mills Inc.",
     source: "demo",
+    onboardingCompleted: true,
   },
   admin: {
     id: "demo_admin",
@@ -101,6 +116,7 @@ export const DEMO_USERS: Record<"buyer" | "supplier" | "admin", AuthUser> = {
     role: "admin",
     businessName: "PSG Supply Gateway",
     source: "demo",
+    onboardingCompleted: true,
   },
 };
 
