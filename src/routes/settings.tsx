@@ -104,19 +104,35 @@ function AppearanceSection() {
 }
 
 function AccountSection({ user }: { user: ReturnType<typeof useAuth>["user"] }) {
+  const role = user?.role;
+  const roleLabel = role === "both" ? "Buyer + Supplier" : role ? role[0].toUpperCase() + role.slice(1) : "Guest";
   return (
     <Section icon={<User size={18} />} title="Account" description="Your PSG account details.">
       <dl className="grid sm:grid-cols-2 gap-4 text-sm">
         <Field label="Name" value={user?.fullName || "—"} />
         <Field label="Email" value={user?.email || "—"} />
-        <Field label="Role" value={user?.role ? user.role.toUpperCase() : "Guest"} />
-        <Field label="Account type" value={user ? "PSG Member" : "Not signed in"} />
+        <Field label="Account type" value={roleLabel} />
+        <Field label="Member since" value="2026" />
       </dl>
       <div className="mt-5 flex flex-wrap gap-2">
-        <button className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted">Edit Profile</button>
-        <Link to="/supplier-portal" className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted">
-          Manage Business Profile
-        </Link>
+        {role === "buyer" && (
+          <Link to="/buyer-portal" className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted">Buyer Preferences</Link>
+        )}
+        {role === "supplier" && (
+          <Link to="/supplier-portal" className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted">Supplier Profile</Link>
+        )}
+        {role === "both" && (
+          <>
+            <Link to="/buyer-portal" className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted">Buyer Preferences</Link>
+            <Link to="/supplier-portal" className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted">Supplier Profile</Link>
+            <Link to="/supplier-portal" className="px-4 py-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground">
+              Switch to Supplier Portal
+            </Link>
+          </>
+        )}
+        {role === "admin" && (
+          <Link to="/admin" className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted">Admin Portal</Link>
+        )}
       </div>
     </Section>
   );
@@ -124,19 +140,27 @@ function AccountSection({ user }: { user: ReturnType<typeof useAuth>["user"] }) 
 
 function BusinessProfileSection({ user }: { user: ReturnType<typeof useAuth>["user"] }) {
   return (
-    <Section icon={<Building2 size={18} />} title="Business Profile" description="Your public buyer or supplier profile on PSG.">
+    <Section icon={<Building2 size={18} />} title="Business Profile" description="Your business details on PSG.">
       <dl className="grid sm:grid-cols-2 gap-4 text-sm">
         <Field label="Business name" value={user?.businessName || "—"} />
-        <Field label="Region" value="Metro Manila" />
+        <Field label="Location" value="Metro Manila" />
+        <Field label="Region" value="NCR" />
+        <Field label="Business email" value={user?.email || "—"} />
       </dl>
-      <div className="mt-5">
-        <Link to="/supplier-portal/preview" className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted inline-block">
-          Preview Public Profile
+      <div className="mt-5 flex flex-wrap gap-2">
+        <Link to="/onboarding" className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted">
+          Edit Business Profile
         </Link>
+        {(user?.role === "supplier" || user?.role === "both") && (
+          <Link to="/supplier-portal/preview" className="px-4 py-2 text-sm font-semibold rounded-md border hover:bg-muted">
+            Preview Public Profile
+          </Link>
+        )}
       </div>
     </Section>
   );
 }
+
 
 function NotificationsSection() {
   const [prefs, setPrefs] = useState<NotifPrefs>(DEFAULT_NOTIFS);

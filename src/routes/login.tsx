@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { supabase } from "@/integrations/supabase/client";
-import { DEMO_USERS, setAuthUser, useAuth } from "@/lib/auth-store";
+import { DEMO_USERS, setAuthUser, useAuth, defaultPortalFor, getAuthUser } from "@/lib/auth-store";
 import { toast } from "sonner";
 import { LogIn, UserCog, Store, ShieldCheck } from "lucide-react";
 
@@ -18,17 +18,30 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { redirect } = Route.useSearch();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const target = redirect || "/";
+  const dispatched = useRef(false);
+
+  function landing(): string {
+    const u = getAuthUser();
+    if (u && u.onboardingCompleted === false) return "/onboarding";
+    const portal = defaultPortalFor(u?.role ?? null);
+    // Only honor redirect param if it isn't a portal that role can't access.
+    if (redirect && redirect !== "/login" && redirect !== "/") return redirect;
+    return portal;
+  }
 
   useEffect(() => {
-    if (isAuthenticated) navigate({ to: target, replace: true });
-  }, [isAuthenticated, target]);
+    if (dispatched.current) return;
+    if (isAuthenticated && user) {
+      dispatched.current = true;
+      navigate({ to: landing(), replace: true });
+    }
+  }, [isAuthenticated, user?.role, user?.onboardingCompleted]);
 
-  function go() { navigate({ to: target, replace: true }); }
+  function go() { navigate({ to: landing(), replace: true }); }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,6 +57,7 @@ function LoginPage() {
           role: ((data.user.user_metadata?.role as any) || "buyer"),
           businessName: (data.user.user_metadata?.business_name as string) || "",
           source: "supabase",
+          onboardingCompleted: !!data.user.user_metadata?.onboarding_completed,
         });
         toast.success("Welcome back!");
         go();
