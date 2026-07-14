@@ -23,12 +23,10 @@ const navLinks = [
 ];
 
 const dashboards = [
-  { to: "/dashboard/buyer", label: "Buyer Dashboard" },
+  { to: "/buyer-portal", label: "Buyer Portal" },
   { to: "/supplier-portal", label: "Supplier Portal" },
-  { to: "/admin", label: "Admin Console" },
-  { to: "/admin/product-review", label: "Admin: Product Review" },
-  { to: "/onboarding/supplier", label: "Become a Supplier" },
-  { to: "/onboarding/buyer", label: "Register as Buyer" },
+  { to: "/admin", label: "Admin Portal" },
+  { to: "/onboarding", label: "Get Started" },
   { to: "/docs", label: "PRD & Architecture" },
 ];
 
