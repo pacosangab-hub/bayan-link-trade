@@ -36,6 +36,7 @@ import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
 import { Route as OffersIndexRouteImport } from './routes/offers.index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as CustomRequestsIndexRouteImport } from './routes/custom-requests.index'
 import { Route as BuyerPortalIndexRouteImport } from './routes/buyer-portal.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -209,6 +210,11 @@ const OffersIndexRoute = OffersIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => OffersRoute,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CustomRequestsIndexRoute = CustomRequestsIndexRouteImport.update({
   id: '/',
@@ -463,6 +469,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/buyer-portal/': typeof BuyerPortalIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/orders/': typeof OrdersIndexRoute
@@ -522,6 +529,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/buyer-portal': typeof BuyerPortalIndexRoute
   '/custom-requests': typeof CustomRequestsIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/offers': typeof OffersIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/orders': typeof OrdersIndexRoute
@@ -590,6 +598,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/buyer-portal/': typeof BuyerPortalIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/orders/': typeof OrdersIndexRoute
@@ -659,6 +668,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/buyer-portal/'
     | '/custom-requests/'
+    | '/dashboard/'
     | '/offers/'
     | '/onboarding/'
     | '/orders/'
@@ -718,6 +728,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/buyer-portal'
     | '/custom-requests'
+    | '/dashboard'
     | '/offers'
     | '/onboarding'
     | '/orders'
@@ -785,6 +796,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/buyer-portal/'
     | '/custom-requests/'
+    | '/dashboard/'
     | '/offers/'
     | '/onboarding/'
     | '/orders/'
@@ -822,6 +834,7 @@ export interface RootRouteChildren {
   DashboardSupplierRoute: typeof DashboardSupplierRoute
   OnboardingBuyerRoute: typeof OnboardingBuyerRoute
   OnboardingSupplierRoute: typeof OnboardingSupplierRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
 }
 
@@ -1015,6 +1028,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/offers/'
       preLoaderRoute: typeof OffersIndexRouteImport
       parentRoute: typeof OffersRoute
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/custom-requests/': {
       id: '/custom-requests/'
@@ -1483,6 +1503,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardSupplierRoute: DashboardSupplierRoute,
   OnboardingBuyerRoute: OnboardingBuyerRoute,
   OnboardingSupplierRoute: OnboardingSupplierRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
 }
 export const routeTree = rootRouteImport
