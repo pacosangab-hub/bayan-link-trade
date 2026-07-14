@@ -26,6 +26,7 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as BuyerPortalRouteImport } from './routes/buyer-portal'
+import { Route as BuyerDashboardRouteImport } from './routes/buyer-dashboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -157,6 +158,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const BuyerPortalRoute = BuyerPortalRouteImport.update({
   id: '/buyer-portal',
   path: '/buyer-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuyerDashboardRoute = BuyerDashboardRouteImport.update({
+  id: '/buyer-dashboard',
+  path: '/buyer-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -404,6 +410,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/buyer-dashboard': typeof BuyerDashboardRoute
   '/buyer-portal': typeof BuyerPortalRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/custom-requests': typeof CustomRequestsRouteWithChildren
@@ -469,6 +476,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/buyer-dashboard': typeof BuyerDashboardRoute
   '/checkout': typeof CheckoutRoute
   '/docs': typeof DocsRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -529,6 +537,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/buyer-dashboard': typeof BuyerDashboardRoute
   '/buyer-portal': typeof BuyerPortalRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/custom-requests': typeof CustomRequestsRouteWithChildren
@@ -597,6 +606,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/buyer-dashboard'
     | '/buyer-portal'
     | '/checkout'
     | '/custom-requests'
@@ -662,6 +672,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/buyer-dashboard'
     | '/checkout'
     | '/docs'
     | '/forgot-password'
@@ -721,6 +732,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/buyer-dashboard'
     | '/buyer-portal'
     | '/checkout'
     | '/custom-requests'
@@ -788,6 +800,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BuyerDashboardRoute: typeof BuyerDashboardRoute
   BuyerPortalRoute: typeof BuyerPortalRouteWithChildren
   CheckoutRoute: typeof CheckoutRoute
   CustomRequestsRoute: typeof CustomRequestsRouteWithChildren
@@ -931,6 +944,13 @@ declare module '@tanstack/react-router' {
       path: '/buyer-portal'
       fullPath: '/buyer-portal'
       preLoaderRoute: typeof BuyerPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/buyer-dashboard': {
+      id: '/buyer-dashboard'
+      path: '/buyer-dashboard'
+      fullPath: '/buyer-dashboard'
+      preLoaderRoute: typeof BuyerDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1441,6 +1461,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  BuyerDashboardRoute: BuyerDashboardRoute,
   BuyerPortalRoute: BuyerPortalRouteWithChildren,
   CheckoutRoute: CheckoutRoute,
   CustomRequestsRoute: CustomRequestsRouteWithChildren,
