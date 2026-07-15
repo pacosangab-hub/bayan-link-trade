@@ -131,25 +131,42 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <div className="text-[11px] text-muted-foreground truncate">{user.businessName}</div>
                       <div className="mt-1 inline-flex text-[10px] uppercase tracking-widest font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{ROLE_LABEL[user.role]}</div>
                     </div>
-                    <Link to="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                    <Link to="/account" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
                       <UserIcon size={14} /> My Account
                     </Link>
-                    <Link to="/supplier-portal/preview" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
-                      <Building2 size={14} /> Business Profile
-                    </Link>
-                    <Link to="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
-                      <SettingsIcon size={14} /> Settings
-                    </Link>
+                    {(user.role === "buyer" || user.role === "both") && (
+                      <Link to="/buyer-portal" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                        <Building2 size={14} /> Buyer Portal
+                      </Link>
+                    )}
                     {(user.role === "supplier" || user.role === "both") && (
                       <Link to="/supplier-portal" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
                         <Store size={14} /> Supplier Portal
                       </Link>
                     )}
                     {user.role === "admin" && (
-                      <Link to="/admin" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
-                        <ShieldCheck size={14} /> Admin Console
-                      </Link>
+                      <>
+                        <Link to="/admin" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                          <ShieldCheck size={14} /> Admin Portal
+                        </Link>
+                        <Link to="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                          <Store size={14} /> Marketplace
+                        </Link>
+                      </>
                     )}
+                    {user.role !== "admin" && (
+                      <>
+                        <Link to="/orders" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                          <SettingsIcon size={14} /> Orders
+                        </Link>
+                        <Link to="/messages" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                          <MessageSquare size={14} /> Messages
+                        </Link>
+                      </>
+                    )}
+                    <Link to="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                      <SettingsIcon size={14} /> Settings
+                    </Link>
                     <div className="border-t my-1" />
                     <button onClick={toggleDark} className="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-muted">
                       <span className="inline-flex items-center gap-2">
