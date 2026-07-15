@@ -3,8 +3,7 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { supabase } from "@/integrations/supabase/client";
-import { DEMO_USERS, setAuthUser, useAuth, type AuthRole } from "@/lib/auth-store";
-import { getDefaultPortal } from "@/lib/user-profile";
+import { DEMO_USERS, setAuthUser, useAuth } from "@/lib/auth-store";
 import { toast } from "sonner";
 import { LogIn, UserCog, Store, ShieldCheck } from "lucide-react";
 
@@ -16,30 +15,20 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
-function portalForRole(role: AuthRole | undefined | null): string {
-  if (role === "admin") return "/admin";
-  if (role === "supplier") return "/supplier-portal";
-  if (role === "both") return getDefaultPortal() === "supplier" ? "/supplier-portal" : "/buyer-portal";
-  if (role === "buyer") return "/buyer-portal";
-  return "/onboarding";
-}
-
 function LoginPage() {
   const { redirect } = Route.useSearch();
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const target = redirect || portalForRole(user?.role);
+  const target = redirect || "/";
 
   useEffect(() => {
     if (isAuthenticated) navigate({ to: target, replace: true });
   }, [isAuthenticated, target]);
 
-  function goForRole(role: AuthRole) {
-    navigate({ to: redirect || portalForRole(role), replace: true });
-  }
+  function go() { navigate({ to: target, replace: true }); }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -48,17 +37,16 @@ function LoginPage() {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       if (data.user) {
-        const role = ((data.user.user_metadata?.role as any) || "buyer") as AuthRole;
         setAuthUser({
           id: data.user.id,
           email: data.user.email || email,
           fullName: (data.user.user_metadata?.full_name as string) || email,
-          role,
+          role: ((data.user.user_metadata?.role as any) || "buyer"),
           businessName: (data.user.user_metadata?.business_name as string) || "",
           source: "supabase",
         });
         toast.success("Welcome back!");
-        goForRole(role);
+        go();
       }
     } catch (err: any) {
       toast.error(err.message || "Login failed");
@@ -70,7 +58,7 @@ function LoginPage() {
   function demoLogin(kind: "buyer" | "supplier" | "admin") {
     setAuthUser(DEMO_USERS[kind]);
     toast.success(`Signed in as ${DEMO_USERS[kind].fullName}`);
-    goForRole(kind);
+    go();
   }
 
   return (

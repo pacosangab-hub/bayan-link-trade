@@ -12,12 +12,6 @@ export const Route = createFileRoute("/rfq/new")({
 });
 
 const CERT_OPTIONS = ["DTI", "BIR", "FDA", "BFAR", "HACCP", "ISO", "NMIS", "DA"];
-const DELIVERY_PREF_OPTIONS = [
-  "Pick Up at Warehouse",
-  "Third-Party Carrier with Tracking",
-  "Supplier-Owned Logistics",
-  "Open to Supplier Recommendation",
-];
 
 function NewRFQ() {
   const navigate = useNavigate();
