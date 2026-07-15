@@ -25,6 +25,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as BuyerPortalRouteImport } from './routes/buyer-portal'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -35,6 +36,7 @@ import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
 import { Route as OffersIndexRouteImport } from './routes/offers.index'
 import { Route as CustomRequestsIndexRouteImport } from './routes/custom-requests.index'
+import { Route as BuyerPortalIndexRouteImport } from './routes/buyer-portal.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
 import { Route as SupplierPortalVerificationRouteImport } from './routes/supplier-portal.verification'
@@ -53,6 +55,11 @@ import { Route as OffersIdRouteImport } from './routes/offers.$id'
 import { Route as DashboardSupplierRouteImport } from './routes/dashboard.supplier'
 import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
 import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
+import { Route as BuyerPortalReordersRouteImport } from './routes/buyer-portal.reorders'
+import { Route as BuyerPortalQuoteRequestsRouteImport } from './routes/buyer-portal.quote-requests'
+import { Route as BuyerPortalOrdersRouteImport } from './routes/buyer-portal.orders'
+import { Route as BuyerPortalOffersRouteImport } from './routes/buyer-portal.offers'
+import { Route as BuyerPortalDeliveriesRouteImport } from './routes/buyer-portal.deliveries'
 import { Route as AdminVerificationRouteImport } from './routes/admin.verification'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
@@ -148,6 +155,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuyerPortalRoute = BuyerPortalRouteImport.update({
+  id: '/buyer-portal',
+  path: '/buyer-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -197,6 +209,11 @@ const CustomRequestsIndexRoute = CustomRequestsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => CustomRequestsRoute,
+} as any)
+const BuyerPortalIndexRoute = BuyerPortalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BuyerPortalRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
@@ -290,6 +307,32 @@ const CustomRequestsIdRoute = CustomRequestsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => CustomRequestsRoute,
 } as any)
+const BuyerPortalReordersRoute = BuyerPortalReordersRouteImport.update({
+  id: '/reorders',
+  path: '/reorders',
+  getParentRoute: () => BuyerPortalRoute,
+} as any)
+const BuyerPortalQuoteRequestsRoute =
+  BuyerPortalQuoteRequestsRouteImport.update({
+    id: '/quote-requests',
+    path: '/quote-requests',
+    getParentRoute: () => BuyerPortalRoute,
+  } as any)
+const BuyerPortalOrdersRoute = BuyerPortalOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => BuyerPortalRoute,
+} as any)
+const BuyerPortalOffersRoute = BuyerPortalOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => BuyerPortalRoute,
+} as any)
+const BuyerPortalDeliveriesRoute = BuyerPortalDeliveriesRouteImport.update({
+  id: '/deliveries',
+  path: '/deliveries',
+  getParentRoute: () => BuyerPortalRoute,
+} as any)
 const AdminVerificationRoute = AdminVerificationRouteImport.update({
   id: '/verification',
   path: '/verification',
@@ -367,6 +410,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/buyer-portal': typeof BuyerPortalRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
@@ -394,6 +438,11 @@ export interface FileRoutesByFullPath {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verification': typeof AdminVerificationRoute
+  '/buyer-portal/deliveries': typeof BuyerPortalDeliveriesRoute
+  '/buyer-portal/offers': typeof BuyerPortalOffersRoute
+  '/buyer-portal/orders': typeof BuyerPortalOrdersRoute
+  '/buyer-portal/quote-requests': typeof BuyerPortalQuoteRequestsRoute
+  '/buyer-portal/reorders': typeof BuyerPortalReordersRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -412,6 +461,7 @@ export interface FileRoutesByFullPath {
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/buyer-portal/': typeof BuyerPortalIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -447,6 +497,11 @@ export interface FileRoutesByTo {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verification': typeof AdminVerificationRoute
+  '/buyer-portal/deliveries': typeof BuyerPortalDeliveriesRoute
+  '/buyer-portal/offers': typeof BuyerPortalOffersRoute
+  '/buyer-portal/orders': typeof BuyerPortalOrdersRoute
+  '/buyer-portal/quote-requests': typeof BuyerPortalQuoteRequestsRoute
+  '/buyer-portal/reorders': typeof BuyerPortalReordersRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -465,6 +520,7 @@ export interface FileRoutesByTo {
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/admin': typeof AdminIndexRoute
+  '/buyer-portal': typeof BuyerPortalIndexRoute
   '/custom-requests': typeof CustomRequestsIndexRoute
   '/offers': typeof OffersIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
@@ -481,6 +537,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/buyer-portal': typeof BuyerPortalRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
@@ -508,6 +565,11 @@ export interface FileRoutesById {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verification': typeof AdminVerificationRoute
+  '/buyer-portal/deliveries': typeof BuyerPortalDeliveriesRoute
+  '/buyer-portal/offers': typeof BuyerPortalOffersRoute
+  '/buyer-portal/orders': typeof BuyerPortalOrdersRoute
+  '/buyer-portal/quote-requests': typeof BuyerPortalQuoteRequestsRoute
+  '/buyer-portal/reorders': typeof BuyerPortalReordersRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
   '/dashboard/supplier': typeof DashboardSupplierRoute
@@ -526,6 +588,7 @@ export interface FileRoutesById {
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/buyer-portal/': typeof BuyerPortalIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -543,6 +606,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/buyer-portal'
     | '/checkout'
     | '/custom-requests'
     | '/docs'
@@ -570,6 +634,11 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/verification'
+    | '/buyer-portal/deliveries'
+    | '/buyer-portal/offers'
+    | '/buyer-portal/orders'
+    | '/buyer-portal/quote-requests'
+    | '/buyer-portal/reorders'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -588,6 +657,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/verification'
     | '/suppliers/$id'
     | '/admin/'
+    | '/buyer-portal/'
     | '/custom-requests/'
     | '/offers/'
     | '/onboarding/'
@@ -623,6 +693,11 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/verification'
+    | '/buyer-portal/deliveries'
+    | '/buyer-portal/offers'
+    | '/buyer-portal/orders'
+    | '/buyer-portal/quote-requests'
+    | '/buyer-portal/reorders'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -641,6 +716,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/verification'
     | '/suppliers/$id'
     | '/admin'
+    | '/buyer-portal'
     | '/custom-requests'
     | '/offers'
     | '/onboarding'
@@ -656,6 +732,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/buyer-portal'
     | '/checkout'
     | '/custom-requests'
     | '/docs'
@@ -683,6 +760,11 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/verification'
+    | '/buyer-portal/deliveries'
+    | '/buyer-portal/offers'
+    | '/buyer-portal/orders'
+    | '/buyer-portal/quote-requests'
+    | '/buyer-portal/reorders'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
     | '/dashboard/supplier'
@@ -701,6 +783,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/verification'
     | '/suppliers/$id'
     | '/admin/'
+    | '/buyer-portal/'
     | '/custom-requests/'
     | '/offers/'
     | '/onboarding/'
@@ -717,6 +800,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BuyerPortalRoute: typeof BuyerPortalRouteWithChildren
   CheckoutRoute: typeof CheckoutRoute
   CustomRequestsRoute: typeof CustomRequestsRouteWithChildren
   DocsRoute: typeof DocsRoute
@@ -854,6 +938,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/buyer-portal': {
+      id: '/buyer-portal'
+      path: '/buyer-portal'
+      fullPath: '/buyer-portal'
+      preLoaderRoute: typeof BuyerPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -923,6 +1014,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/custom-requests/'
       preLoaderRoute: typeof CustomRequestsIndexRouteImport
       parentRoute: typeof CustomRequestsRoute
+    }
+    '/buyer-portal/': {
+      id: '/buyer-portal/'
+      path: '/'
+      fullPath: '/buyer-portal/'
+      preLoaderRoute: typeof BuyerPortalIndexRouteImport
+      parentRoute: typeof BuyerPortalRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -1049,6 +1147,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/custom-requests/$id'
       preLoaderRoute: typeof CustomRequestsIdRouteImport
       parentRoute: typeof CustomRequestsRoute
+    }
+    '/buyer-portal/reorders': {
+      id: '/buyer-portal/reorders'
+      path: '/reorders'
+      fullPath: '/buyer-portal/reorders'
+      preLoaderRoute: typeof BuyerPortalReordersRouteImport
+      parentRoute: typeof BuyerPortalRoute
+    }
+    '/buyer-portal/quote-requests': {
+      id: '/buyer-portal/quote-requests'
+      path: '/quote-requests'
+      fullPath: '/buyer-portal/quote-requests'
+      preLoaderRoute: typeof BuyerPortalQuoteRequestsRouteImport
+      parentRoute: typeof BuyerPortalRoute
+    }
+    '/buyer-portal/orders': {
+      id: '/buyer-portal/orders'
+      path: '/orders'
+      fullPath: '/buyer-portal/orders'
+      preLoaderRoute: typeof BuyerPortalOrdersRouteImport
+      parentRoute: typeof BuyerPortalRoute
+    }
+    '/buyer-portal/offers': {
+      id: '/buyer-portal/offers'
+      path: '/offers'
+      fullPath: '/buyer-portal/offers'
+      preLoaderRoute: typeof BuyerPortalOffersRouteImport
+      parentRoute: typeof BuyerPortalRoute
+    }
+    '/buyer-portal/deliveries': {
+      id: '/buyer-portal/deliveries'
+      path: '/deliveries'
+      fullPath: '/buyer-portal/deliveries'
+      preLoaderRoute: typeof BuyerPortalDeliveriesRouteImport
+      parentRoute: typeof BuyerPortalRoute
     }
     '/admin/verification': {
       id: '/admin/verification'
@@ -1183,6 +1316,28 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface BuyerPortalRouteChildren {
+  BuyerPortalDeliveriesRoute: typeof BuyerPortalDeliveriesRoute
+  BuyerPortalOffersRoute: typeof BuyerPortalOffersRoute
+  BuyerPortalOrdersRoute: typeof BuyerPortalOrdersRoute
+  BuyerPortalQuoteRequestsRoute: typeof BuyerPortalQuoteRequestsRoute
+  BuyerPortalReordersRoute: typeof BuyerPortalReordersRoute
+  BuyerPortalIndexRoute: typeof BuyerPortalIndexRoute
+}
+
+const BuyerPortalRouteChildren: BuyerPortalRouteChildren = {
+  BuyerPortalDeliveriesRoute: BuyerPortalDeliveriesRoute,
+  BuyerPortalOffersRoute: BuyerPortalOffersRoute,
+  BuyerPortalOrdersRoute: BuyerPortalOrdersRoute,
+  BuyerPortalQuoteRequestsRoute: BuyerPortalQuoteRequestsRoute,
+  BuyerPortalReordersRoute: BuyerPortalReordersRoute,
+  BuyerPortalIndexRoute: BuyerPortalIndexRoute,
+}
+
+const BuyerPortalRouteWithChildren = BuyerPortalRoute._addFileChildren(
+  BuyerPortalRouteChildren,
+)
+
 interface CustomRequestsRouteChildren {
   CustomRequestsIdRoute: typeof CustomRequestsIdRoute
   CustomRequestsIndexRoute: typeof CustomRequestsIndexRoute
@@ -1307,6 +1462,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  BuyerPortalRoute: BuyerPortalRouteWithChildren,
   CheckoutRoute: CheckoutRoute,
   CustomRequestsRoute: CustomRequestsRouteWithChildren,
   DocsRoute: DocsRoute,
