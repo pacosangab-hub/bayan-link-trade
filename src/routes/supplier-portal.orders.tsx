@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { orders, products, formatPhp } from "@/lib/mock-data";
+import { seedDemoDeliveries, useAllDeliveries, DELIVERY_METHOD_BADGES } from "@/lib/delivery";
 
 export const Route = createFileRoute("/supplier-portal/orders")({
   component: SupplierOrdersPage,
