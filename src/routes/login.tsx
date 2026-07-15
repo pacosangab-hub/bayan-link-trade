@@ -48,16 +48,17 @@ function LoginPage() {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       if (data.user) {
+        const role = ((data.user.user_metadata?.role as any) || "buyer") as AuthRole;
         setAuthUser({
           id: data.user.id,
           email: data.user.email || email,
           fullName: (data.user.user_metadata?.full_name as string) || email,
-          role: ((data.user.user_metadata?.role as any) || "buyer"),
+          role,
           businessName: (data.user.user_metadata?.business_name as string) || "",
           source: "supabase",
         });
         toast.success("Welcome back!");
-        go();
+        goForRole(role);
       }
     } catch (err: any) {
       toast.error(err.message || "Login failed");
@@ -69,7 +70,7 @@ function LoginPage() {
   function demoLogin(kind: "buyer" | "supplier" | "admin") {
     setAuthUser(DEMO_USERS[kind]);
     toast.success(`Signed in as ${DEMO_USERS[kind].fullName}`);
-    go();
+    goForRole(kind);
   }
 
   return (
