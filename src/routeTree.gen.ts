@@ -20,6 +20,7 @@ import { Route as RfqRouteImport } from './routes/rfq'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as OffersRouteImport } from './routes/offers'
+import { Route as MyAccountRouteImport } from './routes/my-account'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -27,6 +28,7 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as BuyerPortalRouteImport } from './routes/buyer-portal'
+import { Route as BuyerDashboardRouteImport } from './routes/buyer-dashboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
@@ -126,6 +128,11 @@ const OffersRoute = OffersRouteImport.update({
   path: '/offers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MyAccountRoute = MyAccountRouteImport.update({
+  id: '/my-account',
+  path: '/my-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MessagesRoute = MessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
@@ -159,6 +166,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const BuyerPortalRoute = BuyerPortalRouteImport.update({
   id: '/buyer-portal',
   path: '/buyer-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuyerDashboardRoute = BuyerDashboardRouteImport.update({
+  id: '/buyer-dashboard',
+  path: '/buyer-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -386,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/buyer-dashboard': typeof BuyerDashboardRoute
   '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
   '/custom-requests': typeof CustomRequestsRouteWithChildren
@@ -393,6 +406,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
+  '/my-account': typeof MyAccountRoute
   '/offers': typeof OffersRouteWithChildren
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
@@ -448,12 +462,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/buyer-dashboard': typeof BuyerDashboardRoute
   '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
   '/docs': typeof DocsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
+  '/my-account': typeof MyAccountRoute
   '/rfq-center': typeof RfqCenterRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -506,6 +522,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/buyer-dashboard': typeof BuyerDashboardRoute
   '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
   '/custom-requests': typeof CustomRequestsRouteWithChildren
@@ -513,6 +530,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
+  '/my-account': typeof MyAccountRoute
   '/offers': typeof OffersRouteWithChildren
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
@@ -571,6 +589,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/auth'
+    | '/buyer-dashboard'
     | '/buyer-portal'
     | '/checkout'
     | '/custom-requests'
@@ -578,6 +597,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/messages'
+    | '/my-account'
     | '/offers'
     | '/orders'
     | '/products'
@@ -633,12 +653,14 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/auth'
+    | '/buyer-dashboard'
     | '/buyer-portal'
     | '/checkout'
     | '/docs'
     | '/forgot-password'
     | '/login'
     | '/messages'
+    | '/my-account'
     | '/rfq-center'
     | '/search'
     | '/settings'
@@ -690,6 +712,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/auth'
+    | '/buyer-dashboard'
     | '/buyer-portal'
     | '/checkout'
     | '/custom-requests'
@@ -697,6 +720,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/messages'
+    | '/my-account'
     | '/offers'
     | '/orders'
     | '/products'
@@ -754,6 +778,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BuyerDashboardRoute: typeof BuyerDashboardRoute
   BuyerPortalRoute: typeof BuyerPortalRoute
   CheckoutRoute: typeof CheckoutRoute
   CustomRequestsRoute: typeof CustomRequestsRouteWithChildren
@@ -761,6 +786,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   MessagesRoute: typeof MessagesRoute
+  MyAccountRoute: typeof MyAccountRoute
   OffersRoute: typeof OffersRouteWithChildren
   OrdersRoute: typeof OrdersRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
@@ -858,6 +884,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OffersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my-account': {
+      id: '/my-account'
+      path: '/my-account'
+      fullPath: '/my-account'
+      preLoaderRoute: typeof MyAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/messages': {
       id: '/messages'
       path: '/messages'
@@ -905,6 +938,13 @@ declare module '@tanstack/react-router' {
       path: '/buyer-portal'
       fullPath: '/buyer-portal'
       preLoaderRoute: typeof BuyerPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/buyer-dashboard': {
+      id: '/buyer-dashboard'
+      path: '/buyer-dashboard'
+      fullPath: '/buyer-dashboard'
+      preLoaderRoute: typeof BuyerDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1368,6 +1408,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  BuyerDashboardRoute: BuyerDashboardRoute,
   BuyerPortalRoute: BuyerPortalRoute,
   CheckoutRoute: CheckoutRoute,
   CustomRequestsRoute: CustomRequestsRouteWithChildren,
@@ -1375,6 +1416,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   MessagesRoute: MessagesRoute,
+  MyAccountRoute: MyAccountRoute,
   OffersRoute: OffersRouteWithChildren,
   OrdersRoute: OrdersRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
