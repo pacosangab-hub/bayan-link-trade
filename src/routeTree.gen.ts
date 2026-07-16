@@ -15,6 +15,7 @@ import { Route as SupplierPortalRouteImport } from './routes/supplier-portal'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as RfqCenterRouteImport } from './routes/rfq-center'
 import { Route as RfqRouteImport } from './routes/rfq'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as OrdersRouteImport } from './routes/orders'
@@ -96,6 +97,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RfqCenterRoute = RfqCenterRouteImport.update({
+  id: '/rfq-center',
+  path: '/rfq-center',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RfqRoute = RfqRouteImport.update({
@@ -377,6 +383,7 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
+  '/rfq-center': typeof RfqCenterRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
@@ -431,6 +438,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
+  '/rfq-center': typeof RfqCenterRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
@@ -491,6 +499,7 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/rfq': typeof RfqRouteWithChildren
+  '/rfq-center': typeof RfqCenterRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
@@ -553,6 +562,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/products'
     | '/rfq'
+    | '/rfq-center'
     | '/search'
     | '/settings'
     | '/signup'
@@ -607,6 +617,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/messages'
+    | '/rfq-center'
     | '/search'
     | '/settings'
     | '/signup'
@@ -666,6 +677,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/products'
     | '/rfq'
+    | '/rfq-center'
     | '/search'
     | '/settings'
     | '/signup'
@@ -727,6 +739,7 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   RfqRoute: typeof RfqRouteWithChildren
+  RfqCenterRoute: typeof RfqCenterRoute
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
@@ -782,6 +795,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rfq-center': {
+      id: '/rfq-center'
+      path: '/rfq-center'
+      fullPath: '/rfq-center'
+      preLoaderRoute: typeof RfqCenterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rfq': {
@@ -1317,6 +1337,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   RfqRoute: RfqRouteWithChildren,
+  RfqCenterRoute: RfqCenterRoute,
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
