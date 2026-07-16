@@ -190,10 +190,6 @@ function OrderDetailPage() {
           onBuyerReport={() => setDisputeOpen(true)}
         />
 
-        {/* Delivery Method */}
-        <DeliveryMethodPanel orderId={o.id} />
-
-
         {/* Timeline */}
         <div className="rounded-xl border bg-card p-5">
           <div className="mb-1 font-display text-xl">Order Timeline</div>
@@ -659,64 +655,3 @@ function DisputeModal({
     </div>
   );
 }
-
-// ---- Delivery Method Panel ----
-import { DELIVERY_METHODS, DELIVERY_METHOD_LIST, type DeliveryMethodKey } from "@/lib/delivery";
-import { Truck, MapPin as MapPinIcon } from "lucide-react";
-
-const DEMO_DELIVERY_FOR_ORDER: Record<string, { method: DeliveryMethodKey; extras: Record<string, string> }> = {
-  ord_24011: { method: "supplier_owned_logistics", extras: { "Delivery Address": "12 Tomas Morato, QC", "ETA": "Jul 18", "Delivery Fee": "₱1,500", "Driver": "Ronel S.", "Vehicle Plate": "NCP 2214" } },
-  ord_24008: { method: "third_party_carrier", extras: { "Carrier": "LBC", "Tracking Number": "LBC123456789", "Tracking Link": "https://lbcexpress.com/track", "ETA": "Jul 16", "Delivery Fee": "₱480" } },
-  ord_23994: { method: "pickup_warehouse", extras: { "Pickup Address": "Silang, Cavite Warehouse", "Pickup Contact": "Aling Rosa · +63 917 555 0330", "Available": "Mon–Sat, 8am–5pm" } },
-};
-
-function DeliveryMethodPanel({ orderId }: { orderId: string }) {
-  const key = DEMO_DELIVERY_FOR_ORDER[orderId]?.method ?? "supplier_owned_logistics";
-  const extras = DEMO_DELIVERY_FOR_ORDER[orderId]?.extras ?? {};
-  const [selected, setSelected] = useState<DeliveryMethodKey>(key);
-  const method = DELIVERY_METHODS[selected];
-
-  return (
-    <div className="rounded-xl border bg-card p-5 mb-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <div className="font-display text-xl flex items-center gap-2"><Truck size={18} /> Delivery Method</div>
-          <p className="text-xs text-muted-foreground">How this order will reach you.</p>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {DELIVERY_METHOD_LIST.map((m) => (
-            <button key={m.key} onClick={() => setSelected(m.key)}
-              className={`text-xs px-2.5 py-1.5 rounded-md border ${selected === m.key ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted"}`}>
-              {m.short}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="mt-3 border rounded-md p-3 bg-muted/30 text-sm">
-        <div className="font-semibold">{method.label}</div>
-        <div className="text-xs text-muted-foreground mt-0.5">{method.description}</div>
-      </div>
-      {Object.keys(extras).length > 0 && (
-        <div className="mt-3 grid sm:grid-cols-2 gap-2 text-sm">
-          {Object.entries(extras).map(([k, v]) => (
-            <div key={k} className="flex justify-between border rounded-md p-2">
-              <span className="text-xs text-muted-foreground">{k}</span>
-              <span className="font-medium text-right truncate ml-2">{v}</span>
-            </div>
-          ))}
-        </div>
-      )}
-      <div className="mt-3">
-        <div className="text-[10px] uppercase text-muted-foreground font-semibold mb-1.5">Timeline</div>
-        <div className="flex flex-wrap gap-1.5">
-          {method.timeline.map((t, i) => (
-            <span key={i} className="text-[11px] px-2 py-1 rounded bg-primary/10 text-primary font-semibold flex items-center gap-1">
-              <MapPinIcon size={10} /> {t}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
