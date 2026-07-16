@@ -18,12 +18,12 @@ const navLinks = [
   { to: "/", label: "Marketplace" },
   { to: "/products", label: "Products" },
   { to: "/suppliers", label: "Suppliers" },
-  { to: "/rfq", label: "RFQ Center" },
+  { to: "/rfq-center", label: "RFQ Center" },
   { to: "/orders", label: "Orders" },
 ];
 
 const dashboards = [
-  { to: "/dashboard/buyer", label: "Buyer Dashboard" },
+  { to: "/buyer-portal", label: "Buyer Portal" },
   { to: "/supplier-portal", label: "Supplier Portal" },
   { to: "/admin", label: "Admin Console" },
   { to: "/admin/product-review", label: "Admin: Product Review" },
@@ -131,11 +131,24 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <div className="text-[11px] text-muted-foreground truncate">{user.businessName}</div>
                       <div className="mt-1 inline-flex text-[10px] uppercase tracking-widest font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{ROLE_LABEL[user.role]}</div>
                     </div>
-                    <Link to="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                    <Link to="/account" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
                       <UserIcon size={14} /> My Account
                     </Link>
-                    <Link to="/supplier-portal/preview" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
-                      <Building2 size={14} /> Business Profile
+                    {(user.role === "buyer" || user.role === "both" || user.role === "admin") && (
+                      <>
+                        <Link to="/buyer-portal" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                          <Building2 size={14} /> Buyer Portal
+                        </Link>
+                        <Link to="/rfq-center" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                          <SettingsIcon size={14} /> RFQ Center
+                        </Link>
+                      </>
+                    )}
+                    <Link to="/orders" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                      <Store size={14} /> Orders
+                    </Link>
+                    <Link to="/messages" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                      <UserIcon size={14} /> Messages
                     </Link>
                     <Link to="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
                       <SettingsIcon size={14} /> Settings
