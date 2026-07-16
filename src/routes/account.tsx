@@ -9,10 +9,7 @@ import {
   type UserProfile, type BusinessProfile, type BuyerPreferences, type NotificationPrefs,
 } from "@/lib/buyer-store";
 import { DELIVERY_METHOD_LIST } from "@/lib/delivery";
-import { UserIcon as User, Building2, Shield, Bell, SlidersHorizontal, KeyRound } from "lucide-react";
-
-// lucide's `UserIcon` alias for consistent import
-import { User as UserIcon } from "lucide-react";
+import { User as UserIcon, Building2, Shield, Bell, SlidersHorizontal, KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/account")({
   head: () => ({ meta: [{ title: "My Account — PSG" }] }),
