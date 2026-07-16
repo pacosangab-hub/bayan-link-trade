@@ -18,7 +18,7 @@ const navLinks = [
   { to: "/", label: "Marketplace" },
   { to: "/products", label: "Products" },
   { to: "/suppliers", label: "Suppliers" },
-  { to: "/rfq", label: "RFQ Center" },
+  { to: "/rfq-center", label: "RFQ Center" },
   { to: "/orders", label: "Orders" },
 ];
 
