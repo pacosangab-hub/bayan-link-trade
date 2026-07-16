@@ -190,6 +190,10 @@ function OrderDetailPage() {
           onBuyerReport={() => setDisputeOpen(true)}
         />
 
+        {/* Delivery Method */}
+        <DeliveryMethodPanel orderId={o.id} />
+
+
         {/* Timeline */}
         <div className="rounded-xl border bg-card p-5">
           <div className="mb-1 font-display text-xl">Order Timeline</div>
