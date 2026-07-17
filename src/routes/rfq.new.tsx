@@ -155,8 +155,36 @@ function NewRFQ() {
               <Field label="Preferred delivery schedule">
                 <input className="input" value={form.schedule} onChange={(e) => set("schedule", e.target.value)} placeholder="e.g. Weekly, Monday 6 AM" />
               </Field>
+              <Field label="Preferred delivery method">
+                <div className="grid md:grid-cols-3 gap-2">
+                  {DELIVERY_METHOD_OPTIONS.map((opt) => {
+                    const Icon = opt.icon;
+                    const active = form.preferredDeliveryMethod === opt.key;
+                    return (
+                      <button
+                        type="button"
+                        key={opt.key}
+                        onClick={() => set("preferredDeliveryMethod", opt.key)}
+                        className={`text-left p-3 rounded-md border-2 transition ${active ? "border-primary bg-primary/5" : "hover:border-primary/40"}`}
+                      >
+                        <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
+                        <div className="font-semibold text-xs mt-1.5">{opt.title}</div>
+                        <div className="text-[11px] text-muted-foreground">{opt.desc}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </Field>
+              <label className="flex items-start gap-3 p-3 border rounded-md">
+                <input type="checkbox" checked={form.invoiceRequired} onChange={(e) => set("invoiceRequired", e.target.checked)} className="mt-1" />
+                <div>
+                  <div className="text-sm font-semibold">BIR-compliant invoice required</div>
+                  <div className="text-xs text-muted-foreground">Supplier must issue an official receipt / VAT invoice on delivery.</div>
+                </div>
+              </label>
             </>
           )}
+
 
           {step === 3 && (
             <>
