@@ -261,11 +261,30 @@ function pickBestQuote(quotes: { supplierId: string; pricePhp: number; leadTimeD
   return bestId;
 }
 
-function sortedByValue<T extends { supplierId: string; pricePhp: number; leadTimeDays: number }>(quotes: T[]): T[] {
-  const best = pickBestQuote(quotes);
-  return [...quotes].sort((a, b) => {
-    if (a.supplierId === best) return -1;
-    if (b.supplierId === best) return 1;
-    return (a.pricePhp || Infinity) - (b.pricePhp || Infinity);
-  });
+type Q = { supplierId: string; pricePhp: number; leadTimeDays: number; deliveryFee?: number; deliveryMethod?: DeliveryMethod };
+
+function pickCheapest(quotes: Q[]): string | null {
+  const withPrice = quotes.filter((q) => q.pricePhp > 0);
+  if (withPrice.length === 0) return null;
+  return withPrice.reduce((a, b) => (a.pricePhp + (a.deliveryFee ?? 0) <= b.pricePhp + (b.deliveryFee ?? 0) ? a : b)).supplierId;
 }
+function pickByField(quotes: Q[], field: "leadTimeDays"): string | null {
+  if (quotes.length === 0) return null;
+  return quotes.reduce((a, b) => (a[field] <= b[field] ? a : b)).supplierId;
+}
+
+function sortQuotes<T extends Q>(quotes: T[], mode: "value" | "price" | "lead", bestId: string | null): T[] {
+  const arr = [...quotes];
+  if (mode === "price") arr.sort((a, b) => (a.pricePhp + (a.deliveryFee ?? 0)) - (b.pricePhp + (b.deliveryFee ?? 0)));
+  else if (mode === "lead") arr.sort((a, b) => a.leadTimeDays - b.leadTimeDays);
+  else arr.sort((a, b) => (a.supplierId === bestId ? -1 : b.supplierId === bestId ? 1 : (a.pricePhp || Infinity) - (b.pricePhp || Infinity)));
+  return arr;
+}
+
+function deliveryLabel(m?: DeliveryMethod): string {
+  if (m === "pickup") return "Pickup available";
+  if (m === "carrier") return "3rd-party carrier";
+  if (m === "supplier") return "Supplier delivery";
+  return "Delivery TBD";
+}
+
