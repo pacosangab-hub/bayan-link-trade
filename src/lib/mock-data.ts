@@ -74,6 +74,8 @@ export type RFQ = {
   status: RFQStatus;
   nextAction?: string;
   selectedSupplierId?: string;
+  preferredDeliveryMethod?: DeliveryMethod;
+  invoiceRequired?: boolean;
   quotes: {
     supplierId: string;
     pricePhp: number;
@@ -82,8 +84,11 @@ export type RFQ = {
     note: string;
     deliveryFee?: number;
     paymentTerms?: string;
+    deliveryMethod?: DeliveryMethod;
   }[];
 };
+
+export type DeliveryMethod = "pickup" | "carrier" | "supplier";
 
 export type Order = {
   id: string;
