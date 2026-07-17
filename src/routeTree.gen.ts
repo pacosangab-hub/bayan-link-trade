@@ -25,8 +25,10 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as BuyerPortalRouteImport } from './routes/buyer-portal'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SupplierPortalIndexRouteImport } from './routes/supplier-portal.index'
 import { Route as RfqIndexRouteImport } from './routes/rfq.index'
@@ -66,6 +68,7 @@ import { Route as AdminDisputesRouteImport } from './routes/admin.disputes'
 import { Route as AdminBuyersRouteImport } from './routes/admin.buyers'
 import { Route as SupplierPortalProductsIndexRouteImport } from './routes/supplier-portal.products.index'
 import { Route as SupplierPortalProductsNewRouteImport } from './routes/supplier-portal.products.new'
+import { Route as RfqIdAcceptRouteImport } from './routes/rfq.$id.accept'
 import { Route as OffersIdCheckoutRouteImport } from './routes/offers.$id.checkout'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
@@ -148,6 +151,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuyerPortalRoute = BuyerPortalRouteImport.update({
+  id: '/buyer-portal',
+  path: '/buyer-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -156,6 +164,11 @@ const AuthRoute = AuthRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -357,6 +370,11 @@ const SupplierPortalProductsNewRoute =
     path: '/products/new',
     getParentRoute: () => SupplierPortalRoute,
   } as any)
+const RfqIdAcceptRoute = RfqIdAcceptRouteImport.update({
+  id: '/accept',
+  path: '/accept',
+  getParentRoute: () => RfqIdRoute,
+} as any)
 const OffersIdCheckoutRoute = OffersIdCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -365,8 +383,10 @@ const OffersIdCheckoutRoute = OffersIdCheckoutRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
   '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
@@ -402,7 +422,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/supplier': typeof OnboardingSupplierRoute
   '/orders/$id': typeof OrdersIdRoute
   '/products/$id': typeof ProductsIdRoute
-  '/rfq/$id': typeof RfqIdRoute
+  '/rfq/$id': typeof RfqIdRouteWithChildren
   '/rfq/new': typeof RfqNewRoute
   '/supplier-portal/inventory': typeof SupplierPortalInventoryRoute
   '/supplier-portal/messages': typeof SupplierPortalMessagesRoute
@@ -420,12 +440,15 @@ export interface FileRoutesByFullPath {
   '/rfq/': typeof RfqIndexRoute
   '/supplier-portal/': typeof SupplierPortalIndexRoute
   '/offers/$id/checkout': typeof OffersIdCheckoutRoute
+  '/rfq/$id/accept': typeof RfqIdAcceptRoute
   '/supplier-portal/products/new': typeof SupplierPortalProductsNewRoute
   '/supplier-portal/products/': typeof SupplierPortalProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
   '/docs': typeof DocsRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -455,7 +478,7 @@ export interface FileRoutesByTo {
   '/onboarding/supplier': typeof OnboardingSupplierRoute
   '/orders/$id': typeof OrdersIdRoute
   '/products/$id': typeof ProductsIdRoute
-  '/rfq/$id': typeof RfqIdRoute
+  '/rfq/$id': typeof RfqIdRouteWithChildren
   '/rfq/new': typeof RfqNewRoute
   '/supplier-portal/inventory': typeof SupplierPortalInventoryRoute
   '/supplier-portal/messages': typeof SupplierPortalMessagesRoute
@@ -473,14 +496,17 @@ export interface FileRoutesByTo {
   '/rfq': typeof RfqIndexRoute
   '/supplier-portal': typeof SupplierPortalIndexRoute
   '/offers/$id/checkout': typeof OffersIdCheckoutRoute
+  '/rfq/$id/accept': typeof RfqIdAcceptRoute
   '/supplier-portal/products/new': typeof SupplierPortalProductsNewRoute
   '/supplier-portal/products': typeof SupplierPortalProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
   '/custom-requests': typeof CustomRequestsRouteWithChildren
   '/docs': typeof DocsRoute
@@ -516,7 +542,7 @@ export interface FileRoutesById {
   '/onboarding/supplier': typeof OnboardingSupplierRoute
   '/orders/$id': typeof OrdersIdRoute
   '/products/$id': typeof ProductsIdRoute
-  '/rfq/$id': typeof RfqIdRoute
+  '/rfq/$id': typeof RfqIdRouteWithChildren
   '/rfq/new': typeof RfqNewRoute
   '/supplier-portal/inventory': typeof SupplierPortalInventoryRoute
   '/supplier-portal/messages': typeof SupplierPortalMessagesRoute
@@ -534,6 +560,7 @@ export interface FileRoutesById {
   '/rfq/': typeof RfqIndexRoute
   '/supplier-portal/': typeof SupplierPortalIndexRoute
   '/offers/$id/checkout': typeof OffersIdCheckoutRoute
+  '/rfq/$id/accept': typeof RfqIdAcceptRoute
   '/supplier-portal/products/new': typeof SupplierPortalProductsNewRoute
   '/supplier-portal/products/': typeof SupplierPortalProductsIndexRoute
 }
@@ -541,8 +568,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
     | '/admin'
     | '/auth'
+    | '/buyer-portal'
     | '/checkout'
     | '/custom-requests'
     | '/docs'
@@ -596,12 +625,15 @@ export interface FileRouteTypes {
     | '/rfq/'
     | '/supplier-portal/'
     | '/offers/$id/checkout'
+    | '/rfq/$id/accept'
     | '/supplier-portal/products/new'
     | '/supplier-portal/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
     | '/auth'
+    | '/buyer-portal'
     | '/checkout'
     | '/docs'
     | '/forgot-password'
@@ -649,13 +681,16 @@ export interface FileRouteTypes {
     | '/rfq'
     | '/supplier-portal'
     | '/offers/$id/checkout'
+    | '/rfq/$id/accept'
     | '/supplier-portal/products/new'
     | '/supplier-portal/products'
   id:
     | '__root__'
     | '/'
+    | '/account'
     | '/admin'
     | '/auth'
+    | '/buyer-portal'
     | '/checkout'
     | '/custom-requests'
     | '/docs'
@@ -709,14 +744,17 @@ export interface FileRouteTypes {
     | '/rfq/'
     | '/supplier-portal/'
     | '/offers/$id/checkout'
+    | '/rfq/$id/accept'
     | '/supplier-portal/products/new'
     | '/supplier-portal/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BuyerPortalRoute: typeof BuyerPortalRoute
   CheckoutRoute: typeof CheckoutRoute
   CustomRequestsRoute: typeof CustomRequestsRouteWithChildren
   DocsRoute: typeof DocsRoute
@@ -854,6 +892,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/buyer-portal': {
+      id: '/buyer-portal'
+      path: '/buyer-portal'
+      fullPath: '/buyer-portal'
+      preLoaderRoute: typeof BuyerPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -866,6 +911,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -1141,6 +1193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupplierPortalProductsNewRouteImport
       parentRoute: typeof SupplierPortalRoute
     }
+    '/rfq/$id/accept': {
+      id: '/rfq/$id/accept'
+      path: '/accept'
+      fullPath: '/rfq/$id/accept'
+      preLoaderRoute: typeof RfqIdAcceptRouteImport
+      parentRoute: typeof RfqIdRoute
+    }
     '/offers/$id/checkout': {
       id: '/offers/$id/checkout'
       path: '/checkout'
@@ -1249,14 +1308,24 @@ const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
   ProductsRouteChildren,
 )
 
+interface RfqIdRouteChildren {
+  RfqIdAcceptRoute: typeof RfqIdAcceptRoute
+}
+
+const RfqIdRouteChildren: RfqIdRouteChildren = {
+  RfqIdAcceptRoute: RfqIdAcceptRoute,
+}
+
+const RfqIdRouteWithChildren = RfqIdRoute._addFileChildren(RfqIdRouteChildren)
+
 interface RfqRouteChildren {
-  RfqIdRoute: typeof RfqIdRoute
+  RfqIdRoute: typeof RfqIdRouteWithChildren
   RfqNewRoute: typeof RfqNewRoute
   RfqIndexRoute: typeof RfqIndexRoute
 }
 
 const RfqRouteChildren: RfqRouteChildren = {
-  RfqIdRoute: RfqIdRoute,
+  RfqIdRoute: RfqIdRouteWithChildren,
   RfqNewRoute: RfqNewRoute,
   RfqIndexRoute: RfqIndexRoute,
 }
@@ -1305,8 +1374,10 @@ const SuppliersRouteWithChildren = SuppliersRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  BuyerPortalRoute: BuyerPortalRoute,
   CheckoutRoute: CheckoutRoute,
   CustomRequestsRoute: CustomRequestsRouteWithChildren,
   DocsRoute: DocsRoute,

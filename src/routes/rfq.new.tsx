@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { categories, regions } from "@/lib/mock-data";
-import { newRfqId, saveRfq } from "@/lib/rfq-store";
+import type { DeliveryMethod, RFQ } from "@/lib/mock-data";
+import { newRfqId, saveRfq, autoGenerateQuotes } from "@/lib/rfq-store";
+import { useAuth } from "@/lib/auth-store";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check, ArrowLeft, ArrowRight } from "lucide-react";
+import { Check, ArrowLeft, ArrowRight, Truck, Building2, Package } from "lucide-react";
 
 export const Route = createFileRoute("/rfq/new")({
   head: () => ({ meta: [{ title: "Post a Quote Request — PSG" }] }),
@@ -13,8 +15,15 @@ export const Route = createFileRoute("/rfq/new")({
 
 const CERT_OPTIONS = ["DTI", "BIR", "FDA", "BFAR", "HACCP", "ISO", "NMIS", "DA"];
 
+const DELIVERY_METHOD_OPTIONS: { key: DeliveryMethod; icon: any; title: string; desc: string }[] = [
+  { key: "supplier", icon: Package, title: "Supplier Delivery", desc: "Supplier arranges delivery." },
+  { key: "carrier", icon: Truck, title: "3rd-Party Carrier", desc: "Standard courier (LBC / J&T / Lalamove)." },
+  { key: "pickup", icon: Building2, title: "Warehouse Pickup", desc: "We pick up from the supplier." },
+];
+
 function NewRFQ() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     product: "500 kg/month Premium Rice — Recurring Supply",
@@ -27,6 +36,8 @@ function NewRFQ() {
     region: "NCR",
     neededBy: "2026-07-15",
     schedule: "Weekly, Monday 6 AM",
+    preferredDeliveryMethod: "supplier" as DeliveryMethod,
+    invoiceRequired: true,
     verifiedOnly: true,
     certs: ["DTI", "BIR"] as string[],
     notes: "Consistent grade preferred. Open to 6-month contract.",
@@ -42,9 +53,9 @@ function NewRFQ() {
 
   function submit() {
     const id = newRfqId();
-    saveRfq({
+    const base: RFQ = {
       id,
-      buyer: "Lola Nena's Carinderia Group",
+      buyer: user?.businessName || "Lola Nena's Carinderia Group",
       buyerType: "Buyer",
       buyerVerified: true,
       title: form.product,
@@ -57,15 +68,20 @@ function NewRFQ() {
       deliveryLocation: form.deliveryLocation,
       region: form.region,
       postedAgo: "just now",
-      description: `${form.notes}${form.certs.length ? `\n\nRequired certifications: ${form.certs.join(", ")}` : ""}${form.verifiedOnly ? "\nVerified suppliers only." : ""}`,
+      description: `${form.notes}${form.certs.length ? `\n\nRequired certifications: ${form.certs.join(", ")}` : ""}${form.verifiedOnly ? "\nVerified suppliers only." : ""}${form.invoiceRequired ? "\nBIR-compliant invoice required." : ""}`,
       responses: 0,
-      status: "Open",
-      nextAction: "No quotes yet — Share request",
+      status: "Receiving Quotes",
+      preferredDeliveryMethod: form.preferredDeliveryMethod,
+      invoiceRequired: form.invoiceRequired,
+      nextAction: "3 quotes ready — Compare now",
       quotes: [],
-    });
-    toast.success("Your quote request is live. Verified suppliers can now submit offers.");
+    };
+    const quotes = autoGenerateQuotes(base);
+    saveRfq({ ...base, quotes, responses: quotes.length });
+    toast.success(`Your request is live. ${quotes.length} verified suppliers already responded.`);
     navigate({ to: "/rfq/$id", params: { id } });
   }
+
 
   return (
     <AppShell>
@@ -139,8 +155,36 @@ function NewRFQ() {
               <Field label="Preferred delivery schedule">
                 <input className="input" value={form.schedule} onChange={(e) => set("schedule", e.target.value)} placeholder="e.g. Weekly, Monday 6 AM" />
               </Field>
+              <Field label="Preferred delivery method">
+                <div className="grid md:grid-cols-3 gap-2">
+                  {DELIVERY_METHOD_OPTIONS.map((opt) => {
+                    const Icon = opt.icon;
+                    const active = form.preferredDeliveryMethod === opt.key;
+                    return (
+                      <button
+                        type="button"
+                        key={opt.key}
+                        onClick={() => set("preferredDeliveryMethod", opt.key)}
+                        className={`text-left p-3 rounded-md border-2 transition ${active ? "border-primary bg-primary/5" : "hover:border-primary/40"}`}
+                      >
+                        <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
+                        <div className="font-semibold text-xs mt-1.5">{opt.title}</div>
+                        <div className="text-[11px] text-muted-foreground">{opt.desc}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </Field>
+              <label className="flex items-start gap-3 p-3 border rounded-md">
+                <input type="checkbox" checked={form.invoiceRequired} onChange={(e) => set("invoiceRequired", e.target.checked)} className="mt-1" />
+                <div>
+                  <div className="text-sm font-semibold">BIR-compliant invoice required</div>
+                  <div className="text-xs text-muted-foreground">Supplier must issue an official receipt / VAT invoice on delivery.</div>
+                </div>
+              </label>
             </>
           )}
+
 
           {step === 3 && (
             <>

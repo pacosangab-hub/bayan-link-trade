@@ -74,6 +74,8 @@ export type RFQ = {
   status: RFQStatus;
   nextAction?: string;
   selectedSupplierId?: string;
+  preferredDeliveryMethod?: DeliveryMethod;
+  invoiceRequired?: boolean;
   quotes: {
     supplierId: string;
     pricePhp: number;
@@ -82,8 +84,11 @@ export type RFQ = {
     note: string;
     deliveryFee?: number;
     paymentTerms?: string;
+    deliveryMethod?: DeliveryMethod;
   }[];
 };
+
+export type DeliveryMethod = "pickup" | "carrier" | "supplier";
 
 export type Order = {
   id: string;
@@ -1195,7 +1200,26 @@ export const formatPhp = (n: number) =>
   "₱" + n.toLocaleString("en-PH", { maximumFractionDigits: 0 });
 
 export const supplierById = (id: string) => suppliers.find((s) => s.id === id)!;
-export const productById = (id: string) => products.find((p) => p.id === id)!;
+export const productById = (id: string): Product => {
+  const found = products.find((p) => p.id === id);
+  if (found) return found;
+  // Fallback for synthetic IDs (e.g. RFQ-originated orders).
+  return {
+    id,
+    supplierId: "sup_001",
+    title: "Custom RFQ Order",
+    category: "Custom",
+    unit: "unit",
+    moq: 1,
+    pricePhp: 0,
+    tierPricing: [{ qty: 1, price: 0 }],
+    leadTimeDays: 3,
+    image: `https://images.unsplash.com/photo-${I.warehouse}?auto=format&fit=crop&w=800&q=70`,
+    stock: "Custom",
+    origin: "—",
+    description: "Order created from a quote request.",
+  } as Product;
+};
 export const rfqById = (id: string) => rfqs.find((r) => r.id === id)!;
 export const orderById = (id: string) => orders.find((o) => o.id === id)!;
 

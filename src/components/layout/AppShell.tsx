@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut, Settings as SettingsIcon, User as UserIcon, Building2, Store, ShieldCheck, Moon, Sun } from "lucide-react";
+import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut, Settings as SettingsIcon, User as UserIcon, Building2, Store, ShieldCheck, Moon, Sun, LayoutDashboard } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
 import { NotificationBell } from "./NotificationBell";
@@ -131,7 +131,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <div className="text-[11px] text-muted-foreground truncate">{user.businessName}</div>
                       <div className="mt-1 inline-flex text-[10px] uppercase tracking-widest font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{ROLE_LABEL[user.role]}</div>
                     </div>
-                    <Link to="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                    {(user.role === "buyer" || user.role === "both" || user.role === "admin") && (
+                      <Link to="/buyer-portal" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                        <LayoutDashboard size={14} /> Buyer Dashboard
+                      </Link>
+                    )}
+                    <Link to="/account" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
                       <UserIcon size={14} /> My Account
                     </Link>
                     <Link to="/supplier-portal/preview" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
@@ -140,6 +145,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <Link to="/settings" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
                       <SettingsIcon size={14} /> Settings
                     </Link>
+
                     {(user.role === "supplier" || user.role === "both") && (
                       <Link to="/supplier-portal" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
                         <Store size={14} /> Supplier Portal
