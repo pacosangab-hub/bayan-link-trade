@@ -390,4 +390,47 @@ export function disputeOrder(id: string, dispute: DisputeRecord) {
   saveDemoOrder({ ...o, escrowState: "Disputed", dispute });
 }
 
+export function createOrderFromRfq(args: {
+  rfqId: string;
+  title: string;
+  buyer: string;
+  supplierId: string;
+  qty: number;
+  unit: string;
+  unitPrice: number;
+  deliveryFee: number;
+  deliveryMethod: DeliveryMethodKey;
+  invoiceRequired: boolean;
+  address: DemoOrder["address"];
+  shippingDest?: ShippingDest;
+  payment?: string;
+}): DemoOrder {
+  const subtotal = args.qty * args.unitPrice;
+  const now = new Date().toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" });
+  const order: DemoOrder = {
+    id: newOrderIdFromTime(),
+    buyer: args.buyer,
+    supplierId: args.supplierId,
+    items: [{ productId: `rfq_${args.rfqId}`, qty: args.qty, price: args.unitPrice, title: args.title }],
+    subtotal,
+    shippingCost: args.deliveryFee,
+    shippingDest: args.shippingDest ?? "Metro Manila",
+    totalPhp: subtotal + args.deliveryFee,
+    placed: now,
+    escrowState: "Funds Held in Escrow",
+    payment: args.payment ?? "Bank Transfer (Escrow)",
+    address: args.address,
+    deliveryMethod: args.deliveryMethod,
+    invoiceRequired: args.invoiceRequired,
+    rfqId: args.rfqId,
+    stages: {
+      created: { at: now, note: `Order created from RFQ ${args.rfqId}` },
+      funded: { at: now, note: "Escrow funded — awaiting supplier" },
+    },
+    proofs: [],
+  };
+  saveDemoOrder(order);
+  return order;
+}
+
 export { formatPhp, products };
