@@ -115,3 +115,33 @@ export function newRfqId(): string {
   const n = Math.floor(Date.now() / 1000) % 1000000;
   return `rfq_d${n}`;
 }
+
+/** Auto-generate 3 plausible supplier offers for a fresh RFQ. Prototype only. */
+export function autoGenerateQuotes(rfq: RFQ): RFQ["quotes"] {
+  const preferred = rfq.preferredDeliveryMethod;
+  // Pick 3 verified suppliers, prefer category match.
+  const pool = suppliers.filter((s) => s.verified);
+  const matches = pool.filter((s) => s.categories.some((c) => rfq.category.includes(c) || c.includes(rfq.category)));
+  const chosen = (matches.length >= 3 ? matches : [...matches, ...pool.filter((s) => !matches.includes(s))]).slice(0, 3);
+  const budgetHint = parseFloat((rfq.budgetPhp.match(/\d+(\.\d+)?/g) || ["100"])[0]);
+  const base = Math.max(50, budgetHint || 100);
+  const methods: DeliveryMethod[] = preferred
+    ? [preferred, "carrier", "supplier"]
+    : ["supplier", "carrier", "pickup"];
+  const notes = [
+    "Locked-in pricing for 3–6 months. Volume discount available.",
+    "Free samples on request. Weekly delivery slots open.",
+    "Fastest turnaround — dispatched from nearest depot.",
+  ];
+  return chosen.map((s, i) => ({
+    supplierId: s.id,
+    pricePhp: Math.round(base * (0.92 + i * 0.07) * 100) / 100,
+    moq: 50 + i * 50,
+    leadTimeDays: i === 0 ? 2 : i === 1 ? 4 : 7,
+    note: notes[i],
+    deliveryFee: methods[i] === "pickup" ? 0 : methods[i] === "supplier" ? 0 : 400 + i * 200,
+    paymentTerms: i === 0 ? "50% escrow / 50% on delivery" : "Full escrow",
+    deliveryMethod: methods[i],
+  }));
+}
+
