@@ -55,11 +55,13 @@ export type DisputeRecord = {
   at: string;
 };
 
+export type DeliveryMethodKey = "pickup" | "carrier" | "supplier";
+
 export type DemoOrder = {
   id: string;
   buyer: string;
   supplierId: string;
-  items: { productId: string; qty: number; price: number }[];
+  items: { productId: string; qty: number; price: number; title?: string }[];
   subtotal: number;
   shippingCost: number;
   shippingDest: ShippingDest;
@@ -74,6 +76,9 @@ export type DemoOrder = {
     address: string;
     instructions: string;
   };
+  deliveryMethod?: DeliveryMethodKey;
+  invoiceRequired?: boolean;
+  rfqId?: string;
   stages?: Partial<Record<StageKey, StageRecord>>;
   proofs?: Proof[];
   dispute?: DisputeRecord;
