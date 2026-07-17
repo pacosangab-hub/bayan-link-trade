@@ -2,8 +2,8 @@
 // Mirrors the pattern in src/lib/cart.ts.
 
 import { useSyncExternalStore } from "react";
-import type { RFQ, RFQStatus } from "./mock-data";
-import { rfqs as seedRfqs } from "./mock-data";
+import type { RFQ, RFQStatus, DeliveryMethod } from "./mock-data";
+import { rfqs as seedRfqs, suppliers } from "./mock-data";
 
 const RFQ_KEY = "psg_rfqs_v1";
 const isBrowser = typeof window !== "undefined";
