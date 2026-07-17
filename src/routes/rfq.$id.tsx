@@ -2,12 +2,11 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { AppShell } from "@/components/layout/AppShell";
 import { Rating, statusChipClass } from "@/components/ui-bits";
 import { supplierById, formatPhp } from "@/lib/mock-data";
-import type { RFQStatus } from "@/lib/mock-data";
-import { useRfq, selectSupplier, getRfq } from "@/lib/rfq-store";
-import { MapPin, Calendar, Package, Wallet, ShieldCheck, MessageSquare, ArrowRight, CheckCircle2, Sparkles, Paperclip } from "lucide-react";
+import type { RFQStatus, DeliveryMethod } from "@/lib/mock-data";
+import { useRfq, getRfq } from "@/lib/rfq-store";
+import { MapPin, Calendar, Package, Wallet, ShieldCheck, MessageSquare, ArrowRight, CheckCircle2, Sparkles, Paperclip, Truck, Building2, Zap, Award } from "lucide-react";
 import { useState } from "react";
-import ChooseSupplierModal from "@/components/rfq/ChooseSupplierModal";
-import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/rfq/$id")({
   loader: ({ params }) => {
