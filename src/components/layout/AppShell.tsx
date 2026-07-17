@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut, Settings as SettingsIcon, User as UserIcon, Building2, Store, ShieldCheck, Moon, Sun } from "lucide-react";
+import { MessageSquare, ShoppingCart, ChevronDown, Menu, LogIn, UserPlus, LogOut, Settings as SettingsIcon, User as UserIcon, Building2, Store, ShieldCheck, Moon, Sun, LayoutDashboard } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useCartCount } from "@/lib/cart";
 import { NotificationBell } from "./NotificationBell";
