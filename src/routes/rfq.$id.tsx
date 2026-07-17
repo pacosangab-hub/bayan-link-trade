@@ -110,12 +110,22 @@ function RFQDetail() {
         {/* RIGHT — quotes / order summary */}
         <div className="space-y-6">
           {selected ? (
-            <OrderSummary supplierId={selected.supplierId} pricePhp={selected.pricePhp} rfqTitle={r.title} qty={r.qty} onContinue={() => navigate({ to: "/checkout" })} />
+            <OrderSummary supplierId={selected.supplierId} pricePhp={selected.pricePhp} rfqTitle={r.title} qty={r.qty} onContinue={() => navigate({ to: "/rfq/$id/accept", params: { id: r.id }, search: { supplier: selected.supplierId } })} />
           ) : (
             <>
-              <div className="flex items-center justify-between">
-                <h2 className="font-display text-2xl">Quote Comparison ({r.quotes.length})</h2>
-                <span className="text-xs text-muted-foreground">Sorted by best value</span>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-2xl">Quote comparison ({r.quotes.length})</h2>
+                  <p className="text-xs text-muted-foreground">Compare price, delivery, and total landed cost. Recommended offer highlighted.</p>
+                </div>
+                <div className="flex items-center gap-1 text-xs">
+                  <span className="text-muted-foreground mr-1">Sort by:</span>
+                  {(["value", "price", "lead"] as const).map((k) => (
+                    <button key={k} onClick={() => setSortBy(k)} className={`px-2.5 py-1 rounded-md border ${sortBy === k ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted"}`}>
+                      {k === "value" ? "Best value" : k === "price" ? "Lowest price" : "Fastest"}
+                    </button>
+                  ))}
+                </div>
               </div>
               {r.quotes.length === 0 ? (
                 <div className="rounded-lg border bg-card p-10 text-center">
@@ -123,49 +133,52 @@ function RFQDetail() {
                   <p className="text-sm text-muted-foreground">Verified suppliers have been notified. First quotes typically arrive in 2–6 hours.</p>
                 </div>
               ) : (
-                <div className="rounded-lg border bg-card overflow-hidden">
-                  <div className="hidden md:grid grid-cols-[1.5fr_1fr_1fr_0.9fr_0.9fr_1.2fr] text-xs font-semibold uppercase tracking-wide bg-muted/60 px-4 py-2.5">
-                    <div>Supplier</div>
-                    <div>Price</div>
-                    <div>Delivery</div>
-                    <div>MOQ</div>
-                    <div>Rating</div>
-                    <div className="text-right">Action</div>
-                  </div>
-                  {sortedByValue(r.quotes).map((q) => {
+                <div className="grid gap-3">
+                  {sortQuotes(r.quotes, sortBy, bestQuoteId).map((q) => {
                     const s = supplierById(q.supplierId);
-                    const best = q.supplierId === bestQuoteId;
+                    const fee = q.deliveryFee ?? 0;
+                    const subtotal = q.pricePhp * qtyNum;
+                    const total = subtotal + fee;
+                    const tags: { label: string; cls: string; icon: any }[] = [];
+                    if (q.supplierId === bestQuoteId) tags.push({ label: "Best value", cls: "chip-gold", icon: Award });
+                    if (q.supplierId === cheapestId && q.supplierId !== bestQuoteId) tags.push({ label: "Lowest price", cls: "chip-primary", icon: Wallet });
+                    if (q.supplierId === fastestId && q.supplierId !== bestQuoteId) tags.push({ label: "Fastest", cls: "chip-verified", icon: Zap });
                     return (
-                      <div
-                        key={q.supplierId}
-                        className={`grid grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_0.9fr_0.9fr_1.2fr] gap-2 px-4 py-4 border-t items-center ${best ? "bg-gold/5" : ""}`}
-                      >
-                        <div className="col-span-2 md:col-span-1">
-                          <div className="flex items-center gap-2">
+                      <div key={q.supplierId} className={`rounded-lg border-2 bg-card p-4 grid md:grid-cols-[1.4fr_1fr_1fr_auto] gap-4 items-center ${q.supplierId === bestQuoteId ? "border-primary" : ""}`}>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <Link to="/suppliers/$id" params={{ id: s.id }} className="font-semibold hover:text-primary truncate">{s.name}</Link>
-                            {s.verified && <ShieldCheck size={13} className="text-success shrink-0" />}
+                            {s.verified && <ShieldCheck size={14} className="text-success" />}
+                            {tags.map((t) => {
+                              const Icon = t.icon;
+                              return <span key={t.label} className={`chip ${t.cls} text-[10px] inline-flex items-center gap-1`}><Icon size={10} /> {t.label}</span>;
+                            })}
                           </div>
-                          <div className="text-xs text-muted-foreground truncate">{s.location}</div>
-                          {best && <span className="chip chip-gold mt-1 text-[10px]">★ Recommended Best Value</span>}
+                          <div className="text-xs text-muted-foreground mt-0.5">{s.location} · <Rating value={s.rating} /> ({s.reviews})</div>
+                          <div className="text-xs text-muted-foreground mt-1 flex items-center gap-3 flex-wrap">
+                            <span className="inline-flex items-center gap-1"><Package size={11} /> MOQ {q.moq}</span>
+                            <span className="inline-flex items-center gap-1">{q.deliveryMethod === "pickup" ? <Building2 size={11} /> : <Truck size={11} />} {deliveryLabel(q.deliveryMethod)}</span>
+                            {q.paymentTerms && <span className="chip text-[10px]">{q.paymentTerms}</span>}
+                          </div>
                         </div>
-                        <div className="text-sm font-semibold">{q.pricePhp > 0 ? formatPhp(q.pricePhp) : "Sample first"}</div>
-                        <div className="text-sm">{q.leadTimeDays} days</div>
-                        <div className="text-sm">{q.moq || "—"}</div>
-                        <div className="text-sm"><Rating value={s.rating} /></div>
-                        <div className="col-span-2 md:col-span-1 flex flex-wrap md:justify-end gap-1.5 mt-2 md:mt-0">
-                          <Link to="/suppliers/$id" params={{ id: s.id }} className="text-xs border rounded px-2.5 py-1.5 hover:bg-muted">View Supplier</Link>
-                          <Link to="/messages" className="text-xs border rounded px-2.5 py-1.5 hover:bg-muted inline-flex items-center gap-1"><MessageSquare size={11} /> Message</Link>
-                          <button
-                            onClick={() => setConfirmFor({ supplierId: q.supplierId, price: q.pricePhp })}
-                            className="text-xs bg-primary text-primary-foreground rounded px-3 py-1.5 font-semibold hover:opacity-95"
-                          >
-                            Choose
-                          </button>
+                        <div>
+                          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Unit price</div>
+                          <div className="font-display text-lg">{q.pricePhp > 0 ? formatPhp(q.pricePhp) : "Sample first"}</div>
+                          <div className="text-xs text-muted-foreground">Lead time: {q.leadTimeDays} days</div>
+                        </div>
+                        <div>
+                          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Total landed cost</div>
+                          <div className="font-display text-lg">{formatPhp(total)}</div>
+                          <div className="text-xs text-muted-foreground">{formatPhp(subtotal)} + {fee ? formatPhp(fee) + " delivery" : "free delivery"}</div>
+                        </div>
+                        <div className="flex md:flex-col gap-2 md:items-stretch">
+                          <Link to="/messages" className="text-xs border rounded px-3 py-2 hover:bg-muted inline-flex items-center justify-center gap-1"><MessageSquare size={12} /> Message</Link>
+                          <Link to="/rfq/$id/accept" params={{ id: r.id }} search={{ supplier: q.supplierId }} className="text-xs bg-primary text-primary-foreground rounded px-3 py-2 font-semibold inline-flex items-center justify-center gap-1">
+                            Accept quote <ArrowRight size={12} />
+                          </Link>
                         </div>
                         {q.note && (
-                          <div className="col-span-2 md:col-span-6 text-xs text-muted-foreground italic pt-2 border-t border-dashed mt-1">
-                            "{q.note}" {q.paymentTerms && <span className="not-italic ml-2 chip">{q.paymentTerms}</span>}
-                          </div>
+                          <div className="md:col-span-4 text-xs text-muted-foreground italic pt-3 border-t border-dashed">"{q.note}"</div>
                         )}
                       </div>
                     );
@@ -176,22 +189,10 @@ function RFQDetail() {
           )}
         </div>
       </div>
-
-      {confirmFor && (
-        <ChooseSupplierModal
-          supplierId={confirmFor.supplierId}
-          pricePhp={confirmFor.price}
-          onCancel={() => setConfirmFor(null)}
-          onConfirm={() => {
-            selectSupplier(r.id, confirmFor.supplierId);
-            toast.success("Supplier selected — order draft created.");
-            setConfirmFor(null);
-          }}
-        />
-      )}
     </AppShell>
   );
 }
+
 
 function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
