@@ -36,14 +36,18 @@ const TIMELINE: RFQStatus[] = ["Draft", "Open", "Receiving Quotes", "Awaiting De
 function RFQDetail() {
   const { id } = Route.useLoaderData();
   const r = useRfq(id);
-  const [confirmFor, setConfirmFor] = useState<{ supplierId: string; price: number } | null>(null);
   const navigate = useNavigate();
+  const [sortBy, setSortBy] = useState<"value" | "price" | "lead">("value");
 
   if (!r) return null;
 
   const idx = Math.max(0, TIMELINE.indexOf(r.status));
   const bestQuoteId = pickBestQuote(r.quotes);
+  const fastestId = pickByField(r.quotes, "leadTimeDays");
+  const cheapestId = pickCheapest(r.quotes);
   const selected = r.selectedSupplierId ? r.quotes.find((q) => q.supplierId === r.selectedSupplierId) : null;
+  const qtyNum = parseFloat(r.qty.match(/[\d.]+/)?.[0] || "1") || 1;
+
 
   return (
     <AppShell>
