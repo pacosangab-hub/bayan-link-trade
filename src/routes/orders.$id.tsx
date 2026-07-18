@@ -183,6 +183,21 @@ function OrderDetailPage() {
           </div>
         </div>
 
+        {/* Delivery */}
+        {o.deliveryDetails && (
+          <DeliveryCard
+            details={o.deliveryDetails}
+            supplierName={s.name}
+            address={o.address}
+            onTrack={() => setTrackingOpen(true)}
+            onMessage={() => window.location.assign("/messages")}
+            onConfirm={() => setConfirmOpen(true)}
+            onReport={() => setDisputeOpen(true)}
+            isComplete={isComplete}
+            isDisputed={isDisputed}
+          />
+        )}
+
         {/* Actions */}
         <ActionBar
           order={o} role={role} isDisputed={isDisputed} isComplete={isComplete}
