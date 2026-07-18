@@ -51,6 +51,7 @@ function OrderDetailPage() {
   const [uploadStage, setUploadStage] = useState<StageKey>("preparing");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [disputeOpen, setDisputeOpen] = useState(false);
+  const [trackingOpen, setTrackingOpen] = useState(false);
 
   if (!o) {
     if (hydrated && !MOCK_ORDERS.some((x) => x.id === id)) return <OrderNotFound orderId={id} />;
