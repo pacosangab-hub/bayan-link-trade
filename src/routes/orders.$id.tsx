@@ -4,12 +4,13 @@ import { supplierById, productById, formatPhp, orders as MOCK_ORDERS } from "@/l
 import {
   MessageSquare, ShieldAlert, ShieldCheck, CheckCircle2, Clock, Circle,
   Upload, X, Image as ImageIcon, MapPin, BadgeCheck, AlertTriangle, FileText,
+  Truck, Package, Boxes, User, Car, Phone, Calendar, ExternalLink,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   useDemoOrder, ensureDemoOrder, currentStage, nextStage, advanceStage,
   addProof, confirmDeliveryAndRelease, disputeOrder,
-  type DemoOrder, type StageKey, type ProofType, type Proof,
+  type DemoOrder, type StageKey, type ProofType, type Proof, type DeliveryDetails,
 } from "@/lib/cart";
 import { useDemoRole } from "@/lib/demo/session";
 import { pushNotification } from "@/lib/demo/notifications";
@@ -50,6 +51,7 @@ function OrderDetailPage() {
   const [uploadStage, setUploadStage] = useState<StageKey>("preparing");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [disputeOpen, setDisputeOpen] = useState(false);
+  const [trackingOpen, setTrackingOpen] = useState(false);
 
   if (!o) {
     if (hydrated && !MOCK_ORDERS.some((x) => x.id === id)) return <OrderNotFound orderId={id} />;
@@ -181,6 +183,21 @@ function OrderDetailPage() {
           </div>
         </div>
 
+        {/* Delivery */}
+        {o.deliveryDetails && (
+          <DeliveryCard
+            details={o.deliveryDetails}
+            supplierName={s.name}
+            address={o.address}
+            onTrack={() => setTrackingOpen(true)}
+            onMessage={() => window.location.assign("/messages")}
+            onConfirm={() => setConfirmOpen(true)}
+            onReport={() => setDisputeOpen(true)}
+            isComplete={isComplete}
+            isDisputed={isDisputed}
+          />
+        )}
+
         {/* Actions */}
         <ActionBar
           order={o} role={role} isDisputed={isDisputed} isComplete={isComplete}
@@ -289,6 +306,9 @@ function OrderDetailPage() {
           onClose={() => setDisputeOpen(false)}
           onSubmit={handleDispute}
         />
+      )}
+      {trackingOpen && o.deliveryDetails?.method === "carrier" && (
+        <TrackingModal details={o.deliveryDetails} onClose={() => setTrackingOpen(false)} />
       )}
     </AppShell>
   );
@@ -650,6 +670,156 @@ function DisputeModal({
           >
             Submit Report
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =================== Delivery card ===================
+
+function DeliveryCard({
+  details, supplierName, address, onTrack, onMessage, onConfirm, onReport, isComplete, isDisputed,
+}: {
+  details: DeliveryDetails;
+  supplierName: string;
+  address: DemoOrder["address"];
+  onTrack: () => void;
+  onMessage: () => void;
+  onConfirm: () => void;
+  onReport: () => void;
+  isComplete: boolean;
+  isDisputed: boolean;
+}) {
+  const emoji = details.method === "pickup" ? "📦" : details.method === "carrier" ? "🚚" : "🚛";
+  return (
+    <div className="rounded-xl border bg-card p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Delivery</div>
+          <div className="mt-1 font-display text-xl flex items-center gap-2">
+            <span>{emoji}</span> {details.label}
+          </div>
+          <div className="text-xs text-muted-foreground mt-0.5">ETA: {details.eta}</div>
+        </div>
+        <div className="text-right shrink-0">
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Delivery fee</div>
+          <div className="font-display text-lg">{details.fee ? formatPhp(details.fee) : "FREE"}</div>
+        </div>
+      </div>
+
+      <div className="mt-4">
+        {details.method === "pickup" && (
+          <div className="grid sm:grid-cols-2 gap-3 text-xs">
+            <DField icon={MapPin} label="Warehouse" value={details.warehouseName} sub={details.warehouseAddress} />
+            <DField icon={User} label="Contact person" value={details.contactPerson} sub={details.contactPhone} />
+            <DField icon={Calendar} label="Available date" value={details.availableDate} />
+            <DField icon={Clock} label="Available time" value={details.availableTime} sub={details.prepTime} />
+          </div>
+        )}
+        {details.method === "carrier" && (
+          <div className="grid sm:grid-cols-2 gap-3 text-xs">
+            <DField icon={Truck} label="Carrier" value={details.carrier} />
+            <DField icon={Package} label="Tracking number" value={details.trackingNumber} />
+            <DField icon={Clock} label="Current status" value={details.currentStatus} sub={`Est. arrival ${details.eta}`} />
+            <DField icon={MapPin} label="Destination" value={address.address} />
+          </div>
+        )}
+        {details.method === "supplier" && (
+          <div className="grid sm:grid-cols-2 gap-3 text-xs">
+            <DField icon={User} label="Driver" value={details.driverName} />
+            <DField icon={Car} label="Vehicle plate" value={details.vehiclePlate} />
+            <DField icon={Phone} label="Driver contact" value={details.contactPhone} />
+            <DField icon={Clock} label="Arrival window" value={details.eta} sub={`${supplierName} logistics`} />
+          </div>
+        )}
+      </div>
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        {details.method === "carrier" && (
+          <button onClick={onTrack} className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground rounded-md px-4 py-2 text-xs font-semibold">
+            <Truck size={13} /> Track Shipment
+          </button>
+        )}
+        <button onClick={onMessage} className="inline-flex items-center gap-1.5 border rounded-md px-4 py-2 text-xs font-semibold hover:bg-muted">
+          <MessageSquare size={13} /> Message Supplier
+        </button>
+        {!isComplete && !isDisputed && (
+          <button onClick={onConfirm} className="inline-flex items-center gap-1.5 border rounded-md px-4 py-2 text-xs font-semibold hover:bg-muted">
+            <CheckCircle2 size={13} /> Confirm Delivery
+          </button>
+        )}
+        {!isComplete && (
+          <button onClick={onReport} className="inline-flex items-center gap-1.5 border border-destructive/40 text-destructive rounded-md px-4 py-2 text-xs font-semibold hover:bg-destructive/5">
+            <AlertTriangle size={13} /> Report Problem
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DField({ icon: Icon, label, value, sub }: { icon: typeof Package; label: string; value: string; sub?: string }) {
+  return (
+    <div className="flex gap-2 items-start">
+      <Icon size={14} className="text-primary shrink-0 mt-0.5" />
+      <div className="min-w-0">
+        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+        <div className="font-semibold truncate">{value}</div>
+        {sub && <div className="text-[10px] text-muted-foreground truncate">{sub}</div>}
+      </div>
+    </div>
+  );
+}
+
+// =================== Tracking modal ===================
+
+function TrackingModal({ details, onClose }: { details: Extract<DeliveryDetails, { method: "carrier" }>; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 bg-background/80 backdrop-blur z-50 grid place-items-center p-4" onClick={onClose}>
+      <div className="bg-card rounded-xl border shadow-2xl max-w-lg w-full max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-5 border-b flex items-start justify-between gap-3">
+          <div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Live tracking</div>
+            <div className="font-display text-xl mt-1">{details.carrier}</div>
+            <div className="text-xs text-muted-foreground font-mono mt-0.5">{details.trackingNumber}</div>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded hover:bg-muted"><X size={16} /></button>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="rounded-lg bg-primary/5 border border-primary/30 p-3">
+            <div className="text-xs text-muted-foreground">Current status</div>
+            <div className="font-semibold text-primary flex items-center gap-2 mt-0.5">
+              <Truck size={16} /> {details.currentStatus}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">Estimated arrival: <span className="font-semibold text-foreground">{details.eta}</span></div>
+          </div>
+
+          <ol className="relative">
+            {details.history.map((ev, i) => {
+              const isLast = i === details.history.length - 1;
+              return (
+                <li key={i} className="relative pl-8 pb-4">
+                  {!isLast && <span className="absolute left-[11px] top-6 bottom-0 w-0.5 bg-border" />}
+                  <span className={`absolute left-0 top-1 size-6 rounded-full grid place-items-center border-2 ${isLast ? "bg-primary border-primary text-white animate-pulse" : "bg-success border-success text-white"}`}>
+                    {isLast ? <Clock size={12} /> : <CheckCircle2 size={12} />}
+                  </span>
+                  <div className="text-sm font-semibold">{ev.status}</div>
+                  <div className="text-xs text-muted-foreground">{ev.location}</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">{ev.at}</div>
+                </li>
+              );
+            })}
+          </ol>
+
+          <a
+            href={details.trackingLink}
+            target="_blank"
+            rel="noreferrer"
+            className="w-full inline-flex items-center justify-center gap-2 border rounded-md px-4 py-2 text-xs font-semibold hover:bg-muted"
+          >
+            <ExternalLink size={12} /> Open on {details.carrier} website
+          </a>
         </div>
       </div>
     </div>
