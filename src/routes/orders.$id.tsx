@@ -4,12 +4,13 @@ import { supplierById, productById, formatPhp, orders as MOCK_ORDERS } from "@/l
 import {
   MessageSquare, ShieldAlert, ShieldCheck, CheckCircle2, Clock, Circle,
   Upload, X, Image as ImageIcon, MapPin, BadgeCheck, AlertTriangle, FileText,
+  Truck, Package, Boxes, User, Car, Phone, Calendar, ExternalLink,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   useDemoOrder, ensureDemoOrder, currentStage, nextStage, advanceStage,
   addProof, confirmDeliveryAndRelease, disputeOrder,
-  type DemoOrder, type StageKey, type ProofType, type Proof,
+  type DemoOrder, type StageKey, type ProofType, type Proof, type DeliveryDetails,
 } from "@/lib/cart";
 import { useDemoRole } from "@/lib/demo/session";
 import { pushNotification } from "@/lib/demo/notifications";
