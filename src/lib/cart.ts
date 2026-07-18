@@ -314,6 +314,8 @@ export function escrowOrder(args: {
   shippingDest: ShippingDest;
   payment: string;
   address: DemoOrder["address"];
+  deliveryMethod?: DeliveryMethodKey;
+  deliveryDetails?: DeliveryDetails;
 }): DemoOrder {
   const lineItems = args.items.map((it) => ({
     productId: it.productId,
@@ -324,21 +326,24 @@ export function escrowOrder(args: {
   const ship = shippingTable[args.shippingDest];
   const supplierId = productById(lineItems[0].productId).supplierId;
   const now = new Date().toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" });
+  const deliveryFee = args.deliveryDetails ? args.deliveryDetails.fee : ship.cost;
   return {
     id: newOrderIdFromTime(),
     buyer: "Lola Nena's Carinderia Group",
     supplierId,
     items: lineItems,
     subtotal,
-    shippingCost: ship.cost,
+    shippingCost: deliveryFee,
     shippingDest: args.shippingDest,
-    totalPhp: subtotal + ship.cost,
+    totalPhp: subtotal + deliveryFee,
     placed: now,
     escrowState: "Funds Held in Escrow",
     payment: args.payment,
     address: args.address,
+    deliveryMethod: args.deliveryMethod,
+    deliveryDetails: args.deliveryDetails,
     stages: {
-      created: { at: now, note: "Custom offer accepted · Order summary generated" },
+      created: { at: now, note: "Order placed from marketplace checkout" },
       funded: { at: now, note: "Demo escrow payment confirmed" },
     },
     proofs: [],
