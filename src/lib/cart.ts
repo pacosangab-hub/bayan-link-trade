@@ -57,6 +57,43 @@ export type DisputeRecord = {
 
 export type DeliveryMethodKey = "pickup" | "carrier" | "supplier";
 
+export type TrackingEvent = { at: string; location: string; status: string };
+
+export type DeliveryDetails =
+  | {
+      method: "pickup";
+      label: string;
+      warehouseName: string;
+      warehouseAddress: string;
+      contactPerson: string;
+      contactPhone: string;
+      availableDate: string;
+      availableTime: string;
+      prepTime: string;
+      fee: number;
+      eta: string;
+    }
+  | {
+      method: "carrier";
+      label: string;
+      carrier: string;
+      trackingNumber: string;
+      trackingLink: string;
+      currentStatus: string;
+      eta: string;
+      fee: number;
+      history: TrackingEvent[];
+    }
+  | {
+      method: "supplier";
+      label: string;
+      driverName: string;
+      vehiclePlate: string;
+      contactPhone: string;
+      eta: string;
+      fee: number;
+    };
+
 export type DemoOrder = {
   id: string;
   buyer: string;
@@ -77,6 +114,7 @@ export type DemoOrder = {
     instructions: string;
   };
   deliveryMethod?: DeliveryMethodKey;
+  deliveryDetails?: DeliveryDetails;
   invoiceRequired?: boolean;
   rfqId?: string;
   stages?: Partial<Record<StageKey, StageRecord>>;
@@ -91,6 +129,66 @@ export type DemoOrder = {
     comment: string;
   };
 };
+
+function tomorrowLabel(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toLocaleDateString("en-PH", { weekday: "long", month: "short", day: "numeric" });
+}
+
+function todayShort(): string {
+  return new Date().toLocaleDateString("en-PH", { month: "short", day: "numeric" });
+}
+
+export function buildDeliveryDetails(
+  method: DeliveryMethodKey,
+  opts: { supplierName: string; supplierLocation: string; destination: string }
+): DeliveryDetails {
+  const tomorrow = tomorrowLabel();
+  if (method === "pickup") {
+    return {
+      method: "pickup",
+      label: "Warehouse Pickup",
+      warehouseName: `${opts.supplierName} Warehouse`,
+      warehouseAddress: opts.supplierLocation,
+      contactPerson: "Warehouse Officer",
+      contactPhone: "+63 917 555 0142",
+      availableDate: tomorrow,
+      availableTime: "8:00 AM – 5:00 PM",
+      prepTime: "Ready in 4–6 hours",
+      fee: 0,
+      eta: `Pickup ${tomorrow}`,
+    };
+  }
+  if (method === "carrier") {
+    const tracking = `LBC-${Math.floor(100000000 + Math.random() * 899999999)}`;
+    return {
+      method: "carrier",
+      label: "LBC Express (3rd-Party Carrier)",
+      carrier: "LBC Express",
+      trackingNumber: tracking,
+      trackingLink: `https://www.lbcexpress.com/track/?tracking_no=${tracking}`,
+      currentStatus: "Picked up from supplier",
+      eta: `${tomorrow}, 2:00 PM – 5:00 PM`,
+      fee: 850,
+      history: [
+        { at: `${todayShort()} · 10:15 AM`, location: opts.supplierLocation, status: "Shipment picked up from supplier" },
+        { at: `${todayShort()} · 2:45 PM`, location: "LBC Sorting Facility, Valenzuela", status: "Arrived at sorting center" },
+        { at: `${todayShort()} · 6:30 PM`, location: "Valenzuela Hub", status: "Left sorting facility" },
+        { at: `${tomorrow} · (Live)`, location: `In transit to ${opts.destination}`, status: "Out for delivery" },
+      ],
+    };
+  }
+  return {
+    method: "supplier",
+    label: `${opts.supplierName} Logistics`,
+    driverName: "Juan Dela Cruz",
+    vehiclePlate: "NAB-4021",
+    contactPhone: "+63 918 200 4021",
+    eta: `${tomorrow}, 9:00 AM – 11:00 AM`,
+    fee: 500,
+  };
+}
 
 const CART_KEY = "psg_cart_v1";
 const ORDERS_KEY = "psg_demo_orders_v1";
