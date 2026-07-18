@@ -43,6 +43,7 @@ function OrdersList() {
                 <th className="text-left px-4 py-3">Order</th>
                 <th className="text-left px-4 py-3">Supplier</th>
                 <th className="text-left px-4 py-3">Placed</th>
+                <th className="text-left px-4 py-3">Delivery</th>
                 <th className="text-right px-4 py-3">Amount</th>
                 <th className="text-left px-4 py-3">Escrow status</th>
                 <th></th>
@@ -51,6 +52,8 @@ function OrdersList() {
             <tbody>
               {rows.map((order) => {
                 const supplier = supplierById(order.supplierId);
+                const anyOrder = order as typeof order & { deliveryDetails?: { label: string; eta?: string } };
+                const delivery = anyOrder.deliveryDetails;
                 return (
                   <tr key={order.id} className="border-t hover:bg-muted/40">
                     <td className="px-4 py-3 font-mono text-xs">{order.id.toUpperCase()}</td>
@@ -59,6 +62,16 @@ function OrdersList() {
                       <div className="text-xs text-muted-foreground">{supplier.location}</div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{order.placed}</td>
+                    <td className="px-4 py-3">
+                      {delivery ? (
+                        <>
+                          <div className="text-xs font-medium">{delivery.label}</div>
+                          {delivery.eta && <div className="text-[10px] text-muted-foreground">{delivery.eta}</div>}
+                        </>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-right font-semibold">{formatPhp(order.totalPhp)}</td>
                     <td className="px-4 py-3">
                       <span className={`chip ${stateColors[order.escrowState] ?? ""}`}>{order.escrowState}</span>
