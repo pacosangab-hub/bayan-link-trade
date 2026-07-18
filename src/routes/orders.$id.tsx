@@ -307,6 +307,9 @@ function OrderDetailPage() {
           onSubmit={handleDispute}
         />
       )}
+      {trackingOpen && o.deliveryDetails?.method === "carrier" && (
+        <TrackingModal details={o.deliveryDetails} onClose={() => setTrackingOpen(false)} />
+      )}
     </AppShell>
   );
 }
