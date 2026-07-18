@@ -524,6 +524,11 @@ export function createOrderFromRfq(args: {
     payment: args.payment ?? "Bank Transfer (Escrow)",
     address: args.address,
     deliveryMethod: args.deliveryMethod,
+    deliveryDetails: buildDeliveryDetails(args.deliveryMethod, {
+      supplierName: args.buyer, // supplier context isn't threaded here; label falls back to buyer name
+      supplierLocation: args.address.address || "Supplier warehouse",
+      destination: args.address.address || "Buyer address",
+    }),
     invoiceRequired: args.invoiceRequired,
     rfqId: args.rfqId,
     stages: {
