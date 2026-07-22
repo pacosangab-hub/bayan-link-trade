@@ -1,105 +1,87 @@
-# PSG Demo — Full MVP Wire-Up (localStorage only)
+# Xendit Payments Integration — PSG Supply Gateway
 
-Rip out all broken backend calls. Ship a stable, clickable demo where Messages is the center of gravity: chat → custom request → custom offer → order → escrow → completion, with notifications updating throughout.
+Replace the mock checkout payment step with real Xendit-hosted checkout (test mode first), supporting GCash, Maya, ShopeePay, cards, and bank transfer / direct debit via a single Xendit **Invoice** (their all-in-one hosted page). Orders move to `paid` automatically via a webhook that releases funds into PSG's simulated escrow.
 
-## Scope
+Xendit has no prebuilt Lovable connector, so we wire it as a custom integration: secret-stored API key + TanStack server functions + a public webhook route.
 
-Frontend-only. No Supabase, no server functions, no API keys. All state lives in `localStorage` behind a small set of stores. Existing `offers-store.ts` / `rfq-store.ts` / `cart.ts` become the pattern for everything else.
+---
 
-## 1. Demo state layer (`src/lib/demo/`)
+## Part 1 — Getting your Xendit account (before we build)
 
-Central persistence + pub-sub so every screen updates live.
+I'll walk you through this in chat when we start; nothing to do now.
 
-- `store.ts` — tiny `createStore<T>(key, seed)` helper: `get`, `set`, `update`, `subscribe`, `useStore()` hook. Wraps `localStorage` with JSON + versioning. One `resetAll()` export.
-- `session.ts` — active demo role: `buyer | supplier | admin`. Hook `useDemoRole()`. Header dropdown ("View as Buyer/Supplier/Admin") writes here.
-- `messages-store.ts` — conversations + messages. Message kinds: `text | custom_request | custom_offer | order_created | system`. Sending a message updates `lastMessage`, `updatedAt`, unread counter for the other side, and pushes a notification.
-- `orders-store.ts` — orders + timeline events + escrow state machine. Actions: `createFromOffer`, `fundEscrow`, `markPreparing`, `markReady`, `markInTransit`, `markDelivered`, `confirmDelivery` (releases escrow), `openDispute`, `resolveDispute`, `refund`. Each transition appends a timeline entry and fires notifications.
-- `notifications-store.ts` — per-role inbox. `push({role, title, body, href, kind})`, `markRead`, `markAllRead`, `unreadCount(role)`. Bell subscribes.
-- `safety-store.ts` — reports + off-platform keyword list + restricted categories.
-- `seed.ts` — bootstraps rich demo data on first load (conversations with sample custom request + offer cards mid-thread, 3 orders in different states, notifications, reports). `resetDemoData()` re-runs seed.
+1. Sign up at **dashboard.xendit.co** (free, no verification needed for test mode).
+2. Business info: use "Philippine Supply Gateway" (or your registered name), country Philippines, industry B2B Marketplace.
+3. **Stay in Test Mode** (toggle top-right of the dashboard). Test mode gives you working GCash/Maya/card/bank sandboxes with fake money — no KYC needed.
+4. Go to **Settings → Developers → API Keys** → generate a **Secret API Key** (starts with `xnd_development_...`). Copy it.
+5. Go to **Settings → Developers → Webhooks** → we'll paste the webhook URL here after Step 3 below deploys.
+6. Go live later: submit KYC docs (SEC/DTI registration, valid ID, bank account) in the dashboard; swap the test key for a live key in one place.
 
-`offers-store.ts` / `rfq-store.ts` / `cart.ts` are refactored to use `createStore` so everything shares one pattern.
+---
 
-## 2. Messages (`/messages`)
+## Part 2 — What gets built
 
-Rewrite `src/routes/messages.tsx` + new components under `src/components/messages/`.
+### Step 1 — Secret + server client
+- Request `XENDIT_SECRET_KEY` via the secure secret form (test key first, swap to live later with one update).
+- Add a thin server-only Xendit helper `src/lib/xendit.server.ts` (Basic Auth against `https://api.xendit.co`).
 
-- Left: conversation list from store, unread badge, search filter, "Report" link on active chat header.
-- Right: header (supplier/buyer name, verification badge, "View profile", "Report"), safety banner ("Never pay outside PSG escrow…"), message list rendering per-kind:
-  - `text` → bubble
-  - `custom_request` → `CustomRequestCard` (buyer-side actions: Edit/Cancel; supplier-side: Send Custom Offer / Ask Follow-up / Decline)
-  - `custom_offer` → `CustomOfferCard` (buyer: Accept / Request Changes / Reject / Message; supplier: Revise / Withdraw)
-  - `order_created` → `OrderCreatedCard` (View Order → `/orders/$id`)
-- Composer: textarea + Send + paperclip. Paperclip opens `AttachmentMenu` whose contents depend on `useDemoRole()`:
-  - Buyer: Send Custom Request, Attach Product, Attach Order, Upload File (placeholder)
-  - Supplier: Send Custom Offer, Attach Product, Attach Quote, Upload File
-- Off-platform keyword check on Send → `OffPlatformWarningModal` ("Continue sending?"). Continue still sends but flags message.
-- Accepting an offer in-chat → confirm modal → `ordersStore.createFromOffer(offer)` → posts `order_created` card in the same thread → navigate to `/orders/$id` (buyer choice via toast action).
+### Step 2 — Create-invoice server function
+`src/lib/xendit.functions.ts` → `createXenditInvoice({ orderId })`:
+- Loads the order from cart/order storage.
+- Calls `POST /v2/invoices` with amount = order total (PHP), `external_id = orderId`, `payment_methods = ["GCASH","PAYMAYA","SHOPEEPAY","CREDIT_CARD","BPI","BDO","UNIONBANK","METROBANK"]`, success/failure redirect URLs pointing back to the order page.
+- Returns `{ invoice_url, invoice_id }`.
 
-Reuse/extend existing `RequestCustomQuoteModal` and `SendCustomOfferModal` — swap their submit handlers to write into `messages-store` (post as message kind) instead of the separate offers list. `offers.index.tsx` reads from the same store so /offers stays a mirror view.
+### Step 3 — Checkout wiring
+Update `src/routes/checkout.tsx`:
+- Keep the delivery-method selection exactly as-is.
+- In the Payment Method section, keep the same visual options but they now map to Xendit payment channels (Escrow stays as the wrapper label — "PSG Escrow via Xendit").
+- "Confirm & Place Order" now:
+  1. Creates the order locally in status `pending_payment`.
+  2. Calls `createXenditInvoice`.
+  3. Redirects the buyer to `invoice_url` (Xendit hosted page — GCash, Maya, ShopeePay, cards, banks all on one page).
+- On return (success/fail redirect), buyer lands on `/orders/$id`; UI reads status.
 
-## 3. Orders
+### Step 4 — Webhook (public route)
+`src/routes/api/public/xendit-webhook.ts` — TanStack file route:
+- Verifies `x-callback-token` header against `XENDIT_WEBHOOK_TOKEN` secret (timing-safe compare).
+- Handles `invoice.paid` → mark order `paid` and move into escrow (existing `escrowOrder` flow).
+- Handles `invoice.expired` / `invoice.failed` → mark order `payment_failed`, restore cart.
+- Idempotent by `invoice_id`.
 
-- `/orders` (`orders.tsx`): read from store, View → `/orders/$id`.
-- `/orders/$id` (`orders.$id.tsx` — rewrite): full detail page with buyer/supplier panels, items table, delivery info, escrow panel, timeline, "Open conversation" link back to Messages.
-- Role-scoped action bar (driven by `useDemoRole()`):
-  - Buyer: Pay with Demo Escrow, Message Supplier, Report Problem, Confirm Delivery, Request Refund
-  - Supplier: Confirm Order, Mark Preparing, Mark Ready, Mark In Transit, Mark Delivered, Request Escrow Release
-  - Admin: Freeze Escrow, Release, Refund, Partial Refund, Resolve Dispute, Suspend Supplier
-- Each button calls the corresponding `ordersStore` action → status/escrow update → timeline entry → notifications for the counterparty.
-- `ReportProblemModal` (reasons + evidence placeholder) → sets dispute, freezes escrow, notifies admin + supplier.
+Stable URL to paste in Xendit dashboard: `https://psgsupplygateway.lovable.app/api/public/xendit-webhook`.
 
-## 4. Notifications
+### Step 5 — Order page updates
+`src/routes/orders.$id.tsx`:
+- Show payment status badge (Pending Payment / Paid / Failed).
+- If pending, show "Complete payment" button re-opening the Xendit invoice URL (saved on the order).
+- Escrow release logic unchanged (releases on delivery confirmation).
 
-- `NotificationBell` in `AppShell` header: unread badge from `notifications-store` scoped by current role.
-- Dropdown: list with icon per kind, title/body/time, click → `href`, per-item Mark read, "Mark all read".
-- All store actions above push here so counts update live.
+### Step 6 — Test-mode verification
+Walk through one test purchase per method (GCash sandbox, card `4000 0000 0000 0002`, bank sim) and confirm webhook flips order to paid.
 
-## 5. Safety
+---
 
-- Persistent safety banner in Messages (already partly there — strengthen copy).
-- Off-platform keyword warning modal.
-- Report modal reachable from Messages header and Order detail; writes to `safety-store`.
-- Verified badge component reused on: supplier cards, product cards, message header, offer cards, order detail.
-- Restricted-category banner on product detail for high-risk categories (pharma, chemicals, mining, cosmetics, food manufacturing, medical).
-- Explosives/blasting items rendered with "Restricted — Admin Approval Required" and disabled checkout.
-- Attachment placeholder note: "Files are scanned and logged for safety in the real version."
-- New route `/admin/safety` (`admin.safety.tsx`): tabs for reported conversations, disputed orders, unverified suppliers, off-platform flags, suspended accounts, with admin actions wired to stores.
+## Technical details
 
-## 6. Product catalog expansion
+**Auth**: Xendit uses HTTP Basic Auth with the secret key as username and empty password. Server-side only.
 
-- Rewrite `src/lib/mock-data.ts` (or add `src/lib/demo/catalog.ts`) with 90+ products across the 20 industries listed, each with: name, category, industry, supplier, price/range, unit, MOQ, location, rating, verification, lead time, image (use existing placeholder set or category-tinted SVGs — no image gen).
-- Filters on `/products`: category, industry, region, supplier type, verified only, price range, MOQ, sort (relevance/price/rating/newest). Persist filter state in `localStorage`.
-- Product card buttons all functional: View Product, Request Quote (→ Messages + auto-open request modal), Message Supplier (→ Messages), View Supplier.
+**Endpoints used**:
+- `POST /v2/invoices` — create hosted checkout page
+- `GET /v2/invoices/:id` — status poll fallback if webhook delayed
+- Webhook events: `invoice.paid`, `invoice.expired`
 
-## 7. Cross-linking to Messages
+**Secrets stored**:
+- `XENDIT_SECRET_KEY` (test → live swap)
+- `XENDIT_WEBHOOK_TOKEN` (user sets in Xendit dashboard, mirrored here)
 
-- Product detail: Request Custom Quote → navigate `/messages?supplier=<id>&intent=request` → messages route reads query, opens/creates thread, auto-opens `RequestCustomQuoteModal` prefilled with product.
-- Supplier profile: same pattern for Message + Request Custom Quote.
-- RFQ quote row: Message Supplier, Ask for Custom Offer (opens Messages with intent), Accept Quote (existing flow).
+**Files touched**:
+- New: `src/lib/xendit.server.ts`, `src/lib/xendit.functions.ts`, `src/routes/api/public/xendit-webhook.ts`
+- Edited: `src/routes/checkout.tsx`, `src/routes/orders.$id.tsx`, `src/lib/cart.ts` (add `pending_payment` status + `xenditInvoiceId`/`xenditInvoiceUrl` on the order)
 
-## 8. Header / account dropdown
+**Fees for your reference**: Xendit test mode is free. Live: ~2.0–2.5% cards, ~2.0–2.5% GCash/Maya, ~PHP 15 flat direct debit — see xendit.co/ph/pricing.
 
-- Add role switcher ("View as Buyer / Supplier / Admin") in `AppShell` account menu.
-- Bell component beside it.
-- Rebuilds bell + action menus reactively when role changes.
+**Out of scope for this plan**: Transportify (we'll plan that separately when you're ready), refunds/partial captures (can add later), payouts to suppliers (Xendit has a Disbursements API — separate feature).
 
-## 9. Reset
+---
 
-- Admin settings / `/admin` gets a "Reset Demo Data" button calling `resetAll()` + `seed()`.
-
-## 10. Cleanup
-
-- Remove or stub any remaining calls to `useSuppliers`/`db.ts` backend paths that trigger "This page didn't load." Replace with sync reads from stores.
-- Keep Supabase integration files untouched (auto-generated) but ensure no route imports them at load time.
-
-## Technical notes
-
-- All new state hooks use `useSyncExternalStore` via the `createStore` helper for consistent rerenders and SSR safety (`typeof window` guard, initial snapshot = seed).
-- Reads that happen in route loaders stay out — everything is client-only to avoid SSR/localStorage mismatches. Route components render skeletons then hydrate from the store.
-- No new npm deps.
-- No changes to auth, Supabase clients, server functions, or `src/routeTree.gen.ts` (router plugin regenerates).
-
-## Deliverables checklist (maps to acceptance criteria)
-
-Messages send/persist · paperclip menu · in-chat custom request · in-chat custom offer · accept → order · Orders detail + status buttons · demo escrow fund/release/dispute/refund · notifications created + bell dropdown · off-platform warning · report/dispute · `/admin/safety` · 90+ products across 20 industries · filters · product/supplier/RFQ → Messages links · no dead buttons · no broken pages · localStorage persistence · Reset Demo Data.
+Approve this and I'll start with Step 1 (requesting your Xendit test key) and walk you through the dashboard signup in chat.
