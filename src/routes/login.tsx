@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DEMO_USERS, setAuthUser, useAuth } from "@/lib/auth-store";
 import { toast } from "sonner";
 import { LogIn, UserCog, Store, ShieldCheck } from "lucide-react";
+import { GoogleSignInButton, OrDivider } from "@/components/auth/GoogleSignInButton";
 
 const searchSchema = z.object({ redirect: z.string().optional() });
 
@@ -70,7 +71,12 @@ function LoginPage() {
             Log in to source products, message suppliers, and manage protected orders.
           </p>
 
-          <form onSubmit={onSubmit} className="mt-5 space-y-3">
+          <div className="mt-5">
+            <GoogleSignInButton redirectPath={target} />
+          </div>
+          <OrDivider />
+
+          <form onSubmit={onSubmit} className="space-y-3">
             <input type="email" required placeholder="Email" value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full border rounded-md px-3 py-2 text-sm" />

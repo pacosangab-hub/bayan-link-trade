@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { setAuthUser, type AuthRole } from "@/lib/auth-store";
 import { toast } from "sonner";
 import { UserPlus, UserCog, Store, Users } from "lucide-react";
+import { GoogleSignInButton, OrDivider } from "@/components/auth/GoogleSignInButton";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Create Account — PSG Supply Gateway" }] }),
@@ -67,7 +68,12 @@ function SignupPage() {
           <h1 className="font-display text-3xl">Create your PSG Supply Gateway account</h1>
           <p className="text-sm text-muted-foreground mt-1">Join as a buyer, supplier, or both.</p>
 
-          <form onSubmit={onSubmit} className="mt-6 space-y-4">
+          <div className="mt-6">
+            <GoogleSignInButton redirectPath="/onboarding" />
+          </div>
+          <OrDivider />
+
+          <form onSubmit={onSubmit} className="space-y-4">
             <Field label="Full name">
               <input required value={fullName} onChange={(e) => setFullName(e.target.value)} className="input" />
             </Field>

@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
+import { startAuthSync } from "@/lib/auth-sync";
 
 
 
@@ -123,6 +124,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    const stop = startAuthSync();
+    return () => stop();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
