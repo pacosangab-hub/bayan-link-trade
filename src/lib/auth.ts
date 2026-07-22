@@ -1,13 +1,10 @@
-// Compatibility shim. New code should import from `@/lib/auth-store`.
-// This keeps existing pages (which read `useSession().user`) working while
-// the header + guards use the real auth state.
+// Compatibility shim. New code should import from `@/lib/auth-store` / `@/services/auth`.
 import { useQuery } from "@tanstack/react-query";
 import { useAuth, signOutLocal, DEMO_USERS } from "@/lib/auth-store";
-import { supabase } from "@/integrations/supabase/client";
+import { signOutEverywhere } from "@/services/auth";
 
-// Shape older callers expect (mimics Supabase user with user_metadata).
 function toLegacyUser(u: ReturnType<typeof useAuth>["user"]) {
-  const source = u ?? DEMO_USERS.buyer; // fall back to demo buyer for old pages
+  const source = u ?? DEMO_USERS.buyer;
   return {
     id: source.id,
     email: source.email,
@@ -23,7 +20,12 @@ export function useSession() {
   const { user } = useAuth();
   const legacy = toLegacyUser(user);
   return {
-    session: user ? ({ access_token: "local", user: legacy } as any) : null,
+    session: user
+      ? ({ access_token: user.source === "supabase" ? "supabase" : "local", user: legacy } as {
+          access_token: string;
+          user: ReturnType<typeof toLegacyUser>;
+        })
+      : null,
     user: legacy,
     loading: false,
   };
@@ -32,27 +34,41 @@ export function useSession() {
 export function useMyBusinesses() {
   const { user } = useAuth();
   return useQuery({
-    queryKey: ["my-businesses", user?.id],
-    queryFn: async () => [
-      {
-        id: "biz_local",
-        business_name: user?.businessName || "Lola Nena's Carinderia Group",
-        is_buyer: user?.role !== "supplier",
-        is_supplier: user?.role === "supplier" || user?.role === "both",
-      },
-    ],
+    queryKey: ["my-businesses", user?.id, user?.businesses?.map((b) => b.id).join(",")],
+    queryFn: async () => {
+      if (user?.businesses && user.businesses.length > 0) {
+        return user.businesses.map((b) => ({
+          id: b.id,
+          business_name: b.business_name,
+          is_buyer: b.is_buyer,
+          is_supplier: b.is_supplier,
+        }));
+      }
+      return [
+        {
+          id: "biz_local",
+          business_name: user?.businessName || "Lola Nena's Carinderia Group",
+          is_buyer: user?.role !== "supplier",
+          is_supplier: user?.role === "supplier" || user?.role === "both",
+        },
+      ];
+    },
   });
 }
 
 export function useIsAdmin() {
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
   return useQuery({
-    queryKey: ["is-admin", user?.id],
-    queryFn: async () => user?.role === "admin",
+    queryKey: ["is-admin", user?.id, user?.roles?.join(",")],
+    queryFn: async () => hasRole("admin"),
   });
 }
 
 export async function signOut() {
-  try { await supabase.auth.signOut(); } catch { /* demo */ }
+  try {
+    await signOutEverywhere();
+  } catch {
+    /* demo / offline */
+  }
   signOutLocal();
 }

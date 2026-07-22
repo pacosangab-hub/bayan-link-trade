@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { supabase } from "@/integrations/supabase/client";
 import { setAuthUser, type AuthRole } from "@/lib/auth-store";
+import { signUpWithPassword } from "@/services/auth";
 import { toast } from "sonner";
 import { UserPlus, UserCog, Store, Users } from "lucide-react";
 
@@ -11,10 +11,30 @@ export const Route = createFileRoute("/signup")({
   component: SignupPage,
 });
 
-const ACCOUNT_TYPES: { value: AuthRole; label: string; desc: string; icon: any }[] = [
-  { value: "buyer", label: "Buyer", desc: "Find suppliers, request quotes, and place protected orders.", icon: UserCog },
-  { value: "supplier", label: "Supplier", desc: "List products, receive buyer requests, and send custom offers.", icon: Store },
-  { value: "both", label: "Buyer + Supplier", desc: "Buy and sell through one business account.", icon: Users },
+const ACCOUNT_TYPES: {
+  value: Exclude<AuthRole, "admin">;
+  label: string;
+  desc: string;
+  icon: typeof UserCog;
+}[] = [
+  {
+    value: "buyer",
+    label: "Buyer",
+    desc: "Find suppliers, request quotes, and place protected orders.",
+    icon: UserCog,
+  },
+  {
+    value: "supplier",
+    label: "Supplier",
+    desc: "List products, receive buyer requests, and send custom offers.",
+    icon: Store,
+  },
+  {
+    value: "both",
+    label: "Buyer + Supplier",
+    desc: "Buy and sell through one business account.",
+    icon: Users,
+  },
 ];
 
 function SignupPage() {
@@ -23,38 +43,33 @@ function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [role, setRole] = useState<AuthRole>("buyer");
+  const [role, setRole] = useState<Exclude<AuthRole, "admin">>("buyer");
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password !== confirm) { toast.error("Passwords do not match"); return; }
+    if (password !== confirm) {
+      toast.error("Passwords do not match");
+      return;
+    }
     setBusy(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email, password,
-        options: {
-          emailRedirectTo: window.location.origin,
-          data: { full_name: fullName, role },
-        },
+      const user = await signUpWithPassword({
+        email,
+        password,
+        fullName,
+        intendedAccountType: role,
       });
-      // Whether or not email confirmation is required, sign the user into the
-      // local session so onboarding can proceed. Real Supabase session will
-      // hydrate once the token is issued.
-      const id = data?.user?.id || `local_${crypto.randomUUID()}`;
-      setAuthUser({
-        id, email, fullName, role,
-        businessName: "",
-        source: error ? "demo" : "supabase",
-      });
-      if (error && !/registered/i.test(error.message)) {
-        toast.message("Account created in demo mode (backend unavailable).");
+      setAuthUser(user);
+      if (user.awaitingEmailConfirmation) {
+        toast.success("Check your email to confirm your account, then continue onboarding.");
       } else {
         toast.success("Account created — let's set up your business.");
       }
       navigate({ to: "/onboarding", replace: true });
-    } catch (err: any) {
-      toast.error(err.message || "Signup failed");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Signup failed";
+      toast.error(message);
     } finally {
       setBusy(false);
     }
@@ -69,19 +84,42 @@ function SignupPage() {
 
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <Field label="Full name">
-              <input required value={fullName} onChange={(e) => setFullName(e.target.value)} className="input" />
+              <input
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="input"
+              />
             </Field>
             <Field label="Email">
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="input" />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input"
+              />
             </Field>
             <div className="grid md:grid-cols-2 gap-4">
               <Field label="Password">
-                <input type="password" required minLength={6} value={password}
-                  onChange={(e) => setPassword(e.target.value)} className="input" />
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input"
+                />
               </Field>
               <Field label="Confirm password">
-                <input type="password" required minLength={6} value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)} className="input" />
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  className="input"
+                />
               </Field>
             </div>
 
@@ -91,8 +129,12 @@ function SignupPage() {
                 {ACCOUNT_TYPES.map(({ value, label, desc, icon: Icon }) => {
                   const active = role === value;
                   return (
-                    <button type="button" key={value} onClick={() => setRole(value)}
-                      className={`text-left border rounded-lg p-3 hover:border-primary/60 transition ${active ? "border-primary bg-primary/5" : ""}`}>
+                    <button
+                      type="button"
+                      key={value}
+                      onClick={() => setRole(value)}
+                      className={`text-left border rounded-lg p-3 hover:border-primary/60 transition ${active ? "border-primary bg-primary/5" : ""}`}
+                    >
                       <Icon size={18} className={active ? "text-primary" : "text-muted-foreground"} />
                       <div className="font-semibold mt-2 text-sm">{label}</div>
                       <div className="text-[11px] text-muted-foreground leading-snug mt-1">{desc}</div>
@@ -102,15 +144,19 @@ function SignupPage() {
               </div>
             </div>
 
-            <button disabled={busy}
-              className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-md py-3 font-semibold hover:bg-primary/90 disabled:opacity-50">
+            <button
+              disabled={busy}
+              className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-md py-3 font-semibold hover:bg-primary/90 disabled:opacity-50"
+            >
               <UserPlus size={16} /> {busy ? "Creating…" : "Create Account"}
             </button>
           </form>
 
           <div className="mt-4 text-sm text-center">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary font-semibold">Log in</Link>
+            <Link to="/login" className="text-primary font-semibold">
+              Log in
+            </Link>
           </div>
         </div>
       </div>
@@ -120,5 +166,10 @@ function SignupPage() {
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="block"><div className="text-sm font-semibold mb-1">{label}</div>{children}</label>;
+  return (
+    <label className="block">
+      <div className="text-sm font-semibold mb-1">{label}</div>
+      {children}
+    </label>
+  );
 }

@@ -106,23 +106,43 @@ function ProfileTab() {
   const u = getAuthUser();
   const [fullName, setFullName] = useState(u?.fullName || "");
   const [email, setEmail] = useState(u?.email || "");
+  const [phone, setPhone] = useState("");
+  const [busy, setBusy] = useState(false);
   return (
     <Section title="Profile" desc="Your personal contact information on PSG.">
       <div className="grid md:grid-cols-2 gap-4">
         <Field label="Full name"><input className={inputCls} value={fullName} onChange={(e) => setFullName(e.target.value)} /></Field>
-        <Field label="Email"><input className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} /></Field>
-        <Field label="Mobile"><input className={inputCls} defaultValue="+63 917 000 0000" /></Field>
+        <Field label="Email"><input className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} disabled={u?.source === "supabase"} /></Field>
+        <Field label="Mobile"><input className={inputCls} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+63 917 000 0000" /></Field>
         <Field label="Role"><input className={inputCls} defaultValue={u?.role} disabled /></Field>
       </div>
       <div className="pt-3 flex justify-end">
         <button
+          disabled={busy}
           onClick={() => {
-            if (u) setAuthUser({ ...u, fullName, email });
-            toast.success("Profile updated");
+            void (async () => {
+              if (!u) return;
+              setBusy(true);
+              try {
+                if (u.source === "supabase") {
+                  const { updateMyProfile, hydrateSessionUser } = await import("@/services/auth");
+                  await updateMyProfile({ fullName, phone: phone || undefined });
+                  const hydrated = await hydrateSessionUser(u.email);
+                  if (hydrated) setAuthUser(hydrated);
+                } else {
+                  setAuthUser({ ...u, fullName, email });
+                }
+                toast.success("Profile updated");
+              } catch (err: unknown) {
+                toast.error(err instanceof Error ? err.message : "Could not update profile");
+              } finally {
+                setBusy(false);
+              }
+            })();
           }}
-          className="bg-primary text-primary-foreground rounded-md px-5 py-2 text-sm font-semibold"
+          className="bg-primary text-primary-foreground rounded-md px-5 py-2 text-sm font-semibold disabled:opacity-50"
         >
-          Save changes
+          {busy ? "Saving…" : "Save changes"}
         </button>
       </div>
     </Section>
