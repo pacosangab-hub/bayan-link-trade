@@ -1305,6 +1305,11 @@ export type Database = {
           total_orders: number | null
           unit: string | null
           updated_at: string
+          brand: string | null
+          sku: string | null
+          review_notes: string | null
+          moderated_by: string | null
+          moderated_at: string | null
         }
         Insert: {
           category_id?: string | null
@@ -1317,6 +1322,11 @@ export type Database = {
           is_active?: boolean
           is_featured?: boolean
           lead_time?: string | null
+          brand?: string | null
+          sku?: string | null
+          review_notes?: string | null
+          moderated_by?: string | null
+          moderated_at?: string | null
           listing_status?: Database["public"]["Enums"]["product_listing_status"]
           location?: string | null
           minimum_order_quantity?: number | null
@@ -1363,6 +1373,11 @@ export type Database = {
           total_orders?: number | null
           unit?: string | null
           updated_at?: string
+          brand?: string | null
+          sku?: string | null
+          review_notes?: string | null
+          moderated_by?: string | null
+          moderated_at?: string | null
         }
         Relationships: [
           {
@@ -1902,6 +1917,154 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_admin_role: { Args: { _user_id: string }; Returns: boolean }
+      has_permission: {
+        Args: { _user_id: string; _permission_key: string }
+        Returns: boolean
+      }
+      get_my_auth_context: { Args: Record<string, never>; Returns: Json }
+      touch_last_sign_in: { Args: Record<string, never>; Returns: undefined }
+      complete_buyer_onboarding: {
+        Args: {
+          _business_name: string
+          _business_type?: string
+          _industry?: string
+          _location?: string
+          _region?: string
+          _contact_phone?: string
+          _contact_email?: string
+          _address_line1?: string
+          _typical_categories?: string[]
+          _sourcing_cadence?: string
+          _preferred_supplier_locations?: string
+          _branch_count?: number
+        }
+        Returns: string
+      }
+      complete_supplier_onboarding: {
+        Args: {
+          _business_name: string
+          _business_type?: string
+          _industry?: string
+          _location?: string
+          _region?: string
+          _contact_phone?: string
+          _contact_email?: string
+          _description?: string
+          _supplier_type?: string
+          _years_operating?: number
+          _service_regions?: string[]
+          _address_line1?: string
+        }
+        Returns: string
+      }
+      update_my_profile: {
+        Args: { _full_name?: string; _phone?: string; _avatar_url?: string }
+        Returns: Database["public"]["Tables"]["profiles"]["Row"]
+      }
+      upsert_business_address: {
+        Args: {
+          _business_id: string
+          _label: string
+          _line1: string
+          _contact_name?: string
+          _phone?: string
+          _line2?: string
+          _city?: string
+          _region?: string
+          _postal_code?: string
+          _is_default?: boolean
+          _address_id?: string
+        }
+        Returns: string
+      }
+      write_audit_log: {
+        Args: {
+          _action: string
+          _entity_type?: string
+          _entity_id?: string
+          _metadata?: Json
+          _actor_user_id?: string
+          _actor_business_id?: string
+        }
+        Returns: string
+      }
+      list_marketplace_products: {
+        Args: {
+          _search?: string | null
+          _category_slug?: string | null
+          _limit?: number
+          _offset?: number
+        }
+        Returns: Json
+      }
+      get_product_detail: {
+        Args: { _product_id: string }
+        Returns: Json
+      }
+      upsert_supplier_product: {
+        Args: { _payload: Json; _product_id?: string | null }
+        Returns: string
+      }
+      list_my_supplier_products: {
+        Args: Record<string, never>
+        Returns: Json
+      }
+      admin_moderate_product: {
+        Args: {
+          _product_id: string
+          _listing_status: Database["public"]["Enums"]["product_listing_status"]
+          _review_notes?: string | null
+          _compliance_status?: Database["public"]["Enums"]["product_compliance_status"] | null
+          _is_featured?: boolean | null
+        }
+        Returns: undefined
+      }
+      list_admin_products: {
+        Args: {
+          _listing_status?: Database["public"]["Enums"]["product_listing_status"] | null
+        }
+        Returns: Json
+      }
+      upsert_product_inventory: {
+        Args: {
+          _product_id: string
+          _available?: number | null
+          _reserved?: number | null
+          _incoming?: number | null
+          _low_stock_threshold?: number | null
+          _tracking_type?: string | null
+          _paused?: boolean | null
+          _restock_date?: string | null
+          _lead_time?: string | null
+          _note?: string | null
+        }
+        Returns: string
+      }
+      admin_set_user_roles: {
+        Args: {
+          _target_user_id: string
+          _roles: Database["public"]["Enums"]["app_role"][]
+          _reason?: string
+        }
+        Returns: undefined
+      }
+      admin_set_user_permissions: {
+        Args: {
+          _target_user_id: string
+          _permission_keys: string[]
+          _reason?: string
+        }
+        Returns: undefined
+      }
+      admin_set_account_status: {
+        Args: {
+          _target_user_id: string
+          _status: Database["public"]["Enums"]["account_status"]
+          _reason?: string
+        }
+        Returns: undefined
+      }
       is_business_member: {
         Args: { _business_id: string; _user_id: string }
         Returns: boolean
@@ -1909,7 +2072,19 @@ export type Database = {
       user_business_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
-      app_role: "admin" | "buyer" | "supplier" | "carrier" | "user"
+      app_role:
+        | "admin"
+        | "buyer"
+        | "supplier"
+        | "carrier"
+        | "user"
+        | "super_admin"
+        | "support"
+        | "finance_admin"
+        | "verification_admin"
+        | "operations_admin"
+      account_status: "active" | "suspended" | "pending_verification" | "deleted"
+      intended_account_type: "buyer" | "supplier" | "both"
       custom_offer_status:
         | "pending_review"
         | "accepted"
@@ -2204,7 +2379,20 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "buyer", "supplier", "carrier", "user"],
+      app_role: [
+        "admin",
+        "buyer",
+        "supplier",
+        "carrier",
+        "user",
+        "super_admin",
+        "support",
+        "finance_admin",
+        "verification_admin",
+        "operations_admin",
+      ],
+      account_status: ["active", "suspended", "pending_verification", "deleted"],
+      intended_account_type: ["buyer", "supplier", "both"],
       custom_offer_status: [
         "pending_review",
         "accepted",

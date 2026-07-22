@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useSession } from "@/lib/auth";
+import { setAuthUser } from "@/lib/auth-store";
+import { hydrateSessionUser, signInWithPassword, signUpWithPassword } from "@/services/auth";
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { ShieldCheck } from "lucide-react";
@@ -30,24 +31,27 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email, password,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: { full_name: fullName || email },
-          },
+        const user = await signUpWithPassword({
+          email,
+          password,
+          fullName: fullName || email,
+          intendedAccountType: "buyer",
         });
-        if (error) throw error;
-        toast.success("Account created — you can now sign in.");
-        setMode("signin");
+        setAuthUser(user);
+        toast.success(
+          user.awaitingEmailConfirmation
+            ? "Account created — check your email, then continue onboarding."
+            : "Account created — continue onboarding.",
+        );
+        navigate({ to: "/onboarding" });
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        const user = await signInWithPassword({ email, password });
+        setAuthUser(user);
         toast.success("Welcome back!");
         navigate({ to: "/" });
       }
-    } catch (err: any) {
-      toast.error(err.message || "Auth failed");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Auth failed");
     } finally {
       setBusy(false);
     }
@@ -97,10 +101,12 @@ function AuthPage() {
                 });
                 if (result.error) throw result.error;
                 if (result.redirected) return;
+                const user = await hydrateSessionUser();
+                if (user) setAuthUser(user);
                 toast.success("Signed in with Google");
                 navigate({ to: "/" });
-              } catch (err: any) {
-                toast.error(err.message || "Google sign-in failed");
+              } catch (err: unknown) {
+                toast.error(err instanceof Error ? err.message : "Google sign-in failed");
               } finally {
                 setBusy(false);
               }

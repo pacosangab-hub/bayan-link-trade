@@ -4,9 +4,10 @@ import {
   Plus, MessageSquare, ArrowRight, AlertCircle, Boxes, Eye,
   TrendingUp, ShoppingCart, Wallet, Star, Users, PackageCheck,
 } from "lucide-react";
-import { useSupplierListings } from "@/lib/supplier-listings";
+import { mergeSupplierListings, useSupplierListings } from "@/lib/supplier-listings";
 import { orders, rfqs, products as MOCK_PRODUCTS } from "@/lib/mock-data";
 import { useInventoryMap, getInventory, computeStatus } from "@/lib/inventory";
+import { useMySupplierProducts } from "@/lib/db";
 
 export const Route = createFileRoute("/supplier-portal/")({
   component: PortalDashboard,
@@ -92,7 +93,12 @@ function PortalDashboard() {
   const data = RANGE_DATA[range];
   const aov = data.orders > 0 ? Math.round(data.gross / data.orders) : 0;
 
-  const listings = useSupplierListings();
+  const localListings = useSupplierListings();
+  const remoteQuery = useMySupplierProducts();
+  const listings = useMemo(
+    () => mergeSupplierListings(localListings, remoteQuery.data ?? []),
+    [localListings, remoteQuery.data],
+  );
   useInventoryMap();
   const pendingListings = listings.filter((l) => l.status === "Pending Review").length;
 

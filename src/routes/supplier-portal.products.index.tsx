@@ -1,7 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { duplicateListing, updateStatus, useSupplierListings, type ListingStatus } from "@/lib/supplier-listings";
+import {
+  duplicateListing,
+  mergeSupplierListings,
+  updateStatus,
+  useSupplierListings,
+  type ListingStatus,
+} from "@/lib/supplier-listings";
 import { StatusChip } from "./supplier-portal.index";
 import { useInventoryMap, getInventory, computeStatus, badgeForStatus } from "@/lib/inventory";
+import { useMySupplierProducts } from "@/lib/db";
 import { Plus, Upload, ExternalLink } from "lucide-react";
 import { useState, useMemo } from "react";
 
@@ -13,7 +20,12 @@ type Filter = "All" | ListingStatus | "Out of Stock";
 const FILTERS: Filter[] = ["All", "Active", "Pending Review", "Draft", "Paused", "Out of Stock"];
 
 function MyListings() {
-  const listings = useSupplierListings();
+  const localListings = useSupplierListings();
+  const remoteQuery = useMySupplierProducts();
+  const listings = useMemo(
+    () => mergeSupplierListings(localListings, remoteQuery.data ?? []),
+    [localListings, remoteQuery.data],
+  );
   useInventoryMap();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<Filter>("All");

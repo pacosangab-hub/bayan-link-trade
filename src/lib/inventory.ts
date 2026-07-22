@@ -157,6 +157,28 @@ export function saveInventory(rec: InventoryRecord) {
   const all = { ...readInv() };
   all[rec.productId] = { ...rec, lastUpdated: Date.now() };
   writeInv(all);
+  const tracking =
+    rec.trackingType === "exact"
+      ? "tracked"
+      : rec.trackingType === "made_to_order"
+        ? "made_to_order"
+        : rec.trackingType === "unlimited"
+          ? "unlimited"
+          : "tracked";
+  void import("@/services/products").then(({ upsertProductInventory }) =>
+    upsertProductInventory({
+      productId: rec.productId,
+      available: rec.available,
+      reserved: rec.reserved,
+      incoming: rec.incoming,
+      lowStockThreshold: rec.lowStockThreshold,
+      trackingType: tracking,
+      paused: rec.paused,
+      restockDate: rec.restockDate ?? null,
+      leadTime: rec.leadTime ?? null,
+      note: "inventory sync",
+    }),
+  );
 }
 
 export function useInventoryMap(): Record<string, InventoryRecord> {

@@ -1,7 +1,7 @@
-import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { Rating, VerifiedBadge, ProductCard } from "@/components/ui-bits";
-import { productById, supplierById, products, formatPhp } from "@/lib/mock-data";
+import { supplierById, products, formatPhp, type Product } from "@/lib/mock-data";
 import { addToCart, toggleSaved, useSaved, shippingTable, type ShippingDest } from "@/lib/cart";
 import {
   Truck, ShieldCheck, MessageSquare, Package, MapPin, Heart, ShoppingCart, Zap,
@@ -11,15 +11,27 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { RequestCustomQuoteModal } from "@/components/offers/RequestCustomQuoteModal";
 import { useInventory, computeStatus, badgeForStatus, stockDisplayText } from "@/lib/inventory";
+import { getListing, listingToProduct } from "@/lib/supplier-listings";
+import { useProduct } from "@/lib/db";
+
+function resolveLocalProduct(id: string): Product | null {
+  const fromMock = products.find((x) => x.id === id);
+  if (fromMock) return fromMock;
+  const listing = getListing(id);
+  if (listing) return listingToProduct(listing) as Product;
+  return null;
+}
 
 export const Route = createFileRoute("/products/$id")({
   loader: ({ params }) => {
-    const p = products.find((x) => x.id === params.id);
-    if (!p) throw notFound();
-    return { product: p };
+    const local = resolveLocalProduct(params.id);
+    return {
+      productId: params.id,
+      product: local,
+    };
   },
   head: ({ loaderData }) => ({
-    meta: [{ title: `${loaderData?.product.title ?? "Product"} — PSG` }],
+    meta: [{ title: `${loaderData?.product?.title ?? "Product"} — PSG` }],
   }),
   notFoundComponent: () => (
     <AppShell>
@@ -43,18 +55,77 @@ export const Route = createFileRoute("/products/$id")({
 type Tab = "Description" | "Specifications" | "Certificates" | "Reviews" | "Supplier" | "Shipping";
 
 function ProductDetail() {
-  const { product: p } = Route.useLoaderData();
-  const s = supplierById(p.supplierId);
+  const { product: localProduct, productId } = Route.useLoaderData();
+  const remote = useProduct(productId);
+  const placeholder: Product = {
+    id: productId,
+    supplierId: "",
+    title: "",
+    category: "",
+    unit: "unit",
+    moq: 1,
+    pricePhp: 0,
+    tierPricing: [],
+    leadTimeDays: 3,
+    image: "",
+    stock: "",
+    description: "",
+    origin: "",
+  };
+  const p = remote.data?.product ?? localProduct ?? placeholder;
   const navigate = useNavigate();
   const saved = useSaved();
   const isSaved = saved.includes(p.id);
-
-  const [qty, setQty] = useState(p.moq);
+  const [qty, setQty] = useState(p.moq || 1);
   const [dest, setDest] = useState<ShippingDest | "">("");
   const [tab, setTab] = useState<Tab>("Description");
   const [zoom, setZoom] = useState(false);
   const [customOpen, setCustomOpen] = useState(false);
-  const inv = useInventory(p.id, { unit: p.unit, supplierId: p.supplierId, leadTime: `${p.leadTimeDays}-${p.leadTimeDays + 2} days` });
+  const inv = useInventory(p.id, {
+    unit: p.unit || "unit",
+    supplierId: p.supplierId || "unknown",
+    leadTime: `${p.leadTimeDays}-${p.leadTimeDays + 2} days`,
+  });
+
+  const loading = !localProduct && (remote.isLoading || (!remote.isFetched && !remote.isError));
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="mx-auto max-w-3xl px-4 py-20 text-center text-muted-foreground">Loading product…</div>
+      </AppShell>
+    );
+  }
+  if (!remote.data?.product && !localProduct) {
+    return (
+      <AppShell>
+        <div className="mx-auto max-w-3xl px-4 py-20 text-center">
+          <h1 className="font-display text-4xl">Product not found</h1>
+          <Link to="/products" className="mt-4 inline-block text-primary font-semibold">← Back to marketplace</Link>
+        </div>
+      </AppShell>
+    );
+  }
+
+  const s = supplierById(p.supplierId) ?? {
+    id: p.supplierId,
+    name: (remote.data?.supplier as { name?: string } | null)?.name || "Supplier",
+    verified: Boolean((remote.data?.supplier as { verified?: boolean } | null)?.verified),
+    location: (remote.data?.supplier as { location?: string } | null)?.location || p.origin,
+    rating: (remote.data?.supplier as { rating?: number } | null)?.rating || 0,
+    reviews: 0,
+    type: "Manufacturer" as const,
+    region: "",
+    goldSupplier: false,
+    yearsOperating: 0,
+    transactions: 0,
+    repeatBuyers: 0,
+    responseTime: "",
+    leadTime: "",
+    permits: [] as string[],
+    description: "",
+    cover: "",
+    categories: [] as string[],
+  };
   const stockStatus = computeStatus(inv);
   const soldOut = stockStatus === "Out of Stock";
   const madeToOrder = stockStatus === "Made to Order";
