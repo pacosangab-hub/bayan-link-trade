@@ -1305,6 +1305,11 @@ export type Database = {
           total_orders: number | null
           unit: string | null
           updated_at: string
+          brand: string | null
+          sku: string | null
+          review_notes: string | null
+          moderated_by: string | null
+          moderated_at: string | null
         }
         Insert: {
           category_id?: string | null
@@ -1317,6 +1322,11 @@ export type Database = {
           is_active?: boolean
           is_featured?: boolean
           lead_time?: string | null
+          brand?: string | null
+          sku?: string | null
+          review_notes?: string | null
+          moderated_by?: string | null
+          moderated_at?: string | null
           listing_status?: Database["public"]["Enums"]["product_listing_status"]
           location?: string | null
           minimum_order_quantity?: number | null
@@ -1363,6 +1373,11 @@ export type Database = {
           total_orders?: number | null
           unit?: string | null
           updated_at?: string
+          brand?: string | null
+          sku?: string | null
+          review_notes?: string | null
+          moderated_by?: string | null
+          moderated_at?: string | null
         }
         Relationships: [
           {
@@ -1971,6 +1986,58 @@ export type Database = {
           _metadata?: Json
           _actor_user_id?: string
           _actor_business_id?: string
+        }
+        Returns: string
+      }
+      list_marketplace_products: {
+        Args: {
+          _search?: string | null
+          _category_slug?: string | null
+          _limit?: number
+          _offset?: number
+        }
+        Returns: Json
+      }
+      get_product_detail: {
+        Args: { _product_id: string }
+        Returns: Json
+      }
+      upsert_supplier_product: {
+        Args: { _payload: Json; _product_id?: string | null }
+        Returns: string
+      }
+      list_my_supplier_products: {
+        Args: Record<string, never>
+        Returns: Json
+      }
+      admin_moderate_product: {
+        Args: {
+          _product_id: string
+          _listing_status: Database["public"]["Enums"]["product_listing_status"]
+          _review_notes?: string | null
+          _compliance_status?: Database["public"]["Enums"]["product_compliance_status"] | null
+          _is_featured?: boolean | null
+        }
+        Returns: undefined
+      }
+      list_admin_products: {
+        Args: {
+          _listing_status?: Database["public"]["Enums"]["product_listing_status"] | null
+        }
+        Returns: Json
+      }
+      upsert_product_inventory: {
+        Args: {
+          _product_id: string
+          _available?: number | null
+          _reserved?: number | null
+          _incoming?: number | null
+          _low_stock_threshold?: number | null
+          _tracking_type?: string | null
+          _paused?: boolean | null
+          _restock_date?: string | null
+          _lead_time?: string | null
+          _note?: string | null
         }
         Returns: string
       }

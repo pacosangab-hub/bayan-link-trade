@@ -6,7 +6,8 @@ import {
   setLowStockThreshold, setIncoming, saveInventory, getInventory,
   type StockStatus, type StockTrackingType,
 } from "@/lib/inventory";
-import { useSupplierListings } from "@/lib/supplier-listings";
+import { mergeSupplierListings, useSupplierListings } from "@/lib/supplier-listings";
+import { useMySupplierProducts } from "@/lib/db";
 import { products as MOCK_PRODUCTS } from "@/lib/mock-data";
 import { Minus, Plus, Save, History, PackageX, PackageCheck, Pause, Play, X } from "lucide-react";
 import { toast } from "sonner";
@@ -21,7 +22,12 @@ const DEMO_SUPPLIER_ID = "sup_001";
 
 function InventoryPage() {
   useInventoryMap(); // subscribe
-  const listings = useSupplierListings();
+  const localListings = useSupplierListings();
+  const remoteQuery = useMySupplierProducts();
+  const listings = useMemo(
+    () => mergeSupplierListings(localListings, remoteQuery.data ?? []),
+    [localListings, remoteQuery.data],
+  );
   const [historyFor, setHistoryFor] = useState<string | null>(null);
   const [bulkText, setBulkText] = useState("");
 

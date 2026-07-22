@@ -120,6 +120,17 @@ export function saveListing(l: SupplierListing) {
   if (idx >= 0) all[idx] = { ...l, updatedAt: Date.now() };
   else all.push({ ...l, createdAt: Date.now(), updatedAt: Date.now() });
   write(all);
+  // Best-effort backend persistence (Phase 2). Demo localStorage remains source for offline UI.
+  void import("@/services/products").then(({ saveListingToBackend }) =>
+    saveListingToBackend(l).then((backendId) => {
+      if (!backendId || backendId === l.id) return;
+      const latest = read();
+      const row = latest.find((x) => x.id === l.id);
+      if (!row) return;
+      row.id = backendId;
+      write(latest);
+    }),
+  );
 }
 
 export function deleteListing(id: string) {
@@ -134,6 +145,54 @@ export function updateStatus(id: string, status: ListingStatus, reviewNotes?: st
   if (reviewNotes !== undefined) l.reviewNotes = reviewNotes;
   l.updatedAt = Date.now();
   write(all);
+  // Supplier-owned status changes go through upsert (not admin moderate).
+  void import("@/services/products").then(({ saveListingToBackend }) =>
+    saveListingToBackend({ ...l }).catch(() => {
+      /* keep local update if RPC unavailable */
+    }),
+  );
+}
+
+/** Admin moderation path — uses products.moderate RPC when id is a UUID. */
+export function moderateListing(
+  id: string,
+  status: ListingStatus,
+  opts?: { reviewNotes?: string; isFeatured?: boolean },
+) {
+  const all = read();
+  const l = all.find((x) => x.id === id);
+  if (l) {
+    l.status = status;
+    if (opts?.reviewNotes !== undefined) l.reviewNotes = opts.reviewNotes;
+    l.updatedAt = Date.now();
+    write(all);
+  }
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+  if (!isUuid) return;
+  void import("@/services/products").then(({ moderateProduct }) =>
+    moderateProduct({
+      productId: id,
+      listingStatus: status,
+      reviewNotes: opts?.reviewNotes,
+      isFeatured: opts?.isFeatured,
+    }).catch(() => {
+      /* keep local update if RPC unavailable */
+    }),
+  );
+}
+
+export function mergeSupplierListings(
+  local: SupplierListing[],
+  remote: SupplierListing[],
+): SupplierListing[] {
+  const map = new Map<string, SupplierListing>();
+  for (const l of local) map.set(l.id, l);
+  for (const l of remote) {
+    if (!map.has(l.id)) map.set(l.id, l);
+  }
+  return Array.from(map.values()).sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+  );
 }
 
 export function duplicateListing(id: string) {
