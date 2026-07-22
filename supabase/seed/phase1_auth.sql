@@ -1,0 +1,32 @@
+-- Phase 1 development seed notes.
+-- Do NOT put production secrets here.
+--
+-- Apply migrations first, then create auth users via Supabase Auth Admin API
+-- or the Dashboard, then run the SQL below with those user UUIDs.
+--
+-- Example placeholders (replace before running):
+--   buyer_user_id     = '00000000-0000-4000-8000-000000000001'
+--   supplier_user_id  = '00000000-0000-4000-8000-000000000002'
+--   admin_user_id     = '00000000-0000-4000-8000-000000000003'
+
+-- After auth.users rows exist for the three accounts:
+-- UPDATE public.profiles SET full_name = 'Paco Reyes', intended_account_type = 'buyer'
+--   WHERE id = 'BUYER_UUID';
+-- UPDATE public.profiles SET full_name = 'Supplier Admin', intended_account_type = 'supplier'
+--   WHERE id = 'SUPPLIER_UUID';
+-- UPDATE public.profiles SET full_name = 'PSG Admin', intended_account_type = 'buyer'
+--   WHERE id = 'ADMIN_UUID';
+--
+-- DELETE FROM public.user_roles WHERE user_id = 'ADMIN_UUID';
+-- INSERT INTO public.user_roles (user_id, role) VALUES
+--   ('ADMIN_UUID', 'super_admin'),
+--   ('BUYER_UUID', 'buyer'),
+--   ('SUPPLIER_UUID', 'supplier')
+-- ON CONFLICT DO NOTHING;
+--
+-- Grant all admin permissions explicitly (super_admin already implies all via has_permission):
+-- INSERT INTO public.user_admin_permissions (user_id, permission_id, granted_by)
+-- SELECT 'ADMIN_UUID', ap.id, 'ADMIN_UUID' FROM public.admin_permissions ap
+-- ON CONFLICT DO NOTHING;
+
+SELECT 'Phase 1 seed is documented in supabase/seed/phase1_auth.md and scripts/seed-phase1.mjs' AS note;

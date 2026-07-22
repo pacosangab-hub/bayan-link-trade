@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
+import { useAuthSessionSync } from "@/lib/auth-session-sync";
 
 
 
@@ -123,6 +124,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useAuthSessionSync();
 
   return (
     <QueryClientProvider client={queryClient}>

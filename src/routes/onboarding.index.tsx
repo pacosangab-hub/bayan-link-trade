@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth, setAuthUser, getAuthUser } from "@/lib/auth-store";
+import { completeBuyerOnboarding, completeSupplierOnboarding, hydrateSessionUser } from "@/services/auth";
 import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,12 +15,12 @@ function OnboardingPage() {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) navigate({ to: "/login", replace: true });
   }, [isAuthenticated]);
 
-  // Step 1
   const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("Restaurant");
   const [industry, setIndustry] = useState("Food Service");
@@ -27,8 +28,6 @@ function OnboardingPage() {
   const [region, setRegion] = useState("NCR");
   const [phone, setPhone] = useState("");
   const [bizEmail, setBizEmail] = useState(user?.email || "");
-
-  // Step 2 (varies by role)
   const [step2, setStep2] = useState<Record<string, string>>({});
 
   if (!user) return null;
@@ -52,11 +51,73 @@ function OnboardingPage() {
     next();
   }
 
-  function finishAll() {
-    toast.success("You're all set!");
-    if (role === "admin") navigate({ to: "/admin" });
-    else if (role === "supplier") navigate({ to: "/supplier-portal" });
-    else navigate({ to: "/products" });
+  async function finishAll() {
+    const currentUser = user;
+    if (!currentUser) return;
+    setBusy(true);
+    try {
+      if (currentUser.source === "supabase") {
+        if (showBuyer) {
+          await completeBuyerOnboarding({
+            businessName,
+            businessType,
+            industry,
+            location,
+            region,
+            contactPhone: phone,
+            contactEmail: bizEmail,
+            addressLine1: location ? `${location}, ${region}` : undefined,
+            typicalCategories: step2.buyProducts
+              ? step2.buyProducts.split(",").map((s) => s.trim()).filter(Boolean)
+              : [],
+            sourcingCadence: step2.cadence,
+            preferredSupplierLocations: step2.buyerLocation,
+          });
+        }
+        if (showSupplier) {
+          await completeSupplierOnboarding({
+            businessName,
+            businessType,
+            industry,
+            location,
+            region,
+            contactPhone: phone,
+            contactEmail: bizEmail,
+            supplierType: businessType,
+            serviceRegions: step2.serviceAreas
+              ? step2.serviceAreas.split(",").map((s) => s.trim()).filter(Boolean)
+              : region
+                ? [region]
+                : [],
+            addressLine1: location ? `${location}, ${region}` : undefined,
+            description: step2.sellProducts
+              ? `Sells: ${step2.sellProducts}. Categories: ${step2.sellCategories || ""}`
+              : undefined,
+          });
+        }
+        const hydrated = await hydrateSessionUser(currentUser.email);
+        if (hydrated) setAuthUser(hydrated);
+      } else {
+        const current = getAuthUser();
+        if (current) {
+          setAuthUser({
+            ...current,
+            businessName,
+            onboardingCompletedAt: new Date().toISOString(),
+          });
+        }
+      }
+
+      toast.success("You're all set!");
+      if (role === "admin") navigate({ to: "/admin" });
+      else if (role === "supplier") navigate({ to: "/supplier-portal" });
+      else navigate({ to: "/products" });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Could not save business profile";
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -73,7 +134,9 @@ function OnboardingPage() {
 
         {step === 1 && (
           <form onSubmit={finishStep1} className="mt-6 space-y-4 bg-card border rounded-lg p-6">
-            <Field label="Business name"><input required className="input" value={businessName} onChange={(e) => setBusinessName(e.target.value)} /></Field>
+            <Field label="Business name">
+              <input required className="input" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
+            </Field>
             <div className="grid md:grid-cols-2 gap-4">
               <Field label="Business type">
                 <select className="input" value={businessType} onChange={(e) => setBusinessType(e.target.value)}>
@@ -158,13 +221,17 @@ function OnboardingPage() {
             <p className="text-muted-foreground mt-2">
               Your business profile is ready. You can complete verification anytime for higher limits.
             </p>
-            <button onClick={finishAll} className="mt-6 bg-primary text-primary-foreground font-semibold px-6 py-2.5 rounded-md">
-              Go to my {role === "supplier" ? "supplier portal" : role === "admin" ? "admin console" : "marketplace"}
+            <button
+              disabled={busy}
+              onClick={() => void finishAll()}
+              className="mt-6 bg-primary text-primary-foreground font-semibold px-6 py-2.5 rounded-md disabled:opacity-50"
+            >
+              {busy
+                ? "Saving…"
+                : `Go to my ${role === "supplier" ? "supplier portal" : role === "admin" ? "admin console" : "marketplace"}`}
             </button>
           </div>
         )}
-
-        
       </div>
       <style>{`.input{width:100%;border:1px solid var(--color-input);border-radius:.5rem;padding:.6rem .75rem;background:var(--color-background);font-size:.875rem}`}</style>
     </AppShell>
