@@ -70,7 +70,7 @@ export function useAuth() {
     hasRole(...roles: AuthRole[]) {
       if (!user) return false;
       if (user.role === "super_admin") return true;
-      if (user.role === "admin") return roles.includes("admin") || roles.includes("super_admin") ? roles.includes("admin") : true;
+      if (user.role === "admin") return true;
       if (user.role === "both") return roles.includes("buyer") || roles.includes("supplier") || roles.includes("both");
       return roles.includes(user.role);
     },
