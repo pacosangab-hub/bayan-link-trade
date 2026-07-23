@@ -1909,7 +1909,13 @@ export type Database = {
       user_business_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
-      app_role: "admin" | "buyer" | "supplier" | "carrier" | "user"
+      app_role:
+        | "admin"
+        | "buyer"
+        | "supplier"
+        | "carrier"
+        | "user"
+        | "super_admin"
       custom_offer_status:
         | "pending_review"
         | "accepted"
@@ -2204,7 +2210,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "buyer", "supplier", "carrier", "user"],
+      app_role: [
+        "admin",
+        "buyer",
+        "supplier",
+        "carrier",
+        "user",
+        "super_admin",
+      ],
       custom_offer_status: [
         "pending_review",
         "accepted",
