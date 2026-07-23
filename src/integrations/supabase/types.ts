@@ -14,6 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          business_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          business_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          business_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_logs_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       attachments: {
         Row: {
           business_id: string | null
@@ -205,6 +270,44 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      buyer_profiles: {
+        Row: {
+          business_id: string
+          created_at: string
+          monthly_purchase_volume: string | null
+          notes: string | null
+          preferred_payment_terms: string | null
+          procurement_categories: string[]
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          monthly_purchase_volume?: string | null
+          notes?: string | null
+          preferred_payment_terms?: string | null
+          procurement_categories?: string[]
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          monthly_purchase_volume?: string | null
+          notes?: string | null
+          preferred_payment_terms?: string | null
+          procurement_categories?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buyer_profiles_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: true
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       categories: {
         Row: {
@@ -1276,6 +1379,107 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount: number
+          buyer_business_id: string
+          created_at: string
+          currency: string
+          id: string
+          metadata: Json
+          method: string | null
+          order_id: string
+          paid_at: string | null
+          provider: string
+          provider_ref: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          buyer_business_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          method?: string | null
+          order_id: string
+          paid_at?: string | null
+          provider?: string
+          provider_ref?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          buyer_business_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          method?: string | null
+          order_id?: string
+          paid_at?: string | null
+          provider?: string
+          provider_ref?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_buyer_business_id_fkey"
+            columns: ["buyer_business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_images: {
+        Row: {
+          alt: string | null
+          created_at: string
+          id: string
+          position: number
+          product_id: string
+          public_url: string | null
+          storage_path: string
+        }
+        Insert: {
+          alt?: string | null
+          created_at?: string
+          id?: string
+          position?: number
+          product_id: string
+          public_url?: string | null
+          storage_path: string
+        }
+        Update: {
+          alt?: string | null
+          created_at?: string
+          id?: string
+          position?: number
+          product_id?: string
+          public_url?: string | null
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category_id: string | null
@@ -1885,7 +2089,27 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_kpis_v: {
+        Row: {
+          active_deliveries: number | null
+          active_products: number | null
+          completed_orders: number | null
+          gmv: number | null
+          new_users_7d: number | null
+          orders_today: number | null
+          pending_disputes: number | null
+          pending_payments: number | null
+          pending_verifications: number | null
+          refunded_payments: number | null
+          revenue: number | null
+          rfqs_today: number | null
+          successful_payments: number | null
+          total_buyers: number | null
+          total_reviews: number | null
+          total_suppliers: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       business_contact_info: {
@@ -1909,7 +2133,13 @@ export type Database = {
       user_business_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
-      app_role: "admin" | "buyer" | "supplier" | "carrier" | "user"
+      app_role:
+        | "admin"
+        | "buyer"
+        | "supplier"
+        | "carrier"
+        | "user"
+        | "super_admin"
       custom_offer_status:
         | "pending_review"
         | "accepted"
@@ -2204,7 +2434,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "buyer", "supplier", "carrier", "user"],
+      app_role: [
+        "admin",
+        "buyer",
+        "supplier",
+        "carrier",
+        "user",
+        "super_admin",
+      ],
       custom_offer_status: [
         "pending_review",
         "accepted",

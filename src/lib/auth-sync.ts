@@ -1,19 +1,28 @@
 // Bridges Supabase Auth sessions into the local auth-store so the existing
-// header, guards, and pages (which read useAuth()) work with Google OAuth.
+// header, guards, and pages (which read useAuth()) work with real auth.
+// The role is derived from the public.user_roles table (source of truth),
+// never from client-controllable user_metadata.
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { setAuthUser, getAuthUser, type AuthRole, type AuthUser } from "@/lib/auth-store";
 
-function pickRole(u: User): AuthRole {
-  const meta = (u.user_metadata || {}) as Record<string, unknown>;
-  const raw = String(meta.role ?? "").toLowerCase();
-  // Never trust admin from provider metadata — must be granted server-side.
-  if (raw === "supplier") return "supplier";
-  if (raw === "both") return "both";
+async function fetchRole(userId: string): Promise<AuthRole> {
+  try {
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    const roles = new Set((data ?? []).map((r: any) => r.role as string));
+    if (roles.has("super_admin")) return "super_admin";
+    if (roles.has("admin")) return "admin";
+    if (roles.has("supplier") && roles.has("buyer")) return "both";
+    if (roles.has("supplier")) return "supplier";
+    if (roles.has("buyer")) return "buyer";
+  } catch { /* fall through */ }
   return "buyer";
 }
 
-export function toAuthUser(u: User): AuthUser {
+export function toAuthUser(u: User, role: AuthRole = "buyer"): AuthUser {
   const meta = (u.user_metadata || {}) as Record<string, unknown>;
   const email = u.email || String(meta.email || "");
   const fullName =
@@ -21,29 +30,30 @@ export function toAuthUser(u: User): AuthUser {
     (meta.name as string) ||
     email.split("@")[0] ||
     "PSG User";
-  // Preserve any businessName we've already collected locally
   const existing = getAuthUser();
   return {
     id: u.id,
     email,
     fullName,
-    role: existing?.id === u.id ? existing.role : pickRole(u),
+    role,
     businessName: existing?.id === u.id ? existing.businessName : "",
     source: "supabase",
   };
 }
 
+async function hydrate(u: User) {
+  const role = await fetchRole(u.id);
+  setAuthUser(toAuthUser(u, role));
+}
+
 let subscribed = false;
 
-/** Called once from the root component. Hydrates from any existing Supabase
- *  session, then keeps the local auth-store mirrored via onAuthStateChange. */
 export function startAuthSync(): () => void {
   if (subscribed) return () => {};
   subscribed = true;
 
-  // Initial hydrate
   void supabase.auth.getSession().then(({ data }) => {
-    if (data.session?.user) setAuthUser(toAuthUser(data.session.user));
+    if (data.session?.user) void hydrate(data.session.user);
   });
 
   const { data } = supabase.auth.onAuthStateChange((event, session) => {
@@ -52,7 +62,7 @@ export function startAuthSync(): () => void {
       return;
     }
     if (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "TOKEN_REFRESHED") {
-      if (session?.user) setAuthUser(toAuthUser(session.user));
+      if (session?.user) void hydrate(session.user);
     }
   });
 

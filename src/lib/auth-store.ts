@@ -3,7 +3,7 @@
 // swap the demo path for Supabase Auth without touching call sites.
 import { useSyncExternalStore } from "react";
 
-export type AuthRole = "buyer" | "supplier" | "admin" | "both";
+export type AuthRole = "buyer" | "supplier" | "admin" | "super_admin" | "both";
 
 export interface AuthUser {
   id: string;
@@ -69,6 +69,7 @@ export function useAuth() {
     role: user?.role ?? null,
     hasRole(...roles: AuthRole[]) {
       if (!user) return false;
+      if (user.role === "super_admin") return true;
       if (user.role === "admin") return true;
       if (user.role === "both") return roles.includes("buyer") || roles.includes("supplier") || roles.includes("both");
       return roles.includes(user.role);
