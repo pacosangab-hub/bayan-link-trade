@@ -35,20 +35,11 @@ function LoginPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      if (data.user) {
-        setAuthUser({
-          id: data.user.id,
-          email: data.user.email || email,
-          fullName: (data.user.user_metadata?.full_name as string) || email,
-          role: ((data.user.user_metadata?.role as any) || "buyer"),
-          businessName: (data.user.user_metadata?.business_name as string) || "",
-          source: "supabase",
-        });
-        toast.success("Welcome back!");
-        go();
-      }
+      // Role + local auth-store hydrate via startAuthSync's onAuthStateChange.
+      toast.success("Welcome back!");
+      go();
     } catch (err: any) {
       toast.error(err.message || "Login failed");
     } finally {
