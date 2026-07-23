@@ -6,16 +6,18 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { setAuthUser, getAuthUser, type AuthRole, type AuthUser } from "@/lib/auth-store";
 
-const ROLE_PRIORITY: AuthRole[] = ["super_admin", "admin", "supplier", "buyer", "both"];
-
 async function fetchRole(userId: string): Promise<AuthRole> {
   try {
     const { data } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId);
-    const roles = new Set((data ?? []).map((r: any) => r.role as AuthRole));
-    for (const r of ROLE_PRIORITY) if (roles.has(r)) return r;
+    const roles = new Set((data ?? []).map((r: any) => r.role as string));
+    if (roles.has("super_admin")) return "super_admin";
+    if (roles.has("admin")) return "admin";
+    if (roles.has("supplier") && roles.has("buyer")) return "both";
+    if (roles.has("supplier")) return "supplier";
+    if (roles.has("buyer")) return "buyer";
   } catch { /* fall through */ }
   return "buyer";
 }
