@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { supabase } from "@/integrations/supabase/client";
-import { setAuthUser, type AuthRole } from "@/lib/auth-store";
+import { type AuthRole } from "@/lib/auth-store";
+import { setSelfRole } from "@/lib/self-role.functions";
 import { toast } from "sonner";
 import { UserPlus, UserCog, Store, Users } from "lucide-react";
 import { GoogleSignInButton, OrDivider } from "@/components/auth/GoogleSignInButton";
@@ -32,27 +33,21 @@ function SignupPage() {
     if (password !== confirm) { toast.error("Passwords do not match"); return; }
     setBusy(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email, password,
         options: {
-          emailRedirectTo: window.location.origin,
-          data: { full_name: fullName, role },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: { full_name: fullName },
         },
       });
-      // Whether or not email confirmation is required, sign the user into the
-      // local session so onboarding can proceed. Real Supabase session will
-      // hydrate once the token is issued.
-      const id = data?.user?.id || `local_${crypto.randomUUID()}`;
-      setAuthUser({
-        id, email, fullName, role,
-        businessName: "",
-        source: error ? "demo" : "supabase",
-      });
-      if (error && !/registered/i.test(error.message)) {
-        toast.message("Account created in demo mode (backend unavailable).");
-      } else {
-        toast.success("Account created — let's set up your business.");
+      if (error) throw error;
+      // If a session is available immediately (email confirmation off), persist
+      // the chosen role server-side. Otherwise onboarding will do it after login.
+      const { data: sess } = await supabase.auth.getSession();
+      if (sess.session && (role === "buyer" || role === "supplier" || role === "both")) {
+        try { await setSelfRole({ data: { role } }); } catch { /* non-fatal */ }
       }
+      toast.success("Account created — let's set up your business.");
       navigate({ to: "/onboarding", replace: true });
     } catch (err: any) {
       toast.error(err.message || "Signup failed");
@@ -60,6 +55,7 @@ function SignupPage() {
       setBusy(false);
     }
   }
+
 
   return (
     <AppShell>
