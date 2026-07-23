@@ -1,87 +1,61 @@
-# Xendit Payments Integration — PSG Supply Gateway
 
-Replace the mock checkout payment step with real Xendit-hosted checkout (test mode first), supporting GCash, Maya, ShopeePay, cards, and bank transfer / direct debit via a single Xendit **Invoice** (their all-in-one hosted page). Orders move to `paid` automatically via a webhook that releases funds into PSG's simulated escrow.
+# PSG Live Backend Migration Plan
 
-Xendit has no prebuilt Lovable connector, so we wire it as a custom integration: secret-stored API key + TanStack server functions + a public webhook route.
+Goal: replace every mock array, localStorage store, and demo helper with real Supabase-backed data + realtime, without redesigning the UI. Rolled out in 5 phases so each is shippable and verifiable.
 
----
+## Guiding rules
+- Keep the existing schema (`businesses`, `products`, `rfqs`, `rfq_quotes`, `custom_offers`, `orders`, `messages`, `conversations`, `notifications`, `disputes`, `shipments`, etc.) and extend it. No table renames.
+- Every new/changed table gets `GRANT` + `ENABLE RLS` + owner/admin policies in the same migration.
+- All server writes go through `createServerFn` w/ `requireSupabaseAuth`; all client reads use `@/integrations/supabase/client` + TanStack Query.
+- Realtime: enable `supabase_realtime` publication on tables the UI subscribes to; wrap channel subscriptions in `useEffect` with cleanup.
+- First user to sign up becomes `super_admin` (trigger); subsequent admins promoted from Admin Console.
+- Mock data (150+ products, 60+ suppliers) is imported as real rows owned by a seed "PSG Demo Supplier" account so the marketplace isn't empty.
 
-## Part 1 — Getting your Xendit account (before we build)
+## Phase 1 — Auth, Roles, RLS foundation
+- Extend `app_role` enum to include `super_admin`, `admin`, `supplier`, `buyer` (keep `user` alias for back-compat).
+- Update `handle_new_user` trigger: if `user_roles` is empty, assign `super_admin`; else assign default `buyer`.
+- Add missing tables: `activity_logs`, `payments`, `deliveries` (thin wrapper over shipments), `tracking_events` (alias view of `shipment_events`), `product_images` (extract from `products.images` jsonb), `dashboard_metrics` (materialized snapshot refreshed by trigger/cron), `admin_settings`, `buyer_profiles`, `verification_requests` (unify with `verification_documents`).
+- RLS policies for every new table.
+- Rewrite `src/lib/auth-store.ts` + `auth-sync.ts` to derive role from `user_roles` (via `has_role` RPC) instead of user_metadata. Remove localStorage role.
+- Protected routes: `<RequireAuth>` reads live session + role; email verification gate on sensitive actions.
+- Forgot password + `/reset-password` page.
 
-I'll walk you through this in chat when we start; nothing to do now.
+## Phase 2 — Products, Suppliers, Categories, Search
+- Migrate `src/lib/mock-data.ts` (suppliers, products, categories) into DB via a seed migration owned by a `demo@psg.local` supplier account.
+- Replace `src/lib/db.ts`, `src/lib/supplier-listings.ts`, `src/lib/inventory.ts` with real Supabase queries + TanStack Query hooks.
+- Product images: move to `product-images` bucket + `product_images` table with signed URLs.
+- Supplier Portal (`/supplier-portal/*`): products CRUD, inventory adjustments, image uploads, public preview — all live.
+- Marketplace (`/products`, `/suppliers`, `/search`): server-side filtering (category, region, MOQ, verified, escrow, OEM, private label) via `.textSearch()` + filters, pagination + infinite scroll, log queries to `search_logs`.
 
-1. Sign up at **dashboard.xendit.co** (free, no verification needed for test mode).
-2. Business info: use "Philippine Supply Gateway" (or your registered name), country Philippines, industry B2B Marketplace.
-3. **Stay in Test Mode** (toggle top-right of the dashboard). Test mode gives you working GCash/Maya/card/bank sandboxes with fake money — no KYC needed.
-4. Go to **Settings → Developers → API Keys** → generate a **Secret API Key** (starts with `xnd_development_...`). Copy it.
-5. Go to **Settings → Developers → Webhooks** → we'll paste the webhook URL here after Step 3 below deploys.
-6. Go live later: submit KYC docs (SEC/DTI registration, valid ID, bank account) in the dashboard; swap the test key for a live key in one place.
+## Phase 3 — RFQs, Quotations, Offers, Orders, Cart, Checkout
+- Replace `rfq-store.ts`, `offers-store.ts`, `cart.ts` (localStorage) with Supabase-backed hooks.
+- RFQ flow: create → suppliers see in `/supplier-portal/quote-requests` → submit `rfq_quotes` → buyer compares at `/rfq/$id` → accept creates `orders` + `order_items` in a server function.
+- Custom offers via chat: `custom_offers` + `custom_offer_versions` wired to messages.
+- Checkout (`/checkout`, `/offers/$id/checkout`): writes `orders`, `order_items`, `deliveries`, `payments` (status=`pending`, demo escrow). Delivery method selection persisted; tracking timeline reads `shipment_events`.
+- Reviews after `orders.status='completed'`.
 
----
+## Phase 4 — Messaging, Notifications, Realtime, Admin Console
+- Messaging: `/messages` reads `conversations` + `messages`; subscribe via Realtime channel per conversation; attachments to `message-attachments` bucket with path-scoped RLS.
+- Notifications: `notifications` table + realtime subscription in `NotificationBell`; unread count live; server triggers insert notifications on RFQ/quote/order/payment/verification/message events.
+- Admin Console (`/admin/*`): every metric card, table, and chart pulls from live queries. Dashboard KPIs computed via SQL views (`admin_kpis_v`) and subscribed to via realtime on underlying tables. Verification queue, disputes, buyers, suppliers, orders, payments, listings — all live with row actions writing back through server fns.
+- Enable publication:
+```
+alter publication supabase_realtime add table products, rfqs, rfq_quotes, custom_offers, orders, messages, notifications, shipments, shipment_events, verification_documents;
+```
 
-## Part 2 — What gets built
+## Phase 5 — Storage, Analytics, Activity Logs, Polish
+- Storage buckets already exist (verified). Add upload UIs where missing (logos, certificates, FDA/ISO permits, delivery proof).
+- Activity logs: server fn `logActivity()` called from every mutating server fn; `/admin/activity` viewer.
+- Analytics: SQL views for GMV, order counts, supplier/buyer growth, top products/suppliers/categories; charts subscribe via realtime invalidation.
+- Performance: add indexes on FK + filter columns, `defaultPreloadStaleTime: 0` already set, pagination on all lists, optimistic mutations for cart/inventory.
+- Remove `src/lib/mock-data.ts`, `demo/*`, localStorage stores. Add error boundaries + empty states on every list route.
 
-### Step 1 — Secret + server client
-- Request `XENDIT_SECRET_KEY` via the secure secret form (test key first, swap to live later with one update).
-- Add a thin server-only Xendit helper `src/lib/xendit.server.ts` (Basic Auth against `https://api.xendit.co`).
+## Technical notes
+- Server fns live in `src/lib/*.functions.ts`; `supabaseAdmin` used only inside handlers after role check.
+- `src/start.ts` must have `attachSupabaseAuth` in `functionMiddleware` (verify).
+- Public read paths (landing product cards) use server publishable client + narrow `TO anon` SELECT policies on `products` (only `listing_status='active'`) and `businesses` (safe columns only — already enforced).
+- No `service_role` key ever in client bundle; `client.server.ts` imports stay dynamic inside handlers.
+- Types regenerated after each migration; UI updates follow in same phase.
 
-### Step 2 — Create-invoice server function
-`src/lib/xendit.functions.ts` → `createXenditInvoice({ orderId })`:
-- Loads the order from cart/order storage.
-- Calls `POST /v2/invoices` with amount = order total (PHP), `external_id = orderId`, `payment_methods = ["GCASH","PAYMAYA","SHOPEEPAY","CREDIT_CARD","BPI","BDO","UNIONBANK","METROBANK"]`, success/failure redirect URLs pointing back to the order page.
-- Returns `{ invoice_url, invoice_id }`.
-
-### Step 3 — Checkout wiring
-Update `src/routes/checkout.tsx`:
-- Keep the delivery-method selection exactly as-is.
-- In the Payment Method section, keep the same visual options but they now map to Xendit payment channels (Escrow stays as the wrapper label — "PSG Escrow via Xendit").
-- "Confirm & Place Order" now:
-  1. Creates the order locally in status `pending_payment`.
-  2. Calls `createXenditInvoice`.
-  3. Redirects the buyer to `invoice_url` (Xendit hosted page — GCash, Maya, ShopeePay, cards, banks all on one page).
-- On return (success/fail redirect), buyer lands on `/orders/$id`; UI reads status.
-
-### Step 4 — Webhook (public route)
-`src/routes/api/public/xendit-webhook.ts` — TanStack file route:
-- Verifies `x-callback-token` header against `XENDIT_WEBHOOK_TOKEN` secret (timing-safe compare).
-- Handles `invoice.paid` → mark order `paid` and move into escrow (existing `escrowOrder` flow).
-- Handles `invoice.expired` / `invoice.failed` → mark order `payment_failed`, restore cart.
-- Idempotent by `invoice_id`.
-
-Stable URL to paste in Xendit dashboard: `https://psgsupplygateway.lovable.app/api/public/xendit-webhook`.
-
-### Step 5 — Order page updates
-`src/routes/orders.$id.tsx`:
-- Show payment status badge (Pending Payment / Paid / Failed).
-- If pending, show "Complete payment" button re-opening the Xendit invoice URL (saved on the order).
-- Escrow release logic unchanged (releases on delivery confirmation).
-
-### Step 6 — Test-mode verification
-Walk through one test purchase per method (GCash sandbox, card `4000 0000 0000 0002`, bank sim) and confirm webhook flips order to paid.
-
----
-
-## Technical details
-
-**Auth**: Xendit uses HTTP Basic Auth with the secret key as username and empty password. Server-side only.
-
-**Endpoints used**:
-- `POST /v2/invoices` — create hosted checkout page
-- `GET /v2/invoices/:id` — status poll fallback if webhook delayed
-- Webhook events: `invoice.paid`, `invoice.expired`
-
-**Secrets stored**:
-- `XENDIT_SECRET_KEY` (test → live swap)
-- `XENDIT_WEBHOOK_TOKEN` (user sets in Xendit dashboard, mirrored here)
-
-**Files touched**:
-- New: `src/lib/xendit.server.ts`, `src/lib/xendit.functions.ts`, `src/routes/api/public/xendit-webhook.ts`
-- Edited: `src/routes/checkout.tsx`, `src/routes/orders.$id.tsx`, `src/lib/cart.ts` (add `pending_payment` status + `xenditInvoiceId`/`xenditInvoiceUrl` on the order)
-
-**Fees for your reference**: Xendit test mode is free. Live: ~2.0–2.5% cards, ~2.0–2.5% GCash/Maya, ~PHP 15 flat direct debit — see xendit.co/ph/pricing.
-
-**Out of scope for this plan**: Transportify (we'll plan that separately when you're ready), refunds/partial captures (can add later), payouts to suppliers (Xendit has a Disbursements API — separate feature).
-
----
-
-Approve this and I'll start with Step 1 (requesting your Xendit test key) and walk you through the dashboard signup in chat.
+## Deliverable for this approval
+Approving this plan authorizes me to start **Phase 1** in the next turn (auth + roles + RLS foundation + reset-password + role-driven guards + activity_logs/dashboard_metrics/admin_settings tables). Phases 2–5 will each be proposed and shipped as their own turn so you can review and course-correct between them.
