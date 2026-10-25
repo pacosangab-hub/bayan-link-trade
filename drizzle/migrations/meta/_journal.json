@@ -15,6 +15,13 @@
       "when": 1792954157077,
       "tag": "0001_ads_storage_and_campaign_workflow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792954447389,
+      "tag": "0002_ads_scoped_admin_authorization",
+      "breakpoints": true
     }
   ]
 }

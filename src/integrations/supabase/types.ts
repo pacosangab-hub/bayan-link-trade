@@ -2530,6 +2530,7 @@ export type Database = {
     }
     Functions: {
       ads_accept_quote: { Args: { quote: string }; Returns: string }
+      ads_is_admin: { Args: never; Returns: boolean }
       ads_transition_booking: {
         Args: { booking: string; next_status: string }
         Returns: undefined
