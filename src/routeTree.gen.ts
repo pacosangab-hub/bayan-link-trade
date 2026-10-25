@@ -59,6 +59,11 @@ import { Route as DashboardSupplierRouteImport } from './routes/dashboard.suppli
 import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
 import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AdsRequestRouteImport } from './routes/ads.request'
+import { Route as AdsNewRouteImport } from './routes/ads.new'
+import { Route as AdsDashboardRouteImport } from './routes/ads.dashboard'
+import { Route as AdsAdminRouteImport } from './routes/ads.admin'
+import { Route as AdsIdRouteImport } from './routes/ads.$id'
 import { Route as AdminVerificationRouteImport } from './routes/admin.verification'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
@@ -327,6 +332,31 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/callback',
   getParentRoute: () => AuthRoute,
 } as any)
+const AdsRequestRoute = AdsRequestRouteImport.update({
+  id: '/request',
+  path: '/request',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AdsNewRoute = AdsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AdsDashboardRoute = AdsDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AdsAdminRoute = AdsAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AdsIdRoute = AdsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdsRoute,
+} as any)
 const AdminVerificationRoute = AdminVerificationRouteImport.update({
   id: '/verification',
   path: '/verification',
@@ -440,6 +470,11 @@ export interface FileRoutesByFullPath {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verification': typeof AdminVerificationRoute
+  '/ads/$id': typeof AdsIdRoute
+  '/ads/admin': typeof AdsAdminRoute
+  '/ads/dashboard': typeof AdsDashboardRoute
+  '/ads/new': typeof AdsNewRoute
+  '/ads/request': typeof AdsRequestRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -499,6 +534,11 @@ export interface FileRoutesByTo {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verification': typeof AdminVerificationRoute
+  '/ads/$id': typeof AdsIdRoute
+  '/ads/admin': typeof AdsAdminRoute
+  '/ads/dashboard': typeof AdsDashboardRoute
+  '/ads/new': typeof AdsNewRoute
+  '/ads/request': typeof AdsRequestRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -567,6 +607,11 @@ export interface FileRoutesById {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verification': typeof AdminVerificationRoute
+  '/ads/$id': typeof AdsIdRoute
+  '/ads/admin': typeof AdsAdminRoute
+  '/ads/dashboard': typeof AdsDashboardRoute
+  '/ads/new': typeof AdsNewRoute
+  '/ads/request': typeof AdsRequestRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -636,6 +681,11 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/verification'
+    | '/ads/$id'
+    | '/ads/admin'
+    | '/ads/dashboard'
+    | '/ads/new'
+    | '/ads/request'
     | '/auth/callback'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
@@ -695,6 +745,11 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/verification'
+    | '/ads/$id'
+    | '/ads/admin'
+    | '/ads/dashboard'
+    | '/ads/new'
+    | '/ads/request'
     | '/auth/callback'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
@@ -762,6 +817,11 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/verification'
+    | '/ads/$id'
+    | '/ads/admin'
+    | '/ads/dashboard'
+    | '/ads/new'
+    | '/ads/request'
     | '/auth/callback'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
@@ -1178,6 +1238,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/ads/request': {
+      id: '/ads/request'
+      path: '/request'
+      fullPath: '/ads/request'
+      preLoaderRoute: typeof AdsRequestRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/ads/new': {
+      id: '/ads/new'
+      path: '/new'
+      fullPath: '/ads/new'
+      preLoaderRoute: typeof AdsNewRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/ads/dashboard': {
+      id: '/ads/dashboard'
+      path: '/dashboard'
+      fullPath: '/ads/dashboard'
+      preLoaderRoute: typeof AdsDashboardRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/ads/admin': {
+      id: '/ads/admin'
+      path: '/admin'
+      fullPath: '/ads/admin'
+      preLoaderRoute: typeof AdsAdminRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/ads/$id': {
+      id: '/ads/$id'
+      path: '/$id'
+      fullPath: '/ads/$id'
+      preLoaderRoute: typeof AdsIdRouteImport
+      parentRoute: typeof AdsRoute
+    }
     '/admin/verification': {
       id: '/admin/verification'
       path: '/verification'
@@ -1319,10 +1414,20 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AdsRouteChildren {
+  AdsIdRoute: typeof AdsIdRoute
+  AdsAdminRoute: typeof AdsAdminRoute
+  AdsDashboardRoute: typeof AdsDashboardRoute
+  AdsNewRoute: typeof AdsNewRoute
+  AdsRequestRoute: typeof AdsRequestRoute
   AdsIndexRoute: typeof AdsIndexRoute
 }
 
 const AdsRouteChildren: AdsRouteChildren = {
+  AdsIdRoute: AdsIdRoute,
+  AdsAdminRoute: AdsAdminRoute,
+  AdsDashboardRoute: AdsDashboardRoute,
+  AdsNewRoute: AdsNewRoute,
+  AdsRequestRoute: AdsRequestRoute,
   AdsIndexRoute: AdsIndexRoute,
 }
 
