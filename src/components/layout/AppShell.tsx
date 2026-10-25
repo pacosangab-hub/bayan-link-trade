@@ -74,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="opacity-90">🇵🇭 PSG — Connecting Philippine business, end to end.</span>
           <div className="hidden md:flex items-center gap-4 opacity-90">
             <span>Help Center</span>
-            <span>Escrow Policy</span>
+            <span>{path.startsWith('/ads') ? 'Advertising policies' : 'Escrow Policy'}</span>
             <span>EN · TL</span>
           </div>
         </div>
@@ -242,13 +242,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               <div className="font-display text-2xl text-white leading-none">PSG</div>
             </div>
             <p className="opacity-80 leading-relaxed">
-              The B2B wholesale gateway for Philippine commerce. Verified suppliers, RFQs, and escrow on every transaction.
+              {path.startsWith('/ads') ? 'Philippine advertising opportunities, media owners, and campaign quotations. Advertising payments are not yet enabled.' : 'The B2B wholesale gateway for Philippine commerce. Verified suppliers, RFQs, and escrow on every transaction.'}
             </p>
           </div>
           <div>
             <div className="font-semibold text-white mb-3">Buyers</div>
             <ul className="space-y-2 opacity-90">
-              <li>Browse marketplace</li><li>Post an RFQ</li><li>Escrow protection</li><li>Verified suppliers</li>
+              <li>Browse marketplace</li><li>Post an RFQ</li><li>{path.startsWith('/ads') ? 'Compare opportunities' : 'Escrow protection'}</li><li>Verified suppliers</li>
             </ul>
           </div>
           <div>
