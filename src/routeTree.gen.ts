@@ -9,168 +9,80 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
-import { Route as SuppliersRouteImport } from './routes/suppliers'
-import { Route as SupplierPortalRouteImport } from './routes/supplier-portal'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as SearchRouteImport } from './routes/search'
-import { Route as RfqRouteImport } from './routes/rfq'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ProductsRouteImport } from './routes/products'
-import { Route as OrdersRouteImport } from './routes/orders'
-import { Route as OffersRouteImport } from './routes/offers'
-import { Route as MessagesRouteImport } from './routes/messages'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as DocsRouteImport } from './routes/docs'
-import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as BuyerPortalRouteImport } from './routes/buyer-portal'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SupplierPortalIndexRouteImport } from './routes/supplier-portal.index'
-import { Route as RfqIndexRouteImport } from './routes/rfq.index'
-import { Route as ProductsIndexRouteImport } from './routes/products.index'
-import { Route as OrdersIndexRouteImport } from './routes/orders.index'
-import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
-import { Route as OffersIndexRouteImport } from './routes/offers.index'
-import { Route as CustomRequestsIndexRouteImport } from './routes/custom-requests.index'
+import { Route as AccountRouteImport } from './routes/account'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AdsRouteImport } from './routes/ads'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BuyerPortalRouteImport } from './routes/buyer-portal'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as OffersRouteImport } from './routes/offers'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as ProductsRouteImport } from './routes/products'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RfqRouteImport } from './routes/rfq'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SupplierPortalRouteImport } from './routes/supplier-portal'
+import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
-import { Route as SupplierPortalVerificationRouteImport } from './routes/supplier-portal.verification'
-import { Route as SupplierPortalQuoteRequestsRouteImport } from './routes/supplier-portal.quote-requests'
-import { Route as SupplierPortalPreviewRouteImport } from './routes/supplier-portal.preview'
-import { Route as SupplierPortalOrdersRouteImport } from './routes/supplier-portal.orders'
-import { Route as SupplierPortalMessagesRouteImport } from './routes/supplier-portal.messages'
-import { Route as SupplierPortalInventoryRouteImport } from './routes/supplier-portal.inventory'
-import { Route as RfqNewRouteImport } from './routes/rfq.new'
-import { Route as RfqIdRouteImport } from './routes/rfq.$id'
-import { Route as ProductsIdRouteImport } from './routes/products.$id'
-import { Route as OrdersIdRouteImport } from './routes/orders.$id'
-import { Route as OnboardingSupplierRouteImport } from './routes/onboarding.supplier'
-import { Route as OnboardingBuyerRouteImport } from './routes/onboarding.buyer'
-import { Route as OffersIdRouteImport } from './routes/offers.$id'
-import { Route as DashboardSupplierRouteImport } from './routes/dashboard.supplier'
-import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
-import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
-import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
-import { Route as AdminVerificationRouteImport } from './routes/admin.verification'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
-import { Route as AdminSafetyRouteImport } from './routes/admin.safety'
-import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
-import { Route as AdminProductReviewRouteImport } from './routes/admin.product-review'
-import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
-import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
-import { Route as AdminListingsRouteImport } from './routes/admin.listings'
-import { Route as AdminDisputesRouteImport } from './routes/admin.disputes'
 import { Route as AdminBuyersRouteImport } from './routes/admin.buyers'
+import { Route as AdminDisputesRouteImport } from './routes/admin.disputes'
+import { Route as AdminListingsRouteImport } from './routes/admin.listings'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
+import { Route as AdminProductReviewRouteImport } from './routes/admin.product-review'
+import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
+import { Route as AdminSafetyRouteImport } from './routes/admin.safety'
+import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminVerificationRouteImport } from './routes/admin.verification'
+import { Route as AdsIndexRouteImport } from './routes/ads.index'
+import { Route as AdsIdRouteImport } from './routes/ads.$id'
+import { Route as AdsAdminRouteImport } from './routes/ads.admin'
+import { Route as AdsDashboardRouteImport } from './routes/ads.dashboard'
+import { Route as AdsNewRouteImport } from './routes/ads.new'
+import { Route as AdsRequestRouteImport } from './routes/ads.request'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as CustomRequestsIndexRouteImport } from './routes/custom-requests.index'
+import { Route as CustomRequestsIdRouteImport } from './routes/custom-requests.$id'
+import { Route as DashboardBuyerRouteImport } from './routes/dashboard.buyer'
+import { Route as DashboardSupplierRouteImport } from './routes/dashboard.supplier'
+import { Route as OffersIndexRouteImport } from './routes/offers.index'
+import { Route as OffersIdRouteImport } from './routes/offers.$id'
+import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
+import { Route as OnboardingBuyerRouteImport } from './routes/onboarding.buyer'
+import { Route as OnboardingSupplierRouteImport } from './routes/onboarding.supplier'
+import { Route as OrdersIndexRouteImport } from './routes/orders.index'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as ProductsIndexRouteImport } from './routes/products.index'
+import { Route as ProductsIdRouteImport } from './routes/products.$id'
+import { Route as RfqIndexRouteImport } from './routes/rfq.index'
+import { Route as RfqIdRouteImport } from './routes/rfq.$id'
+import { Route as RfqNewRouteImport } from './routes/rfq.new'
+import { Route as SupplierPortalIndexRouteImport } from './routes/supplier-portal.index'
+import { Route as SupplierPortalInventoryRouteImport } from './routes/supplier-portal.inventory'
+import { Route as SupplierPortalMessagesRouteImport } from './routes/supplier-portal.messages'
+import { Route as SupplierPortalOrdersRouteImport } from './routes/supplier-portal.orders'
+import { Route as SupplierPortalPreviewRouteImport } from './routes/supplier-portal.preview'
+import { Route as SupplierPortalQuoteRequestsRouteImport } from './routes/supplier-portal.quote-requests'
+import { Route as SupplierPortalVerificationRouteImport } from './routes/supplier-portal.verification'
+import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
+import { Route as OffersIdCheckoutRouteImport } from './routes/offers.$id.checkout'
+import { Route as RfqIdAcceptRouteImport } from './routes/rfq.$id.accept'
 import { Route as SupplierPortalProductsIndexRouteImport } from './routes/supplier-portal.products.index'
 import { Route as SupplierPortalProductsNewRouteImport } from './routes/supplier-portal.products.new'
-import { Route as RfqIdAcceptRouteImport } from './routes/rfq.$id.accept'
-import { Route as OffersIdCheckoutRouteImport } from './routes/offers.$id.checkout'
 
-const UnauthorizedRoute = UnauthorizedRouteImport.update({
-  id: '/unauthorized',
-  path: '/unauthorized',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SuppliersRoute = SuppliersRouteImport.update({
-  id: '/suppliers',
-  path: '/suppliers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SupplierPortalRoute = SupplierPortalRouteImport.update({
-  id: '/supplier-portal',
-  path: '/supplier-portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RfqRoute = RfqRouteImport.update({
-  id: '/rfq',
-  path: '/rfq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductsRoute = ProductsRouteImport.update({
-  id: '/products',
-  path: '/products',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrdersRoute = OrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OffersRoute = OffersRouteImport.update({
-  id: '/offers',
-  path: '/offers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MessagesRoute = MessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocsRoute = DocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CustomRequestsRoute = CustomRequestsRouteImport.update({
-  id: '/custom-requests',
-  path: '/custom-requests',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BuyerPortalRoute = BuyerPortalRouteImport.update({
-  id: '/buyer-portal',
-  path: '/buyer-portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -178,186 +90,119 @@ const AccountRoute = AccountRouteImport.update({
   path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SupplierPortalIndexRoute = SupplierPortalIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SupplierPortalRoute,
-} as any)
-const RfqIndexRoute = RfqIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => RfqRoute,
-} as any)
-const ProductsIndexRoute = ProductsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ProductsRoute,
-} as any)
-const OrdersIndexRoute = OrdersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => OrdersRoute,
-} as any)
-const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
-  id: '/onboarding/',
-  path: '/onboarding/',
+const AdsRoute = AdsRouteImport.update({
+  id: '/ads',
+  path: '/ads',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OffersIndexRoute = OffersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => OffersRoute,
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const CustomRequestsIndexRoute = CustomRequestsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => CustomRequestsRoute,
+const BuyerPortalRoute = BuyerPortalRouteImport.update({
+  id: '/buyer-portal',
+  path: '/buyer-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomRequestsRoute = CustomRequestsRouteImport.update({
+  id: '/custom-requests',
+  path: '/custom-requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RfqRoute = RfqRouteImport.update({
+  id: '/rfq',
+  path: '/rfq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupplierPortalRoute = SupplierPortalRouteImport.update({
+  id: '/supplier-portal',
+  path: '/supplier-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuppliersRoute = SuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnauthorizedRoute = UnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const SuppliersIdRoute = SuppliersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => SuppliersRoute,
-} as any)
-const SupplierPortalVerificationRoute =
-  SupplierPortalVerificationRouteImport.update({
-    id: '/verification',
-    path: '/verification',
-    getParentRoute: () => SupplierPortalRoute,
-  } as any)
-const SupplierPortalQuoteRequestsRoute =
-  SupplierPortalQuoteRequestsRouteImport.update({
-    id: '/quote-requests',
-    path: '/quote-requests',
-    getParentRoute: () => SupplierPortalRoute,
-  } as any)
-const SupplierPortalPreviewRoute = SupplierPortalPreviewRouteImport.update({
-  id: '/preview',
-  path: '/preview',
-  getParentRoute: () => SupplierPortalRoute,
-} as any)
-const SupplierPortalOrdersRoute = SupplierPortalOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => SupplierPortalRoute,
-} as any)
-const SupplierPortalMessagesRoute = SupplierPortalMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => SupplierPortalRoute,
-} as any)
-const SupplierPortalInventoryRoute = SupplierPortalInventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
-  getParentRoute: () => SupplierPortalRoute,
-} as any)
-const RfqNewRoute = RfqNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => RfqRoute,
-} as any)
-const RfqIdRoute = RfqIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => RfqRoute,
-} as any)
-const ProductsIdRoute = ProductsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ProductsRoute,
-} as any)
-const OrdersIdRoute = OrdersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => OrdersRoute,
-} as any)
-const OnboardingSupplierRoute = OnboardingSupplierRouteImport.update({
-  id: '/onboarding/supplier',
-  path: '/onboarding/supplier',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingBuyerRoute = OnboardingBuyerRouteImport.update({
-  id: '/onboarding/buyer',
-  path: '/onboarding/buyer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OffersIdRoute = OffersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => OffersRoute,
-} as any)
-const DashboardSupplierRoute = DashboardSupplierRouteImport.update({
-  id: '/dashboard/supplier',
-  path: '/dashboard/supplier',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardBuyerRoute = DashboardBuyerRouteImport.update({
-  id: '/dashboard/buyer',
-  path: '/dashboard/buyer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CustomRequestsIdRoute = CustomRequestsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => CustomRequestsRoute,
-} as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/callback',
-  path: '/callback',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AdminVerificationRoute = AdminVerificationRouteImport.update({
-  id: '/verification',
-  path: '/verification',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSuppliersRoute = AdminSuppliersRouteImport.update({
-  id: '/suppliers',
-  path: '/suppliers',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSafetyRoute = AdminSafetyRouteImport.update({
-  id: '/safety',
-  path: '/safety',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRequestsRoute = AdminRequestsRouteImport.update({
-  id: '/requests',
-  path: '/requests',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminProductReviewRoute = AdminProductReviewRouteImport.update({
-  id: '/product-review',
-  path: '/product-review',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
-  id: '/payments',
-  path: '/payments',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminOrdersRoute = AdminOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminListingsRoute = AdminListingsRouteImport.update({
-  id: '/listings',
-  path: '/listings',
+const AdminBuyersRoute = AdminBuyersRouteImport.update({
+  id: '/buyers',
+  path: '/buyers',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminDisputesRoute = AdminDisputesRouteImport.update({
@@ -365,10 +210,217 @@ const AdminDisputesRoute = AdminDisputesRouteImport.update({
   path: '/disputes',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminBuyersRoute = AdminBuyersRouteImport.update({
-  id: '/buyers',
-  path: '/buyers',
+const AdminListingsRoute = AdminListingsRouteImport.update({
+  id: '/listings',
+  path: '/listings',
   getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductReviewRoute = AdminProductReviewRouteImport.update({
+  id: '/product-review',
+  path: '/product-review',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRequestsRoute = AdminRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSafetyRoute = AdminSafetyRouteImport.update({
+  id: '/safety',
+  path: '/safety',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSuppliersRoute = AdminSuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVerificationRoute = AdminVerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdsIndexRoute = AdsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AdsIdRoute = AdsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AdsAdminRoute = AdsAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AdsDashboardRoute = AdsDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AdsNewRoute = AdsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AdsRequestRoute = AdsRequestRouteImport.update({
+  id: '/request',
+  path: '/request',
+  getParentRoute: () => AdsRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
+} as any)
+const CustomRequestsIndexRoute = CustomRequestsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CustomRequestsRoute,
+} as any)
+const CustomRequestsIdRoute = CustomRequestsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => CustomRequestsRoute,
+} as any)
+const DashboardBuyerRoute = DashboardBuyerRouteImport.update({
+  id: '/dashboard/buyer',
+  path: '/dashboard/buyer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardSupplierRoute = DashboardSupplierRouteImport.update({
+  id: '/dashboard/supplier',
+  path: '/dashboard/supplier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffersIndexRoute = OffersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OffersRoute,
+} as any)
+const OffersIdRoute = OffersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OffersRoute,
+} as any)
+const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
+  id: '/onboarding/',
+  path: '/onboarding/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingBuyerRoute = OnboardingBuyerRouteImport.update({
+  id: '/onboarding/buyer',
+  path: '/onboarding/buyer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingSupplierRoute = OnboardingSupplierRouteImport.update({
+  id: '/onboarding/supplier',
+  path: '/onboarding/supplier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersIndexRoute = OrdersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrdersRoute,
+} as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OrdersRoute,
+} as any)
+const ProductsIndexRoute = ProductsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProductsRoute,
+} as any)
+const ProductsIdRoute = ProductsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ProductsRoute,
+} as any)
+const RfqIndexRoute = RfqIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RfqRoute,
+} as any)
+const RfqIdRoute = RfqIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => RfqRoute,
+} as any)
+const RfqNewRoute = RfqNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => RfqRoute,
+} as any)
+const SupplierPortalIndexRoute = SupplierPortalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SupplierPortalRoute,
+} as any)
+const SupplierPortalInventoryRoute = SupplierPortalInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => SupplierPortalRoute,
+} as any)
+const SupplierPortalMessagesRoute = SupplierPortalMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => SupplierPortalRoute,
+} as any)
+const SupplierPortalOrdersRoute = SupplierPortalOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => SupplierPortalRoute,
+} as any)
+const SupplierPortalPreviewRoute = SupplierPortalPreviewRouteImport.update({
+  id: '/preview',
+  path: '/preview',
+  getParentRoute: () => SupplierPortalRoute,
+} as any)
+const SupplierPortalQuoteRequestsRoute =
+  SupplierPortalQuoteRequestsRouteImport.update({
+    id: '/quote-requests',
+    path: '/quote-requests',
+    getParentRoute: () => SupplierPortalRoute,
+  } as any)
+const SupplierPortalVerificationRoute =
+  SupplierPortalVerificationRouteImport.update({
+    id: '/verification',
+    path: '/verification',
+    getParentRoute: () => SupplierPortalRoute,
+  } as any)
+const SuppliersIdRoute = SuppliersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => SuppliersRoute,
+} as any)
+const OffersIdCheckoutRoute = OffersIdCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => OffersIdRoute,
+} as any)
+const RfqIdAcceptRoute = RfqIdAcceptRouteImport.update({
+  id: '/accept',
+  path: '/accept',
+  getParentRoute: () => RfqIdRoute,
 } as any)
 const SupplierPortalProductsIndexRoute =
   SupplierPortalProductsIndexRouteImport.update({
@@ -382,21 +434,12 @@ const SupplierPortalProductsNewRoute =
     path: '/products/new',
     getParentRoute: () => SupplierPortalRoute,
   } as any)
-const RfqIdAcceptRoute = RfqIdAcceptRouteImport.update({
-  id: '/accept',
-  path: '/accept',
-  getParentRoute: () => RfqIdRoute,
-} as any)
-const OffersIdCheckoutRoute = OffersIdCheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => OffersIdRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
+  '/ads': typeof AdsRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
@@ -427,6 +470,11 @@ export interface FileRoutesByFullPath {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verification': typeof AdminVerificationRoute
+  '/ads/$id': typeof AdsIdRoute
+  '/ads/admin': typeof AdsAdminRoute
+  '/ads/dashboard': typeof AdsDashboardRoute
+  '/ads/new': typeof AdsNewRoute
+  '/ads/request': typeof AdsRequestRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -446,6 +494,7 @@ export interface FileRoutesByFullPath {
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/ads/': typeof AdsIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -485,6 +534,11 @@ export interface FileRoutesByTo {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verification': typeof AdminVerificationRoute
+  '/ads/$id': typeof AdsIdRoute
+  '/ads/admin': typeof AdsAdminRoute
+  '/ads/dashboard': typeof AdsDashboardRoute
+  '/ads/new': typeof AdsNewRoute
+  '/ads/request': typeof AdsRequestRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -504,6 +558,7 @@ export interface FileRoutesByTo {
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/admin': typeof AdminIndexRoute
+  '/ads': typeof AdsIndexRoute
   '/custom-requests': typeof CustomRequestsIndexRoute
   '/offers': typeof OffersIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
@@ -521,6 +576,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
+  '/ads': typeof AdsRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
@@ -551,6 +607,11 @@ export interface FileRoutesById {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verification': typeof AdminVerificationRoute
+  '/ads/$id': typeof AdsIdRoute
+  '/ads/admin': typeof AdsAdminRoute
+  '/ads/dashboard': typeof AdsDashboardRoute
+  '/ads/new': typeof AdsNewRoute
+  '/ads/request': typeof AdsRequestRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/custom-requests/$id': typeof CustomRequestsIdRoute
   '/dashboard/buyer': typeof DashboardBuyerRoute
@@ -570,6 +631,7 @@ export interface FileRoutesById {
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/ads/': typeof AdsIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -588,6 +650,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/ads'
     | '/auth'
     | '/buyer-portal'
     | '/checkout'
@@ -618,6 +681,11 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/verification'
+    | '/ads/$id'
+    | '/ads/admin'
+    | '/ads/dashboard'
+    | '/ads/new'
+    | '/ads/request'
     | '/auth/callback'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
@@ -637,6 +705,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/verification'
     | '/suppliers/$id'
     | '/admin/'
+    | '/ads/'
     | '/custom-requests/'
     | '/offers/'
     | '/onboarding/'
@@ -676,6 +745,11 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/verification'
+    | '/ads/$id'
+    | '/ads/admin'
+    | '/ads/dashboard'
+    | '/ads/new'
+    | '/ads/request'
     | '/auth/callback'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
@@ -695,6 +769,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/verification'
     | '/suppliers/$id'
     | '/admin'
+    | '/ads'
     | '/custom-requests'
     | '/offers'
     | '/onboarding'
@@ -711,6 +786,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/ads'
     | '/auth'
     | '/buyer-portal'
     | '/checkout'
@@ -741,6 +817,11 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/verification'
+    | '/ads/$id'
+    | '/ads/admin'
+    | '/ads/dashboard'
+    | '/ads/new'
+    | '/ads/request'
     | '/auth/callback'
     | '/custom-requests/$id'
     | '/dashboard/buyer'
@@ -760,6 +841,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/verification'
     | '/suppliers/$id'
     | '/admin/'
+    | '/ads/'
     | '/custom-requests/'
     | '/offers/'
     | '/onboarding/'
@@ -777,6 +859,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AdsRoute: typeof AdsRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   BuyerPortalRoute: typeof BuyerPortalRoute
   CheckoutRoute: typeof CheckoutRoute
@@ -805,144 +888,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unauthorized': {
-      id: '/unauthorized'
-      path: '/unauthorized'
-      fullPath: '/unauthorized'
-      preLoaderRoute: typeof UnauthorizedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/suppliers': {
-      id: '/suppliers'
-      path: '/suppliers'
-      fullPath: '/suppliers'
-      preLoaderRoute: typeof SuppliersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/supplier-portal': {
-      id: '/supplier-portal'
-      path: '/supplier-portal'
-      fullPath: '/supplier-portal'
-      preLoaderRoute: typeof SupplierPortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rfq': {
-      id: '/rfq'
-      path: '/rfq'
-      fullPath: '/rfq'
-      preLoaderRoute: typeof RfqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/products': {
-      id: '/products'
-      path: '/products'
-      fullPath: '/products'
-      preLoaderRoute: typeof ProductsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/orders': {
-      id: '/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof OrdersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/offers': {
-      id: '/offers'
-      path: '/offers'
-      fullPath: '/offers'
-      preLoaderRoute: typeof OffersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/messages': {
-      id: '/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/docs': {
-      id: '/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/custom-requests': {
-      id: '/custom-requests'
-      path: '/custom-requests'
-      fullPath: '/custom-requests'
-      preLoaderRoute: typeof CustomRequestsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/buyer-portal': {
-      id: '/buyer-portal'
-      path: '/buyer-portal'
-      fullPath: '/buyer-portal'
-      preLoaderRoute: typeof BuyerPortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account': {
@@ -952,61 +902,152 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/supplier-portal/': {
-      id: '/supplier-portal/'
-      path: '/'
-      fullPath: '/supplier-portal/'
-      preLoaderRoute: typeof SupplierPortalIndexRouteImport
-      parentRoute: typeof SupplierPortalRoute
-    }
-    '/rfq/': {
-      id: '/rfq/'
-      path: '/'
-      fullPath: '/rfq/'
-      preLoaderRoute: typeof RfqIndexRouteImport
-      parentRoute: typeof RfqRoute
-    }
-    '/products/': {
-      id: '/products/'
-      path: '/'
-      fullPath: '/products/'
-      preLoaderRoute: typeof ProductsIndexRouteImport
-      parentRoute: typeof ProductsRoute
-    }
-    '/orders/': {
-      id: '/orders/'
-      path: '/'
-      fullPath: '/orders/'
-      preLoaderRoute: typeof OrdersIndexRouteImport
-      parentRoute: typeof OrdersRoute
-    }
-    '/onboarding/': {
-      id: '/onboarding/'
-      path: '/onboarding'
-      fullPath: '/onboarding/'
-      preLoaderRoute: typeof OnboardingIndexRouteImport
+    '/ads': {
+      id: '/ads'
+      path: '/ads'
+      fullPath: '/ads'
+      preLoaderRoute: typeof AdsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offers/': {
-      id: '/offers/'
-      path: '/'
-      fullPath: '/offers/'
-      preLoaderRoute: typeof OffersIndexRouteImport
-      parentRoute: typeof OffersRoute
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/custom-requests/': {
-      id: '/custom-requests/'
-      path: '/'
-      fullPath: '/custom-requests/'
-      preLoaderRoute: typeof CustomRequestsIndexRouteImport
-      parentRoute: typeof CustomRequestsRoute
+    '/buyer-portal': {
+      id: '/buyer-portal'
+      path: '/buyer-portal'
+      fullPath: '/buyer-portal'
+      preLoaderRoute: typeof BuyerPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/custom-requests': {
+      id: '/custom-requests'
+      path: '/custom-requests'
+      fullPath: '/custom-requests'
+      preLoaderRoute: typeof CustomRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rfq': {
+      id: '/rfq'
+      path: '/rfq'
+      fullPath: '/rfq'
+      preLoaderRoute: typeof RfqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/supplier-portal': {
+      id: '/supplier-portal'
+      path: '/supplier-portal'
+      fullPath: '/supplier-portal'
+      preLoaderRoute: typeof SupplierPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suppliers': {
+      id: '/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/': {
       id: '/admin/'
@@ -1015,193 +1056,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/suppliers/$id': {
-      id: '/suppliers/$id'
-      path: '/$id'
-      fullPath: '/suppliers/$id'
-      preLoaderRoute: typeof SuppliersIdRouteImport
-      parentRoute: typeof SuppliersRoute
-    }
-    '/supplier-portal/verification': {
-      id: '/supplier-portal/verification'
-      path: '/verification'
-      fullPath: '/supplier-portal/verification'
-      preLoaderRoute: typeof SupplierPortalVerificationRouteImport
-      parentRoute: typeof SupplierPortalRoute
-    }
-    '/supplier-portal/quote-requests': {
-      id: '/supplier-portal/quote-requests'
-      path: '/quote-requests'
-      fullPath: '/supplier-portal/quote-requests'
-      preLoaderRoute: typeof SupplierPortalQuoteRequestsRouteImport
-      parentRoute: typeof SupplierPortalRoute
-    }
-    '/supplier-portal/preview': {
-      id: '/supplier-portal/preview'
-      path: '/preview'
-      fullPath: '/supplier-portal/preview'
-      preLoaderRoute: typeof SupplierPortalPreviewRouteImport
-      parentRoute: typeof SupplierPortalRoute
-    }
-    '/supplier-portal/orders': {
-      id: '/supplier-portal/orders'
-      path: '/orders'
-      fullPath: '/supplier-portal/orders'
-      preLoaderRoute: typeof SupplierPortalOrdersRouteImport
-      parentRoute: typeof SupplierPortalRoute
-    }
-    '/supplier-portal/messages': {
-      id: '/supplier-portal/messages'
-      path: '/messages'
-      fullPath: '/supplier-portal/messages'
-      preLoaderRoute: typeof SupplierPortalMessagesRouteImport
-      parentRoute: typeof SupplierPortalRoute
-    }
-    '/supplier-portal/inventory': {
-      id: '/supplier-portal/inventory'
-      path: '/inventory'
-      fullPath: '/supplier-portal/inventory'
-      preLoaderRoute: typeof SupplierPortalInventoryRouteImport
-      parentRoute: typeof SupplierPortalRoute
-    }
-    '/rfq/new': {
-      id: '/rfq/new'
-      path: '/new'
-      fullPath: '/rfq/new'
-      preLoaderRoute: typeof RfqNewRouteImport
-      parentRoute: typeof RfqRoute
-    }
-    '/rfq/$id': {
-      id: '/rfq/$id'
-      path: '/$id'
-      fullPath: '/rfq/$id'
-      preLoaderRoute: typeof RfqIdRouteImport
-      parentRoute: typeof RfqRoute
-    }
-    '/products/$id': {
-      id: '/products/$id'
-      path: '/$id'
-      fullPath: '/products/$id'
-      preLoaderRoute: typeof ProductsIdRouteImport
-      parentRoute: typeof ProductsRoute
-    }
-    '/orders/$id': {
-      id: '/orders/$id'
-      path: '/$id'
-      fullPath: '/orders/$id'
-      preLoaderRoute: typeof OrdersIdRouteImport
-      parentRoute: typeof OrdersRoute
-    }
-    '/onboarding/supplier': {
-      id: '/onboarding/supplier'
-      path: '/onboarding/supplier'
-      fullPath: '/onboarding/supplier'
-      preLoaderRoute: typeof OnboardingSupplierRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding/buyer': {
-      id: '/onboarding/buyer'
-      path: '/onboarding/buyer'
-      fullPath: '/onboarding/buyer'
-      preLoaderRoute: typeof OnboardingBuyerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/offers/$id': {
-      id: '/offers/$id'
-      path: '/$id'
-      fullPath: '/offers/$id'
-      preLoaderRoute: typeof OffersIdRouteImport
-      parentRoute: typeof OffersRoute
-    }
-    '/dashboard/supplier': {
-      id: '/dashboard/supplier'
-      path: '/dashboard/supplier'
-      fullPath: '/dashboard/supplier'
-      preLoaderRoute: typeof DashboardSupplierRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/buyer': {
-      id: '/dashboard/buyer'
-      path: '/dashboard/buyer'
-      fullPath: '/dashboard/buyer'
-      preLoaderRoute: typeof DashboardBuyerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/custom-requests/$id': {
-      id: '/custom-requests/$id'
-      path: '/$id'
-      fullPath: '/custom-requests/$id'
-      preLoaderRoute: typeof CustomRequestsIdRouteImport
-      parentRoute: typeof CustomRequestsRoute
-    }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/admin/verification': {
-      id: '/admin/verification'
-      path: '/verification'
-      fullPath: '/admin/verification'
-      preLoaderRoute: typeof AdminVerificationRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/suppliers': {
-      id: '/admin/suppliers'
-      path: '/suppliers'
-      fullPath: '/admin/suppliers'
-      preLoaderRoute: typeof AdminSuppliersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/safety': {
-      id: '/admin/safety'
-      path: '/safety'
-      fullPath: '/admin/safety'
-      preLoaderRoute: typeof AdminSafetyRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/requests': {
-      id: '/admin/requests'
-      path: '/requests'
-      fullPath: '/admin/requests'
-      preLoaderRoute: typeof AdminRequestsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/product-review': {
-      id: '/admin/product-review'
-      path: '/product-review'
-      fullPath: '/admin/product-review'
-      preLoaderRoute: typeof AdminProductReviewRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/payments': {
-      id: '/admin/payments'
-      path: '/payments'
-      fullPath: '/admin/payments'
-      preLoaderRoute: typeof AdminPaymentsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/orders': {
-      id: '/admin/orders'
-      path: '/orders'
-      fullPath: '/admin/orders'
-      preLoaderRoute: typeof AdminOrdersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/listings': {
-      id: '/admin/listings'
-      path: '/listings'
-      fullPath: '/admin/listings'
-      preLoaderRoute: typeof AdminListingsRouteImport
+    '/admin/buyers': {
+      id: '/admin/buyers'
+      path: '/buyers'
+      fullPath: '/admin/buyers'
+      preLoaderRoute: typeof AdminBuyersRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/disputes': {
@@ -1211,12 +1070,299 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDisputesRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/buyers': {
-      id: '/admin/buyers'
-      path: '/buyers'
-      fullPath: '/admin/buyers'
-      preLoaderRoute: typeof AdminBuyersRouteImport
+    '/admin/listings': {
+      id: '/admin/listings'
+      path: '/listings'
+      fullPath: '/admin/listings'
+      preLoaderRoute: typeof AdminListingsRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/payments': {
+      id: '/admin/payments'
+      path: '/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AdminPaymentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/product-review': {
+      id: '/admin/product-review'
+      path: '/product-review'
+      fullPath: '/admin/product-review'
+      preLoaderRoute: typeof AdminProductReviewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/requests': {
+      id: '/admin/requests'
+      path: '/requests'
+      fullPath: '/admin/requests'
+      preLoaderRoute: typeof AdminRequestsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/safety': {
+      id: '/admin/safety'
+      path: '/safety'
+      fullPath: '/admin/safety'
+      preLoaderRoute: typeof AdminSafetyRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/suppliers': {
+      id: '/admin/suppliers'
+      path: '/suppliers'
+      fullPath: '/admin/suppliers'
+      preLoaderRoute: typeof AdminSuppliersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/verification': {
+      id: '/admin/verification'
+      path: '/verification'
+      fullPath: '/admin/verification'
+      preLoaderRoute: typeof AdminVerificationRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/ads/': {
+      id: '/ads/'
+      path: '/'
+      fullPath: '/ads/'
+      preLoaderRoute: typeof AdsIndexRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/ads/$id': {
+      id: '/ads/$id'
+      path: '/$id'
+      fullPath: '/ads/$id'
+      preLoaderRoute: typeof AdsIdRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/ads/admin': {
+      id: '/ads/admin'
+      path: '/admin'
+      fullPath: '/ads/admin'
+      preLoaderRoute: typeof AdsAdminRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/ads/dashboard': {
+      id: '/ads/dashboard'
+      path: '/dashboard'
+      fullPath: '/ads/dashboard'
+      preLoaderRoute: typeof AdsDashboardRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/ads/new': {
+      id: '/ads/new'
+      path: '/new'
+      fullPath: '/ads/new'
+      preLoaderRoute: typeof AdsNewRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/ads/request': {
+      id: '/ads/request'
+      path: '/request'
+      fullPath: '/ads/request'
+      preLoaderRoute: typeof AdsRequestRouteImport
+      parentRoute: typeof AdsRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/custom-requests/': {
+      id: '/custom-requests/'
+      path: '/'
+      fullPath: '/custom-requests/'
+      preLoaderRoute: typeof CustomRequestsIndexRouteImport
+      parentRoute: typeof CustomRequestsRoute
+    }
+    '/custom-requests/$id': {
+      id: '/custom-requests/$id'
+      path: '/$id'
+      fullPath: '/custom-requests/$id'
+      preLoaderRoute: typeof CustomRequestsIdRouteImport
+      parentRoute: typeof CustomRequestsRoute
+    }
+    '/dashboard/buyer': {
+      id: '/dashboard/buyer'
+      path: '/dashboard/buyer'
+      fullPath: '/dashboard/buyer'
+      preLoaderRoute: typeof DashboardBuyerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/supplier': {
+      id: '/dashboard/supplier'
+      path: '/dashboard/supplier'
+      fullPath: '/dashboard/supplier'
+      preLoaderRoute: typeof DashboardSupplierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offers/': {
+      id: '/offers/'
+      path: '/'
+      fullPath: '/offers/'
+      preLoaderRoute: typeof OffersIndexRouteImport
+      parentRoute: typeof OffersRoute
+    }
+    '/offers/$id': {
+      id: '/offers/$id'
+      path: '/$id'
+      fullPath: '/offers/$id'
+      preLoaderRoute: typeof OffersIdRouteImport
+      parentRoute: typeof OffersRoute
+    }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof OnboardingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/buyer': {
+      id: '/onboarding/buyer'
+      path: '/onboarding/buyer'
+      fullPath: '/onboarding/buyer'
+      preLoaderRoute: typeof OnboardingBuyerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/supplier': {
+      id: '/onboarding/supplier'
+      path: '/onboarding/supplier'
+      fullPath: '/onboarding/supplier'
+      preLoaderRoute: typeof OnboardingSupplierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders/': {
+      id: '/orders/'
+      path: '/'
+      fullPath: '/orders/'
+      preLoaderRoute: typeof OrdersIndexRouteImport
+      parentRoute: typeof OrdersRoute
+    }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof OrdersRoute
+    }
+    '/products/': {
+      id: '/products/'
+      path: '/'
+      fullPath: '/products/'
+      preLoaderRoute: typeof ProductsIndexRouteImport
+      parentRoute: typeof ProductsRoute
+    }
+    '/products/$id': {
+      id: '/products/$id'
+      path: '/$id'
+      fullPath: '/products/$id'
+      preLoaderRoute: typeof ProductsIdRouteImport
+      parentRoute: typeof ProductsRoute
+    }
+    '/rfq/': {
+      id: '/rfq/'
+      path: '/'
+      fullPath: '/rfq/'
+      preLoaderRoute: typeof RfqIndexRouteImport
+      parentRoute: typeof RfqRoute
+    }
+    '/rfq/$id': {
+      id: '/rfq/$id'
+      path: '/$id'
+      fullPath: '/rfq/$id'
+      preLoaderRoute: typeof RfqIdRouteImport
+      parentRoute: typeof RfqRoute
+    }
+    '/rfq/new': {
+      id: '/rfq/new'
+      path: '/new'
+      fullPath: '/rfq/new'
+      preLoaderRoute: typeof RfqNewRouteImport
+      parentRoute: typeof RfqRoute
+    }
+    '/supplier-portal/': {
+      id: '/supplier-portal/'
+      path: '/'
+      fullPath: '/supplier-portal/'
+      preLoaderRoute: typeof SupplierPortalIndexRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
+    '/supplier-portal/inventory': {
+      id: '/supplier-portal/inventory'
+      path: '/inventory'
+      fullPath: '/supplier-portal/inventory'
+      preLoaderRoute: typeof SupplierPortalInventoryRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
+    '/supplier-portal/messages': {
+      id: '/supplier-portal/messages'
+      path: '/messages'
+      fullPath: '/supplier-portal/messages'
+      preLoaderRoute: typeof SupplierPortalMessagesRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
+    '/supplier-portal/orders': {
+      id: '/supplier-portal/orders'
+      path: '/orders'
+      fullPath: '/supplier-portal/orders'
+      preLoaderRoute: typeof SupplierPortalOrdersRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
+    '/supplier-portal/preview': {
+      id: '/supplier-portal/preview'
+      path: '/preview'
+      fullPath: '/supplier-portal/preview'
+      preLoaderRoute: typeof SupplierPortalPreviewRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
+    '/supplier-portal/quote-requests': {
+      id: '/supplier-portal/quote-requests'
+      path: '/quote-requests'
+      fullPath: '/supplier-portal/quote-requests'
+      preLoaderRoute: typeof SupplierPortalQuoteRequestsRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
+    '/supplier-portal/verification': {
+      id: '/supplier-portal/verification'
+      path: '/verification'
+      fullPath: '/supplier-portal/verification'
+      preLoaderRoute: typeof SupplierPortalVerificationRouteImport
+      parentRoute: typeof SupplierPortalRoute
+    }
+    '/suppliers/$id': {
+      id: '/suppliers/$id'
+      path: '/$id'
+      fullPath: '/suppliers/$id'
+      preLoaderRoute: typeof SuppliersIdRouteImport
+      parentRoute: typeof SuppliersRoute
+    }
+    '/offers/$id/checkout': {
+      id: '/offers/$id/checkout'
+      path: '/checkout'
+      fullPath: '/offers/$id/checkout'
+      preLoaderRoute: typeof OffersIdCheckoutRouteImport
+      parentRoute: typeof OffersIdRoute
+    }
+    '/rfq/$id/accept': {
+      id: '/rfq/$id/accept'
+      path: '/accept'
+      fullPath: '/rfq/$id/accept'
+      preLoaderRoute: typeof RfqIdAcceptRouteImport
+      parentRoute: typeof RfqIdRoute
     }
     '/supplier-portal/products/': {
       id: '/supplier-portal/products/'
@@ -1231,20 +1377,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/supplier-portal/products/new'
       preLoaderRoute: typeof SupplierPortalProductsNewRouteImport
       parentRoute: typeof SupplierPortalRoute
-    }
-    '/rfq/$id/accept': {
-      id: '/rfq/$id/accept'
-      path: '/accept'
-      fullPath: '/rfq/$id/accept'
-      preLoaderRoute: typeof RfqIdAcceptRouteImport
-      parentRoute: typeof RfqIdRoute
-    }
-    '/offers/$id/checkout': {
-      id: '/offers/$id/checkout'
-      path: '/checkout'
-      fullPath: '/offers/$id/checkout'
-      preLoaderRoute: typeof OffersIdCheckoutRouteImport
-      parentRoute: typeof OffersIdRoute
     }
   }
 }
@@ -1280,6 +1412,26 @@ const AdminRouteChildren: AdminRouteChildren = {
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface AdsRouteChildren {
+  AdsIdRoute: typeof AdsIdRoute
+  AdsAdminRoute: typeof AdsAdminRoute
+  AdsDashboardRoute: typeof AdsDashboardRoute
+  AdsNewRoute: typeof AdsNewRoute
+  AdsRequestRoute: typeof AdsRequestRoute
+  AdsIndexRoute: typeof AdsIndexRoute
+}
+
+const AdsRouteChildren: AdsRouteChildren = {
+  AdsIdRoute: AdsIdRoute,
+  AdsAdminRoute: AdsAdminRoute,
+  AdsDashboardRoute: AdsDashboardRoute,
+  AdsNewRoute: AdsNewRoute,
+  AdsRequestRoute: AdsRequestRoute,
+  AdsIndexRoute: AdsIndexRoute,
+}
+
+const AdsRouteWithChildren = AdsRoute._addFileChildren(AdsRouteChildren)
 
 interface AuthRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
@@ -1425,6 +1577,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
+  AdsRoute: AdsRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   BuyerPortalRoute: BuyerPortalRoute,
   CheckoutRoute: CheckoutRoute,
@@ -1453,3 +1606,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

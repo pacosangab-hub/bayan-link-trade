@@ -79,6 +79,423 @@ export type Database = {
         }
         Relationships: []
       }
+      ads_bookings: {
+        Row: {
+          advertiser_user_id: string
+          amount: number
+          commission_rate: number
+          created_at: string
+          id: string
+          owner_user_id: string
+          payment_status: string
+          quote_id: string
+          request_id: string
+          status: string
+        }
+        Insert: {
+          advertiser_user_id: string
+          amount: number
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          owner_user_id: string
+          payment_status?: string
+          quote_id: string
+          request_id: string
+          status?: string
+        }
+        Update: {
+          advertiser_user_id?: string
+          amount?: number
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          owner_user_id?: string
+          payment_status?: string
+          quote_id?: string
+          request_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_bookings_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: true
+            referencedRelation: "ads_quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ads_bookings_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "ads_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ads_campaigns: {
+        Row: {
+          advertiser_user_id: string
+          booking_id: string
+          created_at: string
+          end_date: string
+          id: string
+          owner_user_id: string
+          proof_urls: string[]
+          report: string | null
+          start_date: string
+          title: string
+        }
+        Insert: {
+          advertiser_user_id: string
+          booking_id: string
+          created_at?: string
+          end_date: string
+          id?: string
+          owner_user_id: string
+          proof_urls?: string[]
+          report?: string | null
+          start_date: string
+          title: string
+        }
+        Update: {
+          advertiser_user_id?: string
+          booking_id?: string
+          created_at?: string
+          end_date?: string
+          id?: string
+          owner_user_id?: string
+          proof_urls?: string[]
+          report?: string | null
+          start_date?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_campaigns_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "ads_bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ads_disputes: {
+        Row: {
+          booking_id: string
+          created_at: string
+          decision: string | null
+          id: string
+          opened_by: string
+          reason: string
+          status: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          decision?: string | null
+          id?: string
+          opened_by: string
+          reason: string
+          status?: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          decision?: string | null
+          id?: string
+          opened_by?: string
+          reason?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_disputes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "ads_bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ads_listings: {
+        Row: {
+          audience: string
+          available_from: string
+          available_until: string
+          category: string
+          created_at: string
+          description: string
+          duration_days: number
+          format: string
+          id: string
+          images: string[]
+          instant_booking: boolean
+          is_demo: boolean
+          latitude: number | null
+          location: string
+          longitude: number | null
+          media_owner: string
+          owner_user_id: string | null
+          packages: Json
+          price: number | null
+          reach: number | null
+          reach_verified: boolean
+          specifications: Json
+          status: string
+          title: string
+        }
+        Insert: {
+          audience?: string
+          available_from?: string
+          available_until?: string
+          category: string
+          created_at?: string
+          description?: string
+          duration_days?: number
+          format?: string
+          id?: string
+          images?: string[]
+          instant_booking?: boolean
+          is_demo?: boolean
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          media_owner: string
+          owner_user_id?: string | null
+          packages?: Json
+          price?: number | null
+          reach?: number | null
+          reach_verified?: boolean
+          specifications?: Json
+          status?: string
+          title: string
+        }
+        Update: {
+          audience?: string
+          available_from?: string
+          available_until?: string
+          category?: string
+          created_at?: string
+          description?: string
+          duration_days?: number
+          format?: string
+          id?: string
+          images?: string[]
+          instant_booking?: boolean
+          is_demo?: boolean
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          media_owner?: string
+          owner_user_id?: string | null
+          packages?: Json
+          price?: number | null
+          reach?: number | null
+          reach_verified?: boolean
+          specifications?: Json
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      ads_members: {
+        Row: {
+          account_type: string
+          created_at: string
+          display_name: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          account_type?: string
+          created_at?: string
+          display_name?: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          account_type?: string
+          created_at?: string
+          display_name?: string
+          user_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      ads_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          request_id: string
+          sender_user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          request_id: string
+          sender_user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          request_id?: string
+          sender_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "ads_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ads_quotes: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          owner_user_id: string
+          request_id: string
+          status: string
+          terms: string
+          valid_until: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          owner_user_id: string
+          request_id: string
+          status?: string
+          terms: string
+          valid_until: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          owner_user_id?: string
+          request_id?: string
+          status?: string
+          terms?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_quotes_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "ads_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ads_requests: {
+        Row: {
+          advertiser_user_id: string
+          audience: string
+          budget: number
+          channels: string[]
+          created_at: string
+          end_date: string
+          id: string
+          listing_id: string | null
+          locations: string
+          objective: string
+          owner_user_id: string | null
+          requirements: string
+          start_date: string
+          status: string
+        }
+        Insert: {
+          advertiser_user_id: string
+          audience: string
+          budget: number
+          channels?: string[]
+          created_at?: string
+          end_date: string
+          id?: string
+          listing_id?: string | null
+          locations: string
+          objective: string
+          owner_user_id?: string | null
+          requirements?: string
+          start_date: string
+          status?: string
+        }
+        Update: {
+          advertiser_user_id?: string
+          audience?: string
+          budget?: number
+          channels?: string[]
+          created_at?: string
+          end_date?: string
+          id?: string
+          listing_id?: string | null
+          locations?: string
+          objective?: string
+          owner_user_id?: string | null
+          requirements?: string
+          start_date?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_requests_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ads_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ads_saved: {
+        Row: {
+          created_at: string
+          listing_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          listing_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          listing_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_saved_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ads_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ads_settings: {
+        Row: {
+          key: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       attachments: {
         Row: {
           business_id: string | null
@@ -2112,6 +2529,12 @@ export type Database = {
       }
     }
     Functions: {
+      ads_accept_quote: { Args: { quote: string }; Returns: string }
+      ads_is_admin: { Args: never; Returns: boolean }
+      ads_transition_booking: {
+        Args: { booking: string; next_status: string }
+        Returns: undefined
+      }
       business_contact_info: {
         Args: { _business_id: string }
         Returns: {
@@ -2322,12 +2745,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2351,11 +2774,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2376,11 +2799,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2401,11 +2824,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2418,11 +2841,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

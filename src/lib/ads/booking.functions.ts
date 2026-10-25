@@ -1,0 +1,5 @@
+import {createServerFn} from '@tanstack/react-start';
+import {requireSupabaseAuth} from '@/integrations/supabase/auth-middleware';
+import {z} from 'zod';
+export const transitionAdBooking=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(z.object({id:z.string().uuid(),status:z.enum(['payment_pending','campaign_active','completed','cancelled'])})).handler(async({data,context})=>{const {error}=await context.supabase.rpc('ads_transition_booking',{booking:data.id,next_status:data.status});if(error)throw new Error('Booking cannot advance until its requirements are met; payment must be confirmed before activation');return {ok:true};});
+export const disputeAdBooking=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(z.object({id:z.string().uuid(),reason:z.string().min(5).max(5000)})).handler(async({data,context})=>{const {error}=await context.supabase.from('ads_disputes').insert({booking_id:data.id,opened_by:context.userId,reason:data.reason});if(error)throw new Error('Could not open dispute');return {ok:true};});

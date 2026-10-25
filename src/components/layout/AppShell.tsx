@@ -17,6 +17,7 @@ import psgLogo from "@/assets/psg-logo.png.asset.json";
 const navLinks = [
   { to: "/", label: "Marketplace" },
   { to: "/products", label: "Products" },
+  { to: "/ads", label: "Ads Marketplace" },
   { to: "/suppliers", label: "Suppliers" },
   { to: "/rfq", label: "RFQ Center" },
   { to: "/orders", label: "Orders" },
@@ -73,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="opacity-90">🇵🇭 PSG — Connecting Philippine business, end to end.</span>
           <div className="hidden md:flex items-center gap-4 opacity-90">
             <span>Help Center</span>
-            <span>Escrow Policy</span>
+            <span>{path.startsWith('/ads') ? 'Advertising policies' : 'Escrow Policy'}</span>
             <span>EN · TL</span>
           </div>
         </div>
@@ -82,11 +83,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center gap-4">
-          <Link to="/" className="flex items-center gap-2 shrink-0">
+          <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0">
             <img src={psgLogo.url} alt="PSG — Philippine Supply Gateway" className="h-10 w-10 object-contain" />
             <div className="leading-tight">
               <div className="font-display text-xl tracking-wide">PSG</div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground -mt-0.5">
+              <div className="hidden sm:block text-[10px] uppercase tracking-[0.18em] text-muted-foreground -mt-0.5">
                 Philippine Supply Gateway
               </div>
             </div>
@@ -241,13 +242,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               <div className="font-display text-2xl text-white leading-none">PSG</div>
             </div>
             <p className="opacity-80 leading-relaxed">
-              The B2B wholesale gateway for Philippine commerce. Verified suppliers, RFQs, and escrow on every transaction.
+              {path.startsWith('/ads') ? 'Philippine advertising opportunities, media owners, and campaign quotations. Advertising payments are not yet enabled.' : 'The B2B wholesale gateway for Philippine commerce. Verified suppliers, RFQs, and escrow on every transaction.'}
             </p>
           </div>
           <div>
             <div className="font-semibold text-white mb-3">Buyers</div>
             <ul className="space-y-2 opacity-90">
-              <li>Browse marketplace</li><li>Post an RFQ</li><li>Escrow protection</li><li>Verified suppliers</li>
+              <li>Browse marketplace</li><li>Post an RFQ</li><li>{path.startsWith('/ads') ? 'Compare opportunities' : 'Escrow protection'}</li><li>Verified suppliers</li>
             </ul>
           </div>
           <div>
