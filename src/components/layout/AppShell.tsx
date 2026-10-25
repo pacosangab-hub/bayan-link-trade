@@ -17,6 +17,7 @@ import psgLogo from "@/assets/psg-logo.png.asset.json";
 const navLinks = [
   { to: "/", label: "Marketplace" },
   { to: "/products", label: "Products" },
+  { to: "/ads", label: "Ads Marketplace" },
   { to: "/suppliers", label: "Suppliers" },
   { to: "/rfq", label: "RFQ Center" },
   { to: "/orders", label: "Orders" },

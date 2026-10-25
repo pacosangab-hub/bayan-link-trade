@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep advertising procurement in the `ads_*` tables and `/ads` routes, using existing account authentication; this isolates advertising workflows from established product/order behavior.
+- Public advertising catalog reads use a publishable-client server function; private advertising mutations use the authenticated client with RLS and atomic database booking functions to preserve account isolation.
+- Advertising media resolves bundled demonstration images by key and uploaded inventory through Storage; demonstration inventory cannot create confirmed bookings or collect payments.
