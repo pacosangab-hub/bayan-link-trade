@@ -28,6 +28,7 @@ import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as BuyerPortalRouteImport } from './routes/buyer-portal'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdsRouteImport } from './routes/ads'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
@@ -38,6 +39,7 @@ import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
 import { Route as OffersIndexRouteImport } from './routes/offers.index'
 import { Route as CustomRequestsIndexRouteImport } from './routes/custom-requests.index'
+import { Route as AdsIndexRouteImport } from './routes/ads.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
 import { Route as SupplierPortalVerificationRouteImport } from './routes/supplier-portal.verification'
@@ -168,6 +170,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdsRoute = AdsRouteImport.update({
+  id: '/ads',
+  path: '/ads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -217,6 +224,11 @@ const CustomRequestsIndexRoute = CustomRequestsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => CustomRequestsRoute,
+} as any)
+const AdsIndexRoute = AdsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdsRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
@@ -397,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
+  '/ads': typeof AdsRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
@@ -446,6 +459,7 @@ export interface FileRoutesByFullPath {
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/ads/': typeof AdsIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -504,6 +518,7 @@ export interface FileRoutesByTo {
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/admin': typeof AdminIndexRoute
+  '/ads': typeof AdsIndexRoute
   '/custom-requests': typeof CustomRequestsIndexRoute
   '/offers': typeof OffersIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
@@ -521,6 +536,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
+  '/ads': typeof AdsRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/buyer-portal': typeof BuyerPortalRoute
   '/checkout': typeof CheckoutRoute
@@ -570,6 +586,7 @@ export interface FileRoutesById {
   '/supplier-portal/verification': typeof SupplierPortalVerificationRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/ads/': typeof AdsIndexRoute
   '/custom-requests/': typeof CustomRequestsIndexRoute
   '/offers/': typeof OffersIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -588,6 +605,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/ads'
     | '/auth'
     | '/buyer-portal'
     | '/checkout'
@@ -637,6 +655,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/verification'
     | '/suppliers/$id'
     | '/admin/'
+    | '/ads/'
     | '/custom-requests/'
     | '/offers/'
     | '/onboarding/'
@@ -695,6 +714,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/verification'
     | '/suppliers/$id'
     | '/admin'
+    | '/ads'
     | '/custom-requests'
     | '/offers'
     | '/onboarding'
@@ -711,6 +731,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/ads'
     | '/auth'
     | '/buyer-portal'
     | '/checkout'
@@ -760,6 +781,7 @@ export interface FileRouteTypes {
     | '/supplier-portal/verification'
     | '/suppliers/$id'
     | '/admin/'
+    | '/ads/'
     | '/custom-requests/'
     | '/offers/'
     | '/onboarding/'
@@ -777,6 +799,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AdsRoute: typeof AdsRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   BuyerPortalRoute: typeof BuyerPortalRoute
   CheckoutRoute: typeof CheckoutRoute
@@ -938,6 +961,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ads': {
+      id: '/ads'
+      path: '/ads'
+      fullPath: '/ads'
+      preLoaderRoute: typeof AdsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -1007,6 +1037,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/custom-requests/'
       preLoaderRoute: typeof CustomRequestsIndexRouteImport
       parentRoute: typeof CustomRequestsRoute
+    }
+    '/ads/': {
+      id: '/ads/'
+      path: '/'
+      fullPath: '/ads/'
+      preLoaderRoute: typeof AdsIndexRouteImport
+      parentRoute: typeof AdsRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -1281,6 +1318,16 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface AdsRouteChildren {
+  AdsIndexRoute: typeof AdsIndexRoute
+}
+
+const AdsRouteChildren: AdsRouteChildren = {
+  AdsIndexRoute: AdsIndexRoute,
+}
+
+const AdsRouteWithChildren = AdsRoute._addFileChildren(AdsRouteChildren)
+
 interface AuthRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
 }
@@ -1425,6 +1472,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
+  AdsRoute: AdsRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   BuyerPortalRoute: BuyerPortalRoute,
   CheckoutRoute: CheckoutRoute,

@@ -8,6 +8,13 @@
       "when": 1792954017332,
       "tag": "0000_psg_ads_marketplace",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792954157077,
+      "tag": "0001_ads_storage_and_campaign_workflow",
+      "breakpoints": true
     }
   ]
 }

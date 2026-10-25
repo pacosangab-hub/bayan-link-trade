@@ -180,6 +180,44 @@ export type Database = {
           },
         ]
       }
+      ads_disputes: {
+        Row: {
+          booking_id: string
+          created_at: string
+          decision: string | null
+          id: string
+          opened_by: string
+          reason: string
+          status: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          decision?: string | null
+          id?: string
+          opened_by: string
+          reason: string
+          status?: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          decision?: string | null
+          id?: string
+          opened_by?: string
+          reason?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_disputes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "ads_bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ads_listings: {
         Row: {
           audience: string
@@ -442,6 +480,21 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ads_settings: {
+        Row: {
+          key: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          value?: Json
+        }
+        Relationships: []
       }
       attachments: {
         Row: {
@@ -2477,6 +2530,10 @@ export type Database = {
     }
     Functions: {
       ads_accept_quote: { Args: { quote: string }; Returns: string }
+      ads_transition_booking: {
+        Args: { booking: string; next_status: string }
+        Returns: undefined
+      }
       business_contact_info: {
         Args: { _business_id: string }
         Returns: {
