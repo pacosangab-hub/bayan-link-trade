@@ -83,11 +83,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center gap-4">
-          <Link to="/" className="flex items-center gap-2 shrink-0">
+          <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0">
             <img src={psgLogo.url} alt="PSG — Philippine Supply Gateway" className="h-10 w-10 object-contain" />
             <div className="leading-tight">
               <div className="font-display text-xl tracking-wide">PSG</div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground -mt-0.5">
+              <div className="hidden sm:block text-[10px] uppercase tracking-[0.18em] text-muted-foreground -mt-0.5">
                 Philippine Supply Gateway
               </div>
             </div>
